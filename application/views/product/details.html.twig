@@ -1,0 +1,130 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    {% if isSingle %}
+    <div data-role="panel" id="ingredients" class="ingredients-list" data-theme="b" data-display="overlay" data-position="right">
+    </div>
+    {% endif %}
+
+    {% if hasHalf %}
+        <div data-role="panel" id="ingredients2" class="ingredients-list" data-theme="b" data-display="overlay" data-position="right">
+        </div>
+    {% endif %}
+
+    <div data-role="content" class="product-single" id="productContent">
+        <form method="post" action="" id="order-form">
+
+
+            <div class="single-top {% if image %}with-image{% endif %}" {% if image %} style="background-image: url('{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ image.full }}')" {% endif %}>
+
+                {% if image %}
+                    <a href="#product-image" data-rel="popup" data-position-to="window" data-transition="none" class="photo-popup"><i class="icon-plus"></i></a>
+
+                    <div data-role="popup" id="product-image" data-overlay-theme="a" data-theme="d" data-corners="false">
+                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img class="popphoto" src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ image.full }}" style="max-height:512px;" alt="Paris, France">
+                    </div>
+                {% endif %}
+
+                <div class="single-content get-space">
+                    <h1>{{ product.product_name }}</h1>
+                    <div class="single-description">
+                        {{ product.description|striptags }}
+                    </div>
+                </div>
+
+                {#{% if withPoints %}#}
+                {#<div id="p-footer" data-price="{{ product.product_points }}" class="align-center product-total">#}
+                    {#Total: <span id="p-total">{{ product.product_points }}</span> points#}
+                {#</div>#}
+                {#{% else %}#}
+                {#<div id="p-footer" data-price="{{ product.product_price }}" class="align-center product-total">#}
+                    {#Total: $<span id="p-total">{{ product.product_price }}</span>#}
+                {#</div>#}
+                {#{% endif %}#}
+            </div>
+
+
+            <div class="single-options get-space" style="padding-bottom: 0">
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        Quantity
+                    </div>
+                    <div class="ui-block-b">
+                        <select name="p-quantity" data-mini="true" id="p-quantity">
+                            {% for x in 1..5 %}
+                            <option value="{{ x }}">{{ x }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div><!-- /grid-a -->
+
+            </div>
+
+            {% if isSingle and not isMultple %}
+                {% include 'product/productSingle.html.twig' %}
+            {% elseif isMultiple %}
+                {% include 'product/productMultiple.html.twig' %}
+            {% endif %}
+
+            {% if withPoints %}
+                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="1" data-user="{{ logged }}" data-points="{{ pointsLeft }}">
+            {% else %}
+                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="0">
+            {% endif %}
+
+
+            <input id="hasHalf" name="hasHalfInput" value="{% if hasHalf %}1{% else %}0{% endif %}" type="hidden">
+            <input id="hasIngredients" name="hasIngredientsInput" value="{% if isSingle and not isMultple %}1{% else %}0{% endif %}" type="hidden">
+
+
+            <div class="single-options get-space">
+                <label for="textarea">Special Instructions:</label>
+                <textarea cols="40" rows="8" name="textarea" id="textarea" placeholder="Please write your special instructions here"></textarea>
+                <div class="holder">
+                    <input type="hidden" name="pid" value="{{ product.product_id }}">
+                </div>
+            </div>
+
+            {#<div class="single-options get-space">#}
+                {#<button data-theme="c" class="submit-order">#}
+                    {#<i class="icon-plus-sign"></i>#}
+                    {#Add to cart#}
+                {#</button>#}
+            {#</div>#}
+        </form>
+    </div><!-- /content -->
+
+    {#{% include 'base/cartFooter.html.twig' %}#}
+
+
+    <div data-role="footer" data-theme="pizza" data-position="fixed" class="after footer-element">
+        <div class="get-30">
+            <a class="btn btn-grey" data-rel="back" data-transition="none">
+                <span class="left-arrow-icon"></span>
+                Back
+            </a>
+        </div>
+        <div class="get-70" id="p-footer" {% if withPoints %}data-price="{{ product.product_points }}"{% else %}data-price="{{ product.product_price }}"{% endif %}>
+            <a class="btn btn-blue submit-order" href="#" data-transition="none">
+                Add to cart
+                {% if withPoints %}
+                    (<span id="p-total">{{ product.product_price }}</span>p)
+                {% else %}
+                    ($<span id="p-total">{{ product.product_price }}</span>)
+                {% endif %}
+                <span class="right-arrow-icon"></span>
+            </a>
+        </div>
+
+    </div><!-- /footer -->
+
+{% endblock content %}
+
+{% block footerjs %}
+
+    <script type="text/javascript">
+        var halfs = {% if halfs %}{{ halfs }}{% else %}false{% endif %};
+    </script>
+{% endblock %}

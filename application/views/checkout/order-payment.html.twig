@@ -1,0 +1,123 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <div data-role="content">
+        <div id="main-content">
+            <div class="get-space">
+                <div data-role="content">
+                        <div class="form_container">
+
+                            <div class="button-login " onclick="window.location.href = '{{ base_url }}account/login_order';">
+                                Login
+                            </div>
+                            <form id="register_form" action="{{ base_url }}register" method="post">
+                                <div class="error_form_message" id="error_note"></div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_firstname">First Name: </label>
+                                    <input type="text" name="first_name" id="form_firstname" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_lastname">Last Name: </label>
+                                    <input type="text" name="last_name" id="form_lastname" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_company">Company Name: </label>
+                                    <input type="text" name="company_name" id="form_company" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_address">Address: </label>
+                                    <input type="text" name="address" id="form_address" value="" />
+                                </div>
+                                {% if suburb is defined %}
+                                    <div data-role="fieldcontain">
+                                        <label for="form_suburb">Suburb: </label>
+                                        <select id="form_suburb" name="suburb">
+                                            <option value="">Choose Suburb</option>
+                                            {% for item in suburb %}
+                                                <option value="{{ item.id }}">{{ item.suburb_name }}, +${{ item.delivery_fee }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                <div data-role="fieldcontain">
+                                    <label for="form_username">User Name: </label>
+                                    <input type="text" name="username" id="form_username" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_email">Email: </label>
+                                    <input type="email" name="email" id="form_email" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_password">Password: </label>
+                                    <input type="password" name="password" id="form_password" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_passconfirm">Confirm Password: </label>
+                                    <input type="password" name="conf_password" id="form_passconfirm" value="" />
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_mobile">Mobile: </label>
+                                    <input type="text" name="mobile" id="form_mobile" value="" />
+                                </div>
+                                {% if countries is defined %}
+                                    <div data-role="fieldcontain">
+                                        <label for="form_country">Country: </label>
+                                        <select id="form_country" name="country_id">
+                                            <option value="">Choose Country</option>
+                                            {% for item in countries %}
+                                                {% if item.country == 'Australia' %}
+                                                    <option value="{{ item.country_id }}" selected="selected" >{{ item.country }}</option>
+                                                {% else %}
+                                                    <option value="{{ item.country_id }}" >{{ item.country }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                {% endif %}
+                                <div data-role="fieldcontain" id="div-state" class="hide">
+                                    <label for="form_state">State: </label>
+                                    <select id="form_state" name="state">
+                                        <option value="">Choose State</option>
+                                    </select>
+                                </div>
+                                <div data-role="fieldcontain" id="div-city" class="hide">
+                                    <label for="form_city">City: </label>
+                                    <select id="form_city" name="city">
+                                        <option value="">Choose City</option>
+                                    </select>
+                                </div>
+                                <div data-role="fieldcontain">
+                                    <label for="form_city">Zip Code: </label>
+                                    <input type="text" name="zipcode" id="form_zipcode" value="" />
+                                </div>
+
+                            </form>
+                        </div>
+
+                    </div>
+                
+
+            </div>
+
+        </div>
+    </div>
+
+
+    <div data-role="footer" data-position="fixed">
+        <div class="get-30">
+            <a class="btn btn-grey" data-rel="back" data-transition="none">
+                <span class="left-arrow-icon"></span>
+                Back
+            </a>
+        </div>
+        <div class="get-70">
+            <a class="btn btn-blue submit-order" href="/payment" data-transition="none">
+                Send Order
+                <span class="right-arrow-icon"></span>
+            </a>
+        </div>
+    </div>
+    </div><!-- /content -->
+
+{% endblock content %}

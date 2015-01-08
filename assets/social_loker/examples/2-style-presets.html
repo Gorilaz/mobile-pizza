@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Examples: Social Locker for jQuery</title>
+	
+  <!-- [INSTALATION] -->
+	
+  <!-- required libraries (copy this and check path correctness) -->
+	
+  <!-- social locker for jquery (copy this and check path correctness) -->
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="../js/jquery.op.sociallocker.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="../css/jquery.op.sociallocker.min.css" />
+	
+  <!-- [USAGE] -->
+    
+  <script>
+  // -
+    // Notice: read the documentation that comes with the plugins to get more details 
+
+    // IMPORTANT: this is an obligatory wrapper, it runs after loading a page
+    jQuery(document).ready(function ($) {
+
+        // --
+        // Starter style
+        // --
+
+        $("#built-in-themes .to-lock-1").sociallocker({
+            
+            // common url for every social button
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+            
+            // text that appears inside the locker
+            text: "<strong>You can put any message here!</strong><br />Change the locker appearance just by adding some CSS rules! No coding required!",
+  
+            facebook: {
+                // facebook app id (get the one here: https://developers.facebook.com/apps)
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    // text that will be preloaded to tweet
+                    text: "Try a new Social Locker plugin for #jquery from #onepress!"
+                }
+            }
+	});
+		   
+        // --
+        // Secrets style
+        // --
+        
+        $("#built-in-themes .to-lock-2").sociallocker({
+    
+            // common url for every social button
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+		    
+            // a theme name that will be used
+            theme: "secrets",
+
+            // text that appears above the social buttons
+            text: {
+                header: "The content is locked!",
+                message: "This is one of the professionally designed themes!"
+            },
+            facebook: {
+                // facebook app id (get the one here: https://developers.facebook.com/apps)
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    // text that will be preloaded to tweet
+                    text: "Try a new Social Locker plugin for #jquery from #onepress!"
+                }
+            }
+        });
+        
+        // --
+        // Dandyish style
+        // --
+
+        $("#built-in-themes .to-lock-3").sociallocker({
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+
+            // a theme name that will be used
+            theme: "dandyish",
+            
+            // text that appears above the social buttons
+            text: {
+                header: "The content is locked!",
+                message: "This is one of the professionally designed themes!"
+            },
+ 
+            facebook: {
+                // facebook app id (get the one here: https://developers.facebook.com/apps)
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    // text that will be preloaded to tweet
+                    text: "Try a new Social Locker plugin for #jquery from #onepress!"
+                }
+            }
+        });
+
+        // --
+        // Glass style
+        // --
+
+        $("#built-in-themes .to-lock-4").sociallocker({
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+                
+            // a theme name that will be used
+            theme: "glass",
+            
+            // text that appears above the social buttons
+            text: {
+                header: "The content is locked!",
+                message: "This is one of the professionally designed themes!"
+            },
+            
+            facebook: {
+                // facebook app id (get the one here: https://developers.facebook.com/apps)
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    // text that will be preloaded to tweet
+                    text: "Try a new Social Locker plugin for #jquery from #onepress!"
+                }
+            }
+        });
+    });
+  </script>
+    
+  <style>
+  #built-in-themes .title {
+        font-style: normal;
+        padding-bottom: 0px;
+        margin-bottom: 0px;
+        margin-top: 25px;
+    }
+    #built-in-themes .title:first-child {
+        margin-top: 0px;
+    } 
+     #built-in-themes .example {
+         padding: 0 0 0 16px;
+    }
+    #built-in-themes .pattern-background {
+        background: url("../img/preview-bg.png");
+        padding: 25px 25px 10px 25px;
+        box-shadow: inset 0 0 30px #fff;
+    }
+  </style>
+	
+	
+  <!-- Styles for this example, don't copy -->
+  <style>
+    /* Styles for this page, don't copy */
+    body { margin:: 0px; padding: 0px; line-height: 170%; padding: 20px; font-family: "Arial" }
+    h1, h2, h3, h4, h5 { padding: 0px; margin: 20px 0 20px 0; }
+    a {color: #000;}
+    p { margin: 8px 0; }
+    .wrap { width: 700px; margin: auto;}
+    .notice {background-color: #fffec7; padding: 10px; line-height: 130%;}
+    .notice-2 {background-color: #f4f4f4; padding: 10px; margin-top: 10px; line-height: 130%;}
+    #example { padding: 20px 0;}
+    img.left { float: left; margin: 0 15px 10px 0; }
+    img.right { float: right; margin: 0 0 10px 15px; }
+    .ui-locker { margin: 10px 0; }
+    .short { font-size: 10px; }
+  </style>
+  
+  <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="notice">
+      <strong>Notice</strong>: Remember the Like Buttons don't work correctly in local. Visit:<br />
+      <a href="http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/2-style-presets.html" class="short">http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/2-style-presets.html</a>
+    </div>
+	
+    <div class="notice-2">
+      <strong>See the source of this page to find out how it works.</strong>
+    </div>    
+         
+    <article id="built-in-themes">
+	<header>
+    	<h2>2. Style Presets</h2>
+        <p>The plugins comes with 3 preset styles (+1 default style) that can be switched with ease. The documentation explains how to create an own theme:</p>
+        <div class="arrow"></div>
+    </header>
+
+    <section class="example">
+        <div class="pattern-background">
+        <p class="title"><strong>Starter</strong>. The most suitable theme to customize and create your own style.</p>
+        <p class="to-lock-1 to-lock">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac pretium diam. Donec tempus nisi nec quam volutpat porta.</p> 
+        <p class="title"><strong>#1 Secrets</strong>. An extremely awesome theme based on the latest web technologies that will make your site a superstar! It's truly fascinating!</p>
+        <p class="to-lock-2 to-lock">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac pretium diam. Donec tempus nisi nec quam volutpat porta.</p> 
+        <p class="title"><strong>#2 Dandyish</strong>. A very rich theme to attract maximum attention!</p>
+        <p class="to-lock-3 to-lock">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac pretium diam. Donec tempus nisi nec quam volutpat porta.</p> 
+        
+
+            <p class="title"><strong>#3 Glass</strong>. Another nice preset theme for any background!</p>
+            <p class="to-lock-4 to-lock">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac pretium diam. Donec tempus nisi nec quam volutpat porta.</p>
+        </div>
+    </section>
+
+</article>
+        
+  </div>
+
+</body>
+</html>

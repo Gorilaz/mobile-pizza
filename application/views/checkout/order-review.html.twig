@@ -1,0 +1,349 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <script type="text/javascript">
+        var schedule = {{ schedule.forJquery }};
+        var rules    = {{ rules }};
+    </script>
+
+    <div data-role="content">
+    <form id="form-checkout" action="{{ settings.subdomain_url }}payment" method="post" data-ajax="false">
+        <div id="main-content">
+            <div class="get-space">
+
+                <div class="notice-holder{% if itemsNo !=0 %} hide{% endif %}">
+                    <div class="notice">
+                        <i class="icon-exclamation-sign"></i> Your cart is empty.
+                    </div>
+                    <a href="/menu" class="ui-btn ui-btn-a" data-transition="none">Start your order now!</a>
+                </div>
+            </div>
+
+                {% if itemsNo != 0 %}
+                <div class="order-holder get-space">
+
+                    <table class="ui-body-a ui-shadow table-stripe ui-responsive order-table">
+                        <tbody>
+                        {%  for item in cart %}
+
+                            <tr class="item-{{ item.rowid }}">
+                                <td class="order-item"><h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2></td>
+                                {% if item.points is defined %}
+                                    <td class="order-price"></td>
+                                {% else %}
+                                    <td class="order-price">${{ item.prod_price }}</td>
+                                {% endif %}
+                            </tr>
+
+                            <tr class="item-{{ item.rowid }}">
+                                <td colspan="2" class=" order-item-padded">Qty: {{ item.qty }}</td>
+                            </tr>
+
+                            {% for option in item.options %}
+                                <tr class="item-{{ item.rowid }}">
+                                    <td class="order-item order-item-padded">{{ option.name }}</td>
+                                    <td class="order-price">{% if option.price %} ${{ option.price }} {% endif %}</td>
+                                </tr>
+                            {% endfor %}
+
+                            {% if item.instruction is not empty %}
+                                <tr class="item-{{ item.rowid }}">
+                                    <td colspan="2">Ins:  {{ item.instruction }}</td>
+                                </tr>
+                            {% endif %}
+
+                            <tr class="order-subtotal item-{{ item.rowid }}">
+
+                                {% if item.points is defined %}
+                                    <td class="order-item">Total points</td>
+                                    <td class="order-price">{{ item.points }}</td>
+                                {% else %}
+                                    <td class="order-item">Total</td>
+                                    <td class="order-price">$ {{ item.subtotal }}</td>
+                                {% endif %}
+                            </tr>
+
+                        {% endfor %}
+
+                        <tr>
+                            <td colspan="2"><a href="/menu?action=clear-cart">Clear Cart</a></td>
+                        </tr>
+                        <!----- start Social Loker  ---->
+                        {% if socialLoker is defined and socialLoker is not empty %}
+                            <tr>
+                                <td colspan="2" id="td-social">
+                                    {{ settings.text_social_locker }}<div id="social-loker"></div></td>
+                            </tr>
+                            <tr id="show-social-loker" class="hide">
+                                <td colspan="2">
+                                    <span>{{ socialLoker }}</span>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <!-----  end Social Loker  --->
+
+                        <!----  start Coupons  --------->
+                        {% if haveCoupon is defined and haveCoupon == 'havecoupon' %}
+                            <tr>
+                                <td colspan="2">
+                                    <fieldset data-role="controlgroup">
+
+                                        {% if coupons.firstOrder is not empty or coupons.allOrder is not empty %}
+                                            <legend>Coupon(s) :</legend>
+                                            <input type="hidden" id="has-coupons" data-has="yes">
+                                        {% else %}
+                                            <input type="hidden" id="has-coupons" data-has="no">
+                                        {% endif %}
+
+                                        {% if coupons.firstOrder is not empty %}
+                                            <input type="radio" class="choose-coupon" name="coupon" value="{{ coupons.firstOrder.id }}" id="coupon_{{ coupons.firstOrder.id }}" data-discount="{{ coupons.firstOrder.discountper }}">
+                                            <label for="coupon_{{ coupons.firstOrder.id }}">First order discount ({{ coupons.firstOrder.discountper }}% off)</label>
+                                        {% endif %}
+
+                                        {% if coupons.allOrder is not empty and haveCoupon is defined %}
+                                            <input type="radio" class="choose-coupon" name="coupon" value="{{ coupons.allOrder.id }}" id="coupon_{{ coupons.allOrder.id }}" data-discount="{{ coupons.allOrder.discountper }}">
+                                            <label for="coupon_{{ coupons.allOrder.id }}">Online order discount ({{ coupons.allOrder.discountper }}% off)</label>
+                                        {% endif %}
+
+                                        {% if coupons.firstOrder is not empty or coupons.allOrder is not empty %}
+                                            <input type="radio" class="choose-coupon" name="coupon" id="other" data-discount="other" >
+                                            <label for="other">Other coupon</label>
+                                        {% endif %}
+
+                                    </fieldset>
+                                </td>
+                            </tr>
+                            <tr id="tr-coupon" {% if coupons.firstOrder is not empty or coupons.allOrder is not empty  %} class="hide" {% endif %}>
+                                <td class="order-item"><input id="coupon" name="outher-coupon" placeholder="Apply Coupon"/></td>
+                                <td class="order-price"><a href="#" data-role="button" id="voucher" data-mini="true">Apply</a></td>
+                            </tr>
+                        {% endif %}
+
+                            <tr id="coupon-row">
+                                <td  class="order-item">
+                                    <a href="#" class="hide" id="icon-remove-coupon"><i class="icon-remove-sign"></i> <span id="coupon-des"></span></a>
+
+                                </td>
+                                <td id="coupon-dis" class="order-price"></td>
+                            </tr>
+                            <!-----  end Coupons  --->
+                            <!----- Public holiday Fee  ---->
+                            {% if holidayFee is defined %}
+                                <tr>
+                                    <td class="order-item">Public Holiday Fee ({{ holidayFee.discount }}%)</td>
+                                    <td class="order-price" id="fee-prince">+{{ holidayFee.price }}</td>
+                                </tr>
+                            {% endif %}
+
+                            <!----- end Public holiday Fee  ---->
+
+                            <!-----  low order amount fee  ------->
+                            <tr class="hide" id="low_order">
+                                <td class="order-item">Low order amount fee</td>
+                                <td class="order-price" id="low_order_fee"></td>
+                            </tr>
+                            <!-----  end low order amount fee -------->
+                            <tr class="order-total">
+                                <td class="order-item">Total inc GST</td>
+                            {% if holidayFee is defined %}
+                                    <td class="order-price order-total-price" data-default="{{ total }}" data-value="{{ total+holidayFee.price }}">$ {{ total+holidayFee.price }}</td>
+                            {% else %}
+                                <td class="order-price order-total-price" data-default="{{ total }}" data-value="{{ total }}">$ {{ total }}</td>
+                            {% endif %}
+                            </tr>
+
+                            <tr class="order-total">
+                                <td class="order-item" colspan="2">
+                                    <input type="text" name="comment" placeholder="Order Comments">
+                                </td>
+                            </tr>
+                            <tr class="order-total">
+                                <td class="order-item" colspan="2">
+                                    {%- if text is defined -%}
+                                        {{ text }}
+                                    {%- endif -%}
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+                <!-----  Public Holiday Fee  ---->
+                {% if holidayFee is defined %}
+                    <input type="hidden" id="holiday-fee" data-fee="{{ holidayFee.discount }}">
+                {% else %}
+                    <input type="hidden" id="holiday-fee" data-fee="no">
+                {% endif %}
+                <!----- end Public Holiday Fee --->
+                <!----- Show if has discount --->
+                <input type="hidden" id="has_discount" data-discountper="no">
+                <!----- end Show discount  ----->
+
+                {#<form id="form-checkout" action="{{ settings.subdomain_url }}payment" method="post" data-ajax="false">#}
+                {#<form id="form-checkout" action="{{ base_url }}payment" method="post" data-ajax="false">#}
+                    <input type="hidden" name="orderHash" value="{{ sessionid }}">
+                    {#<div class="get-space">#}
+                        {#<fieldset data-role="controlgroup">#}
+                            {#<legend>Payment Method:</legend>#}
+                            {#<input type="radio" name="payment" class="payment" id="radio-choice-v-2aa" value="Cash On Delivery" checked="checked">#}
+                            {#<label for="radio-choice-v-2aa">Cash</label>#}
+                            {#<input type="radio" name="payment" class="payment" id="radio-choice-v-2bb" value="Credit Card(Online)">#}
+                            {#<label for="radio-choice-v-2bb">Credit Card(Online)</label>#}
+                            {#<input type="radio" name="payment" class="payment" id="radio-choice-v-2cc" value="Paypal">#}
+                            {#<label for="radio-choice-v-2cc">Paypal</label>#}
+                        {#</fieldset>#}
+
+                        {#<fieldset data-role="controlgroup">#}
+                            {#<legend>Delivery option:</legend>#}
+                            {#<input type="radio" name="delivery" id="radio-choice-v-2a" value="D" checked="checked">#}
+                            {#<label for="radio-choice-v-2a">Home Delivery</label>#}
+                            {#<input type="radio" name="delivery" id="radio-choice-v-2b" value="P">#}
+                            {#<label for="radio-choice-v-2b">In-store Pickup</label>#}
+                        {#</fieldset>#}
+
+                        {#<input type="hidden" id="isopen" {% if isopen.isOpen %} data-open="open"{% else %}data-open="close"{% endif %}>#}
+                        <input type="hidden" id="isopen" data-open="open">
+                        {#{% if isopen.isOpen %}#}
+
+                            {#<fieldset data-role="controlgroup">#}
+                                {#<legend>Delivery time:</legend>#}
+                                {#<input type="radio" name="when" id="radio-choice-v-2b1" value="ASAP" checked="checked">#}
+                                {#<label for="radio-choice-v-2b1" class="asap">ASAP</label>#}
+                                {#<input type="radio" name="when" id="radio-choice-v-2a1" class="later" value="Later">#}
+                                {#<label for="radio-choice-v-2a1" class="show-date">Later</label>#}
+                            {#</fieldset>#}
+
+                        {#{% else %}#}
+
+                            {#<fieldset data-role="controlgroup">#}
+                                {#<legend>Delivery time:</legend>#}
+                                {#<input type="radio" name="when" id="radio-choice-v-2a3" class="later" value="Later" checked="checked">#}
+                                {#<label for="radio-choice-v-2a3">Later</label>#}
+                            {#</fieldset>#}
+
+                        {#{% endif %}#}
+
+
+                        {#<div id="date-time" class="hide">#}
+
+                            {#<span id="date-error" class="hide">Please select date.</span>#}
+
+                            {#<label for="dateinput1" class="select">Select Date</label>#}
+                            {#<input name="date" id="date" placeholder="" value="" type="date" min="2013-12-15" max="2013-12-20">#}
+
+                            {#<label for="timeinput1" class="select">Select Time</label>#}
+                            {#<select name="time" id="time" data-mini="true">#}
+                                {#{% for i in 1..23 %}#}
+                                    {#<option value="{{ i }}:00">{{ i }}:00</option>#}
+                                    {#<option value="{{ i }}:00">{{ i }}:15</option>#}
+                                    {#<option value="{{ i }}:30">{{ i }}:30</option>#}
+                                    {#<option value="{{ i }}:30">{{ i }}:45</option>#}
+                                {#{% endfor %}#}
+                            {#</select>#}
+                        {#</div>#}
+
+                    {#</div>#}
+
+
+                {% endif %}
+
+
+                {#<div data-role="popup" id="popupMinOrderValueConfirm" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">#}
+                    {#<div data-role="header" data-theme="a" class="ui-corner-top">#}
+                        {#<h1>Delete Page?</h1>#}
+                    {#</div>#}
+                    {#<div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">#}
+                        {#<h3 class="ui-title">Are you sure you want to delete this page?</h3>#}
+                        {#<p>This action cannot be undone.</p>#}
+                        {#<a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Cancel</a>#}
+                        {#<a href="#" data-role="button" data-inline="true" data-rel="back" data-transition="flow" data-theme="b">Delete</a>#}
+                    {#</div>#}
+                {#</div>#}
+
+                <div data-role="popup" id="popupMinOrderValueNotMet" data-overlay-theme="a" data-theme="a" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+                    <div data-role="header" data-theme="a" class="ui-corner-top">
+                        <h1>Notice</h1>
+                    </div>
+                    <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                        <h3 class="ui-title">Minimum amount for Delivery is x</h3>
+
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">OK</a>
+                    </div>
+                </div>
+            </div>
+
+
+    {% if itemsNo != 0 %}
+    <div data-role="footer" data-position="fixed" id="checkout-footer">
+        {#<a class="btn btn-blue" id="checkout" href="#" data-transition="slide">#}
+            {#Checkout#}
+            {#<span class="right-arrow-icon"></span>#}
+        {#</a>#}
+
+        <div class="checkout-footer control-1">
+                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                    <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2aa" value="Cash On Delivery">#}
+                    {#<label for="radio-choice-v-2aa">Cash</label>#}
+                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2bb" value="Credit Card(Online)">#}
+                    {#<label for="radio-choice-v-2bb">Credit Card(Online)</label>#}
+                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2cc" value="Paypal">#}
+                    {#<label for="radio-choice-v-2cc">Paypal</label>#}
+                    {%  if paymentMethods is defined %}
+                        {% for pm in paymentMethods %}
+                            <input type="radio" name="payment" class="payment footer-change"  id="payment-type-{{ pm.id }}" value="{{ pm.id }}">
+                            <label class="footer-btns" for="payment-type-{{ pm.id }}">{{ pm.pay_type }}</label>
+                        {% endfor %}
+                    {% endif %}
+                </fieldset>
+        </div>
+
+        <div class="checkout-footer control-2">
+                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                    <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                    <input type="radio" class="footer-change" name="delivery" id="radio-choice-v-2a" value="D">
+                    <label class="footer-btns" for="radio-choice-v-2a">Home Delivery</label>
+                    <input type="radio" class="footer-change" name="delivery"  id="radio-choice-v-2b" value="P">
+                    <label class="footer-btns" for="radio-choice-v-2b">In-store Pickup</label>
+                </fieldset>
+        </div>
+
+        {% if isopen.isOpen %}
+            <div class="checkout-footer control-3">
+                <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
+                    <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                    <input type="radio" name="when" class="footer-change" id="radio-choice-v-2b1" value="ASAP">
+                    <label for="radio-choice-v-2b1" class="asap footer-btns">ASAP</label>
+                    <input type="radio" name="when" id="radio-choice-v-2a1"   class="later footer-change" value="Later">
+                    <label for="radio-choice-v-2a1" class="show-date footer-btns">Later</label>
+                </fieldset>
+            </div>
+        {% endif %}
+
+        <div class="checkout-footer control-4">
+
+            <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
+                <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                <label class="footer-btns" for="date">Select Date</label>
+                <select name="date" id="date">
+                    <option value="" selected="selected">Select Date</option>
+                    {% for key,value in schedule.forTwig %}
+                        <option value="{{ value.value }}" data-day="{{ key }}">{{ value.name }}</option>
+                    {% endfor %}
+                </select>
+                <label for="time">Select Time</label>
+                <select name="time" id="time" class="footer-change"  >
+
+                </select>
+            </fieldset>
+        </div>
+    </div>
+    {% endif %}
+    </form>
+    </div><!-- /content -->
+
+
+
+
+{% endblock content %}

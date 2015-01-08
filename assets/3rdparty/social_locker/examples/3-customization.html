@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Examples: Social Locker for jQuery</title>
+	
+  <!-- [INSTALATION] -->
+	
+  <!-- required libraries (copy this and check path correctness) -->
+	
+  <!-- social locker for jquery (copy this and check path correctness) -->
+  <script src="../js/jquery.op.sociallocker.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="../css/jquery.op.sociallocker.min.css" />
+	
+  <!-- [USAGE] -->
+    
+  <script>
+  // -
+    // Notice: read the documentation that comes with the plugins to get more details 
+
+    // IMPORTANT: this is an obligatory wrapper, it runs after loading a page
+    jQuery(document).ready(function ($) {
+
+        $("#customization .to-lock").sociallocker({
+            
+            // common url for every social button
+            url: "http://codecanyon.net/user/OnePress/portfolio?" + Math.random(),
+            
+            // text that appears above the social buttons
+            text: {
+                header: "This content is locked!",
+                message: "To unlock the content, use one of the social buttons below. Thank you for your support and love."
+            },
+            
+            buttons: {
+                order: ["facebook-share", "twitter-tweet"]
+            },
+
+            // a name of your own theme
+            theme: "my-custom",
+
+            facebook: {
+                // facebook app id (get the one here: https://developers.facebook.com/apps
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    // text that will be preloaded to tweet
+                    text: "Check out #onepress portfolio!"
+                }
+            }
+        });
+    });
+  </script>
+    
+  <style>
+  .onp-sociallocker-my-custom {
+	padding: 30px 10px 20px 220px;
+	background: #f8f8f8 url("../img/lock-example.png") 20px 20px no-repeat;
+	overflow: hidden;
+	min-height: 205px;
+}
+.onp-sociallocker-my-custom .onp-sociallocker-text {
+	text-align: left;
+} 
+.onp-sociallocker-my-custom .onp-sociallocker-buttons {
+	padding: 0px;
+	text-align: left;
+}
+.onp-sociallocker-my-custom .onp-sociallocker-button {
+	width: 120px;
+	margin: 10px 10px 0 0;
+	overflow: hidden;
+}
+
+@media screen and (max-width: 600px) 
+{
+	.onp-sociallocker-my-custom {
+		padding: 205px 20px 20px 20px;
+		background: #f8f8f8 url("../img/lock-example.png") 50% 20px no-repeat;
+		overflow: hidden;
+		min-height: 205px;
+		text-align: center;
+	}
+	.onp-sociallocker-my-custom .onp-sociallocker-text {
+		text-align: center;
+	} 
+	.onp-sociallocker-my-custom .onp-sociallocker-buttons {
+		text-align: center;
+	}
+}
+  </style>
+	
+	
+  <!-- Styles for this example, don't copy -->
+  <style>
+    /* Styles for this page, don't copy */
+    body { margin:: 0px; padding: 0px; line-height: 170%; padding: 20px; font-family: "Arial" }
+    h1, h2, h3, h4, h5 { padding: 0px; margin: 20px 0 20px 0; }
+    a {color: #000;}
+    p { margin: 8px 0; }
+    .wrap { width: 700px; margin: auto;}
+    .notice {background-color: #fffec7; padding: 10px; line-height: 130%;}
+    .notice-2 {background-color: #f4f4f4; padding: 10px; margin-top: 10px; line-height: 130%;}
+    #example { padding: 20px 0;}
+    img.left { float: left; margin: 0 15px 10px 0; }
+    img.right { float: right; margin: 0 0 10px 15px; }
+    .ui-locker { margin: 10px 0; }
+    .short { font-size: 10px; }
+  </style>
+  
+  <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="notice">
+      <strong>Notice</strong>: Remember the Like Buttons don't work correctly in local. Visit:<br />
+      <a href="http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/3-customization.html" class="short">http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/3-customization.html</a>
+    </div>
+	
+    <div class="notice-2">
+      <strong>See the source of this page to find out how it works.</strong>
+    </div>    
+         
+    <article id="customization">
+	<header>
+    	<h2>3. Customization</h2>
+        <p>The plugin is 100% customizable. You can add your custom styles and images, can change the locker message and the language. For example:</p>
+        <div class="arrow"></div>
+    </header>
+    
+    <section class="example">
+        <p class="to-lock">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac pretium diam. Donec tempus nisi nec quam volutpat porta.</p> 
+    </section>
+</article>
+        
+  </div>
+
+</body>
+</html>

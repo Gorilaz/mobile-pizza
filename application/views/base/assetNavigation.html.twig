@@ -1,0 +1,36 @@
+<div data-role="panel" id="menu-panel" data-theme="pizza" data-display="overlay">
+    <div class="menu-separator"></div>
+    <a href="{{ base_url }}menu" data-transition="none">
+        <div class="menu-item selected">
+            <div class="left-menu-icon">&#xf00b;</div>
+            <div class="menu-text">our menu</div>
+        </div>
+    </a>
+    <div class="menu-separator"></div>
+    {% if logged is defined and logged == 1 %}
+        <a href="{{ base_url }}security/edit" data-transition="none">
+    {% else %}
+        <a href="{{ base_url }}security/login_page" data-transition="none">
+    {% endif %}
+
+        <div class="menu-item">
+            <div class="left-menu-icon">&#xf007;</div>
+            <div class="menu-text">your account</div>
+        </div>
+    </a>
+    <div class="menu-separator"></div>
+    <a href="{{ base_url }}orders" data-transition="none">
+        <div class="menu-item">
+            <div class="left-menu-icon">&#xf046;</div>
+            <div class="menu-text">your orders</div>
+        </div>
+    </a>
+    <div class="menu-separator"></div>
+    <a href="{{ base_url }}security/logout" data-transition="none"  data-ajax="false">
+        <div class="menu-item">
+            <div class="left-menu-icon">&#xf08b;</div>
+            <div class="menu-text">logout</div>
+        </div>
+    </a>
+    <div class="menu-separator"></div>
+</div>

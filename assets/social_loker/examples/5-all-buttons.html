@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Examples: Social Locker for jQuery</title>
+	
+  <!-- [INSTALATION] -->
+	
+  <!-- required libraries (copy this and check path correctness) -->
+	
+  <!-- social locker for jquery (copy this and check path correctness) -->
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="../js/jquery.op.sociallocker.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="../css/jquery.op.sociallocker.min.css" />
+	
+  <!-- [USAGE] -->
+    
+  <script>
+  // -
+    // Notice: read the documentation that comes with the plugins to get more details 
+
+    // IMPORTANT: this is an obligatory wrapper, it runs after loading a page
+    jQuery(document).ready(function ($) {
+        
+        // --
+        // Detailed example for the Secrets Theme
+        // --
+        
+        // use your own selector to choose content what you want to lock
+        $("#all-buttons .to-lock").sociallocker({
+
+            // a theme name that will be used
+            theme: "secrets",
+            
+            buttons: {
+                order: [
+                    "facebook-like", "facebook-share", "google-plus", "google-share",   
+                    "twitter-follow", "twitter-tweet", "linkedin-share"
+                ]
+            },
+            
+            facebook: {
+                
+                // facebook app id (get the one here: https://developers.facebook.com/apps
+                // it's obligatory option, dont forget to set it
+                appId: "223634647777160",
+                
+                like: {
+                    title: 'like me',
+                    url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random()
+                },
+                share: {
+                    title: 'share it',
+                    url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random()
+                }
+            },
+            
+            twitter: {
+                
+                tweet: {
+                    title: "tweet me",
+                    text: 'Tweet this message',
+                    url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random()
+                },
+                follow: {
+                    title: "follow @onepress",
+                    url: "http://twitter.com/onepressmedia"
+                }
+            },
+            
+            google: {
+                
+                plus: {
+                    title: 'plus 1',
+                    url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random()
+                },
+                share: {
+                    title: 'or share',
+                    url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random()
+                }
+            }
+        });
+        
+        // --
+        // More compact example for the Glass theme
+        // --
+        
+        // use your own selector to choose content what you want to lock
+        $("#all-buttons .to-lock-2").sociallocker({
+
+            // a theme name that will be used
+            theme: "glass",
+            
+            buttons: {
+                order: [
+                    "facebook-like", "facebook-share", "google-plus", "google-share",   
+                    "twitter-follow", "twitter-tweet", "linkedin-share"
+                ]
+            },
+            
+            // sets common url for all buttons, but we can carry on to use other urls in the options of buttons
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+            
+            facebook: { 
+                // facebook app id (get the one here: https://developers.facebook.com/apps
+                appId: "223634647777160"
+            },
+            
+            twitter: {
+                tweet: {
+                    text: 'Tweet this message'
+                },
+                follow: {
+                    // overrides the common url for the follow button
+                    url: "http://twitter.com/onepressmedia"
+                }
+            }
+        });
+        
+    });
+  </script>
+    
+	
+	
+  <!-- Styles for this example, don't copy -->
+  <style>
+    /* Styles for this page, don't copy */
+    body { margin:: 0px; padding: 0px; line-height: 170%; padding: 20px; font-family: "Arial" }
+    h1, h2, h3, h4, h5 { padding: 0px; margin: 20px 0 20px 0; }
+    a {color: #000;}
+    p { margin: 8px 0; }
+    .wrap { width: 700px; margin: auto;}
+    .notice {background-color: #fffec7; padding: 10px; line-height: 130%;}
+    .notice-2 {background-color: #f4f4f4; padding: 10px; margin-top: 10px; line-height: 130%;}
+    #example { padding: 20px 0;}
+    img.left { float: left; margin: 0 15px 10px 0; }
+    img.right { float: right; margin: 0 0 10px 15px; }
+    .ui-locker { margin: 10px 0; }
+    .short { font-size: 10px; }
+  </style>
+  
+  <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="notice">
+      <strong>Notice</strong>: Remember the Like Buttons don't work correctly in local. Visit:<br />
+      <a href="http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/5-all-buttons.html" class="short">http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/5-all-buttons.html</a>
+    </div>
+	
+    <div class="notice-2">
+      <strong>See the source of this page to find out how it works.</strong>
+    </div>    
+         
+    <article id="all-buttons">
+	<header>
+    	<h2>5. Usage example of all buttons</h2>
+	    <p>Check out the code of this example to learn how to setup each button. 
+               Please keep in mind that the google-share button is experimental and doen't appear in IE and Opera.</p>
+        <div class="arrow"></div>
+    </header>
+    
+    <section class="example">
+        <div class="to-lock" style="display: none;">
+            <p>
+                <strong>Lorem ipsum dolor</strong> sit amet, consectetur adipiscing elit. Curabitur vitae enim ullamcorper risus tincidunt 
+                pellentesque. Cras eget tellus in leo dictum dapibus. Sed congue elit in tortor sagittis sed egestas orci viverra. 
+            </p>
+        </div>
+    </section>
+    
+    <section class="example">
+        <div class="to-lock-2" style="display: none;">
+            <p>
+                <strong>Lorem ipsum dolor</strong> sit amet, consectetur adipiscing elit. Curabitur vitae enim ullamcorper risus tincidunt 
+                pellentesque. Cras eget tellus in leo dictum dapibus. Sed congue elit in tortor sagittis sed egestas orci viverra. 
+            </p>
+        </div>
+    </section>
+</article>
+        
+  </div>
+
+</body>
+</html>

@@ -1,0 +1,419 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <script type="text/javascript">
+        var low_order = {{ low_order }};
+        var has_delivery = {{ hasDeliveryFee }};
+        {% if logged == 0  %}
+        var logged = 0;
+        {% else %}
+        var logged = 1;
+        {% endif %}
+    </script>
+
+
+    <div data-role="content">
+        <div class="get-space single-options">
+            {{ pg }}
+            <!--- Start Total  --->
+            <table class="ui-body-a ui-shadow table-stripe ui-responsive order-table">
+                <tbody>
+                    <tr>
+                        <td><b>Order Total</b></td>
+                        <td id="subtotal">${{ total }}</td>
+                    </tr>
+                    {% set oldTotal = total %}
+                    {% if coupon is defined %}
+                        {% set discount = (oldTotal/100)*coupon.discount %}
+                        {% set discount = discount %}
+                        {% set total = total - discount %}
+                        <tr>
+                            <td>
+                                <b>{{ coupon.name }}</b>
+                                <input type="hidden" id="discount" value="{{ discount }}">
+                            </td>
+                            <td id="subtotal">-${{ discount|number_format(2, '.', '') }}</td>
+                        </tr>
+                    {% endif %}
+                    {% if hasDeliveryFee == 1 %}
+                        <tr>
+                            <td><b>Delivery Fee</b></td>
+                            <td id="delivery-fee">{% if delivery_fee is defined and delivery_fee is not empty %}+${{ delivery_fee }}{% else %}$0{% endif %}</td>
+                            {% if delivery_fee is defined  %}
+                                {% set total = total + delivery_fee %}
+                            {% endif %}
+                        </tr>
+                    {% endif %}
+                    {% if paymentFee is defined and paymentFee.value is not null%}
+                        <tr>
+                            {% set total = total + paymentFee.value %}
+                            <td><b>{{ paymentFee.name }}</b></td>
+                            <td>+${{ paymentFee.value }}</td>
+                        </tr>
+                    {% endif %}
+
+                    {% if low_order is defined and low_order != 0 %}
+                        <tr>
+                            {% set total = total + low_order %}
+                            <td><b>Minimum order fee</b></td>
+                            <td>+${{ low_order }}</td>
+                        </tr>
+                    {% endif %}
+
+                    {% if holidayFee is defined %}
+                        <tr>
+                            {% set holidatyPrice = (oldTotal/100)*holidayFee %}
+                            {% set total = total + holidatyPrice %}
+                            <td><b>Public Holiday Fee ({{ holidayFee }}%)</b></td>
+                            <td>+${{ holidatyPrice|number_format(2, '.', '') }}</td>
+                        </tr>
+                    {% endif %}
+
+                    <tr>
+                        <td><h4>Total</h4></td>
+                        <td><h4 class="left">$</h4><h4 id="total">{{ total|number_format(2, '.', '') }}</h4></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+            <!-- End Total -->
+        <input type="hidden" id="cc" data-cc="{%- if paymentFee is defined and paymentFee is not null -%}{{ paymentFee.value }}{%- else -%}0{%- endif -%}" >
+            <!-- Start Login  -->
+            {% if logged == 0 %}
+                <div class="get-space">
+                    <a href="#" data-role="button" data-theme="c" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
+                    {#<div class="ui-grid-a">#}
+                        {#<div class="ui-block-a">#}
+                            {#<a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="pop">Register</a>#}
+                        {#</div>#}
+                        {#<div class="ui-block-b">#}
+                            {#<a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="pop">Login</a>#}
+                        {#</div>#}
+                    {#</div>#}
+
+                    <fieldset data-role="controlgroup" data-type="horizontal" class="checkout-final">
+                        <legend>OR:</legend>
+
+                        <input type="radio" name="registerorlogin" id="radio-choice-h-2a" value="register" checked="checked" class="registerorlogin">
+                        <label for="radio-choice-h-2a">Register</label>
+                        <input type="radio" name="registerorlogin" id="radio-choice-h-2b" value="login" class="registerorlogin">
+                        <label for="radio-choice-h-2b">Login</label>
+                    </fieldset>
+
+
+                    <div data-role="popup" id="popupLogin" data-theme="d" class="ui-corner-all" >
+                        <form id="form-signin">
+                            <div id="signin-div">
+                                <h3>Please sign in</h3>
+                                <span id="login-error" class="hide">Invalid username or password.</span>
+                                <span id="login-required" class="hide">Username and password are required.</span>
+                                <label for="un" class="ui-hidden-accessible">Email Address:</label>
+                                <input type="text" name="user" id="user" value="" placeholder="email address" data-theme="a">
+                                <label for="pw" class="ui-hidden-accessible">Password:</label>
+                                <input type="password" name="pass" id="pass" value="" placeholder="password" data-theme="a">
+                                <button type="button" data-theme="b" data-icon="check" id="sign-in">Sign in</button>
+                            </div>
+                            {#<div class="ui-grid-a">#}
+                                <a href="{{ base_url }}security/reset" data-role="button">Recover Password</a>
+                                {#<div class="ui-block-a"></div>#}
+                                {#<div class="ui-block-b"><a href="#" data-role="button" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a></div>#}
+                            {#</div>#}
+                        </form>
+                    </div>
+
+                    <input type="hidden" id="page" data-page="{{ static.page }}">
+                </div>
+            {% else %}
+                <div class="get-space">
+                    <a href="#" data-role="button" data-theme="a" id="log-out"> Not You? Log Out</a>
+                </div>
+            {% endif %}
+
+            <!-- End Login  -->
+        <div class="get-space single-options">
+            <!-- Start Register  -->
+            <form id="register_form" class="single-options">
+                <div class="error_form_message" id="error_note"></div>
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_firstname">First Name: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="first_name" id="form_firstname" value="{%- if logged.first_name is defined -%} {{ logged.first_name }}{%- endif -%}" />
+                    </div>
+                </div>
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_lastname">Last Name: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="last_name" id="form_lastname" value="{%- if logged.last_name is defined -%} {{ logged.last_name }}{%- endif -%}" />
+                    </div>
+                </div>
+
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_company">Company Name: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="company_name" id="form_company" value="{%- if logged.company_name is defined -%} {{ logged.company_name }}{%- endif -%}" />
+                    </div>
+                </div>
+
+                <div class="ui-grid-a" >
+                    <div class="ui-block-a">
+                        <label for="form_address">Address: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="address" id="form_address" value="{%- if logged.address is defined -%} {{ logged.address }}{%- endif -%}" />
+                    </div>
+                </div>
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_suburb">Suburb: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <select id="form_suburb" name="suburb" data-mini="true">
+                            <option value="">Choose Suburb</option>
+                            {% for item in static.suburb %}
+                                <option value="{{ item.id }}" data-fee="{{ item.delivery_fee }}" {% if logged.suburb is defined and logged.suburb ==  item.id %} selected{% endif %}>
+                                    {{ item.suburb_name }}, +${{ item.delivery_fee }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="email">Email: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="email" name="email"class="required email" id="email" value="{%- if logged.email is defined -%} {{ logged.email }}{%- endif -%}" />
+                    </div>
+                </div>
+                {% if logged is not defined or logged == 0 %}
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                                <label for="form_password">Password: </label>
+                        </div>
+                        <div class="ui-block-b">
+                            <input type="password" name="password" id="form_password" value="" />
+                        </div>
+                    </div>
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                            <label for="form_passconfirm">Confirm Password: </label>
+                        </div>
+                        <div class="ui-block-b">
+                            <input type="password" name="conf_password" id="form_passconfirm" value="" />
+                        </div>
+                    </div>
+
+
+
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_mobile">Mobile: </label>
+                    </div>
+                    <div class="ui-block-b" >
+                        <div id="mobile-div">
+                            <input type="text" name="mobile" id="form_mobile" maxlength="10" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
+                            {#<input type="hidden" id="old-mobile" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />#}
+                        </div>
+                        <div id="verify-div">
+                            <label for="form_mobile"> </label>
+                            <a href="#" data-role="button" id="verify" data-verify="no" data-inline="true">Verify</a>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="ui-grid-a" >
+
+                    <div class="ui-block-a" >
+                        <label for="sms-code">Verif. Code</label>
+
+                    </div>
+
+                    <div class="ui-block-b  {% if logged != 0 %} hide{% endif %}" id="sms-verify">
+
+                        <div class="ui-grid-a">
+
+                            <div class="left" id="mobile-code-div">
+
+                                <input type="text" name="mobile_code" id="sms-code"  data-sendcode="no" maxlength="4" data-final="{%- if logged != 0 -%}yes{%- else -%}no{%- endif -%}"/>
+                            </div>
+                        </div>
+                        <div class="clear"></div>
+                        <div style="width: 100%">
+                            <span class="hide" id="sms-code-error">Incorect Verification code.</span>
+                        </div>
+
+                    </div>
+                </div>
+
+                    <div id="reg-text">
+                        {% if regText is not empty %}
+                            {{ regText }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+                <hr/>
+
+                {% if pg is defined and pg == 'paypal' %}
+                    <input type="hidden" name="paypal" value="yes">
+                {% else %}
+                    <input type="hidden" name="paypal" value="no">
+                {% endif %}
+            </form>
+
+            <input type="hidden" id="pg" data-pg="{{ pg }}">
+
+            {% if pg is defined and pg == 'credit-card' %}
+                {% include 'checkout/order-login/credit-card.html.twig' %}
+            {% endif %}
+
+
+        </div>
+        <!--------  SMS verification popup    ----->
+        {#<a href="#popupDialog" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-transition="pop" data-icon="delete" data-theme="b">Delete page...</a>#}
+        <div data-role="popup" id="popupDialog" data-overlay-theme="a" data-theme="c" data-dismissible="false" style="max-width:400px;" class="ui-corner-all">
+            <div data-role="header" data-theme="a" class="ui-corner-top">
+                <h1>Verify Your Mobile</h1>
+            </div>
+            <div data-role="content" data-theme="d" class="ui-corner-bottom ui-content">
+                <div id="popup-sms-text">
+                    <h3 class="ui-title">SMS verification code has been sent to your email id.</h3>
+                    <p>It can take up to 2 minutes till you receive it.</p>
+                    <p>Once you have please enter it in the form and complete your registration.</p>
+                    <div id="popup-sms-btn">
+                        <a href="#" data-role="button" data-inline="true" data-rel="back" data-theme="c">Ok</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-----  END SMS   ----->
+    </div>
+
+    <div data-role="footer" data-position="fixed">
+        <div class="get-30">
+            <a class="btn btn-grey" data-rel="back" data-transition="none">
+                <span class="left-arrow-icon"></span>
+                Back
+            </a>
+        </div>
+        <div class="get-70">
+            <a class="btn btn-blue" href="#" data-transition="none" id="send-order">
+                Order Now
+                <span class="right-arrow-icon"></span>
+            </a>
+        </div>
+    </div>
+    <input type="hidden" id="sms" data-sms="{{ sms }}">
+    </div><!-- /content -->
+
+
+
+{% endblock content %}
+
+
+{% block footerjs %}
+    {#<script type="text/javascript" src="{{ base_url }}assets/js/account/login.js"></script>#}
+
+    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>#}
+
+    <script type="text/javascript">
+
+
+        window.fbAsyncInit = function() {
+            // init the FB JS SDK
+            FB.init({
+                appId      : '459434800844351',                   // App ID from the app dashboard
+                status     : true                                 // Check Facebook Login status
+            });
+
+            // Additional initialization code such as adding Event Listeners goes here
+        };
+
+        // Load the SDK asynchronously
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/all.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        $(function(){
+            $('#loginButton').click(function(){
+                authFBUser();
+            });
+        });
+
+        function authFBUser() {
+
+            FB.login(checkLoginStatus, {scope:'email'});
+
+        }
+
+
+        // Check the result of the user status and display login button if necessary
+
+        function checkLoginStatus(response) {
+            if(response && response.status == 'connected') {
+                FB.api('/me', function(me) {
+                    $.ajax({
+
+                        url: '//' + location.host + '/security/facebook_login',
+
+                        data: me,
+
+                        type: "POST",
+
+                        success: function(result) {
+                            window.location.href = '//' + location.host + '/payment/socialLoker';
+
+                        },
+
+                        error: function(e){
+
+                            console.error(e);
+
+                        }
+
+                    });
+
+                });
+
+
+
+                // Hide the login button
+
+//        document.getElementById('loginButton').style.display = 'none';
+
+            } else {
+
+//        alert('User is not authorized');
+
+
+
+                // Display the login button
+
+//        document.getElementById('loginButton').style.display = 'block';
+
+            }
+
+        }
+
+        /** By default country is Australia - get states */
+
+
+    </script>
+{% endblock %}

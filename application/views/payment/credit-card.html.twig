@@ -1,0 +1,168 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    {#<form id="form-credit" action="{{ base_url }}payment/Do_direct_payment" method="post">#}
+    <form id="form-credit" >
+        <div data-role="content">
+            <div class="get-space">
+                <div id="errors"></div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_firstname" >Credit Card: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <select id="credit-card" name="credit_card" data-theme="a" >
+                            <option value="">Choose credit card type</option>
+                            <option value="Visa">Visa</option>
+                            <option value="MasterCard">MasterCard</option>
+                            <option value="Discover">Discover</option>
+                            <option value="Amex">Amex</option>
+                            <option value="Maestro">Maestro</option>
+                            <option value="Solo">Solo</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label>Credit Card Number: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="card_number" value="" />
+                        <span>No spaces or punctuation.</span>
+                    </div>
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label>Expiration Date: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="expiration" value="" />
+                        <span>Format is MMYYYY.</span>
+                    </div>
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label >Security Digits: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="security" value="" />
+                        <span>Security digits for credit card.</span>
+                    </div>
+                </div>
+                <div id="optional" class="hide">
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                            <label for="issued">Month and year that Maestro or Solo card was issued.  MMYYYY: </label>
+                        </div>
+                        <div class="ui-block-b">
+                            <input type="text" name="issued" id="issued" value="" />
+                            <span>Format is MMYYYY.</span>
+                        </div>
+                    </div>
+                    <div class="ui-grid-a">
+                        <div class="ui-block-a">
+                            <label for="form_address"> Issue number of Maestro or Solo card.</label>
+                        </div>
+                        <div class="ui-block-b">
+                            <input type="text" name="issue_number" value="" id="issue-number" />
+                            <span>Two numeric digits max.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div data-role="footer" data-position="fixed">
+            <a class="btn btn-blue" href="#" data-transition="none" id="send-card">
+                Order Now
+                <span class="right-arrow-icon"></span>
+            </a>
+        </div>
+
+    </form>
+{% endblock %}
+
+
+{% block footerjs %}
+    <script type="text/javascript" src="{{ base_url }}/assets/js/jquery_validator/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="{{ base_url }}/assets/js/jquery_validator/additional-methods.min.js"></script>
+
+    <script type="text/javascript">
+
+        $( document ).ready(function() {
+
+            $('#credit-card').on('change', function(){
+                var el = $(this).val();
+                if(el == 'Maestro' || el == 'Solo'){
+                    $('#optional').removeClass('hide');
+                    $('#issued').rules('add', {
+                        required: true,
+                        number: true,
+                        minlength:6,
+                        maxlength:6
+
+                    });
+                    $('#issue-number').rules('add', {
+                        required:true
+                    });
+                    $("#optional :input").attr("disabled", false);
+                } else {
+                    $('#optional').addClass('hide');
+                    $("#optional :input").attr("disabled", true);
+
+                }
+            });
+
+
+            $('#form-credit').validate({
+                rules: {
+                    credit_card: "required",
+                    card_number: "required",
+                    expiration: {
+                        required: true,
+                        number: true,
+                        minlength:6,
+                        maxlength:6
+                    },
+                    security: {
+                        required: true,
+                        number: true
+                    }
+                }
+            });
+
+            $('#send-card').click(function(){
+                if($('#form-credit').valid()){
+                    alert('asda');
+                    var request = $.ajax({
+                        url: '//' + location.host + '/payment/Do_direct_payment',
+                        type: "POST",
+                        data: $('#form-credit').serialize(),
+                        dataType: "json"
+                    });
+
+                    request.done(function( data ) {
+                        if(data.error){
+                            $('#errors').html('');
+                            var new_errors = '';
+                            $.each(data.message, function( index, value ) {
+                                new_errors += '<span>' + value + '</span><br/>'
+                            });
+
+                            $('#errors').html(new_errors);
+                        }
+                    });
+
+                    request.fail(function( jqXHR, textStatus ) {
+                        alert( "Request failed: " + textStatus );
+                    });
+
+//                    $('#form-credit').submit();
+                }
+            });
+
+
+
+        });
+    </script>
+{% endblock footerjs %}

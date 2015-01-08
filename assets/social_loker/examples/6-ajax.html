@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>Examples: Social Locker for jQuery</title>
+	
+  <!-- [INSTALATION] -->
+	
+  <!-- required libraries (copy this and check path correctness) -->
+	
+  <!-- social locker for jquery (copy this and check path correctness) -->
+  <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+  <script src="../js/jquery.op.sociallocker.min.js"></script>
+  <link type="text/css" rel="stylesheet" href="../css/jquery.op.sociallocker.min.css" />
+	
+  <!-- [USAGE] -->
+    
+  <script>
+  // -
+    // Notice: read the documentation that comes with the plugins to get more details 
+    
+    // IMPORTANT: this is an obligatory wrapper, it runs after loading a page
+    jQuery(document).ready(function ($) {
+
+        // use your own selector to choose content what you want to lock
+        $("#ajax-example .to-lock").sociallocker({
+
+            // common url for every social button
+            url: "http://codecanyon.net/item/social-locker-for-jquery/3408941?ref=onepress&" + Math.random(),
+
+            // text that appears inside the locker
+            text: {
+                header: "The content is locked but not loaded",
+                message: "Click on any social buttons below to unlock and to load content!"
+            },
+            
+            // a name of your own theme
+            theme: "secrets",
+
+            // content options
+            content: {
+                // url to get ajax content
+                url: "http://onepress.js:85/ajaxtest.html",
+
+                // -
+                // Notice:
+                // the plugin will automatically take the response from the request and 
+                // set it for you if you don't override the default success handler.
+                
+                // however, if you intend on using your own success callback, 
+                // you'll need to set it yourself using the following way:
+                success: function (api, data) {
+	 
+                    // finds content inside the response that we want to put
+                    var content = $("<div>").html(data).find("#content");
+                    // sets content for the locker
+                    api.element.html(content);
+                }
+            },
+
+            facebook: {
+                // your facebook app id here, get it here: https://developers.facebook.com/apps
+                // it requires for a like button
+                appId: "223634647777160"
+            }
+        });
+
+    });
+  </script>
+    
+	
+	
+  <!-- Styles for this example, don't copy -->
+  <style>
+    /* Styles for this page, don't copy */
+    body { margin:: 0px; padding: 0px; line-height: 170%; padding: 20px; font-family: "Arial" }
+    h1, h2, h3, h4, h5 { padding: 0px; margin: 20px 0 20px 0; }
+    a {color: #000;}
+    p { margin: 8px 0; }
+    .wrap { width: 700px; margin: auto;}
+    .notice {background-color: #fffec7; padding: 10px; line-height: 130%;}
+    .notice-2 {background-color: #f4f4f4; padding: 10px; margin-top: 10px; line-height: 130%;}
+    #example { padding: 20px 0;}
+    img.left { float: left; margin: 0 15px 10px 0; }
+    img.right { float: right; margin: 0 0 10px 15px; }
+    .ui-locker { margin: 10px 0; }
+    .short { font-size: 10px; }
+  </style>
+  
+  <!--[if IE]><script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->
+</head>
+<body>
+
+  <div class="wrap">
+
+    <div class="notice">
+      <strong>Notice</strong>: Remember the Like Buttons don't work correctly in local. Visit:<br />
+      <a href="http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/6-ajax.html" class="short">http://onepress.js:85/storage/examples/social-locker-for-jquery/656da8ab-4fc8-4921-924d-ecddece72f7d/6-ajax.html</a>
+    </div>
+	
+    <div class="notice-2">
+      <strong>See the source of this page to find out how it works.</strong>
+    </div>    
+         
+    <article id="ajax-example">
+	<header>
+    	<h2>6. Ajax Usage</h2>
+        <p>By default th plugin shows content of an initial element after unlock. But you can load content via ajax as well.</p>
+        <div class="arrow"></div>
+    </header>
+    
+    <section class="example">
+        <div class="to-lock"></div>
+    </section>
+</article>
+        
+  </div>
+
+</body>
+</html>

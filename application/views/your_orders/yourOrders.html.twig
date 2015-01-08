@@ -1,0 +1,92 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <script>
+        var base_url = '{{ base_url }}';
+    </script>
+    <div data-role="content">
+        <div id="main-content">
+            <div class="get-space">
+                {% if logged == 0  %}
+                    <div class="ui-grid-a">
+                        <a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="none">You Must Login</a>
+                    </div>
+                    <div data-role="popup" id="popupLogin" data-theme="d" class="ui-corner-all" >
+                        <form id="form-signin">
+                            <div id="signin-div">
+                                <h3>Please sign in</h3>
+                                <span id="login-error" class="hide">Invalid username or password.</span>
+                                <span id="login-required" class="hide">Username and password are required.</span>
+                                <label for="un" class="ui-hidden-accessible">Email Address:</label>
+                                <input type="text" name="user" id="user" value="" placeholder="email address" data-theme="a">
+                                <label for="pw" class="ui-hidden-accessible">Password:</label>
+                                <input type="password" name="pass" id="pass" value="" placeholder="password" data-theme="a">
+                                <button type="button" data-theme="b" data-icon="check" id="order-signin">Sign in</button>
+                            </div>
+                        </form>
+                    </div>
+                {% elseif orders is defined %}
+                    <div class="get-space  single-options">
+                        <table data-role="table" class="ui-responsive">
+                            <thead>
+                                <tr id="tbl-header-yorders">
+                                    <th>Date</th>
+                                    <th>Items Ordered</th>
+                                    <th>Price</th>
+                                    <th>Points Used</th>
+                                    <th>Points Earned</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbody-orders">
+                                {% for order in orders %}
+                                    {% if order.order_description is not empty %}
+                                        <tr class="tr-your-order">
+                                            <td>{{ order.order_placement_date }}</td>
+                                            <td>{{ order.order_description }}</td>
+                                            <td>{{ order.payment_amount }}</td>
+                                            <td>{{ order.points_used }}</td>
+                                            <td>{{ order.points_earned }}</td>
+                                            <td><a href="{{ base_url }}order-again/{{ order.order_id }}" data-role="button" data-inline="true">Order This Again</a></td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                        <input type="hidden" id="page" data-count="{{ count }}" />
+                        <input type="hidden" id="total" data-total="{{ total }}" />
+                        <!---- pagination  --->
+                        <div>
+                            <div class="ui-grid-a hide" id="div-both">
+                                <div class="ui-block-a">
+                                    <a href="#" class="change-page" data-role="button" data-change="preview">Preview</a>
+                                </div>
+                                <div class="ui-block-b">
+                                    <a href="#" class="change-page" data-role="button" data-change="next">Next</a>
+                                </div>
+                            </div>
+
+                            <div id="div-next">
+                                <a href="#" class="change-page" data-role="button" data-change="next">Next</a>
+                            </div>
+
+                            <div id="div-preview" class="hide">
+                                <a href="#" class="change-page" data-role="button" data-change="preview">Preview</a>
+                            </div>
+                            {#<ul class="pagination" id="pagination-ul">#}
+                                {#&#123;&#35;{% if count == 5 %}&#35;&#125;#}
+                                    {#<li><a href="#" class="change-page" data-change="preview">Preview</a></li>#}
+                                {#&#123;&#35;{% endif %}&#35;&#125;#}
+                                {#{% if total > count %}#}
+                                    {#<li><a href="#" class="change-page" data-change="next">Next</a></li>#}
+                                {#{% endif %}#}
+                            {#</ul>#}
+                        </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

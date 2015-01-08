@@ -1,0 +1,20 @@
+<div data-role="popup" id="popup-refer">
+    <div data-role="header" data-theme="a" class="ui-corner-top">
+        <h1>Refer a friend</h1>
+    </div>
+    <div data-role="content" data-theme="pizza-popup" class="ui-corner-bottom ui-content">
+        {% if logged is defined and logged == 1 %}
+            {% if mobile is defined and mobile is not empty%}
+            <h3 class="ui-title"><span>Refer your friends by sending them the link below:</span><br><br>
+                <i class="icon-link"></i> {{ base_url }}{{ mobile }}</h3>
+            {% else %}
+                <h3 class="ui-title"><span>Please enter your phone number in your profile to be able to use our refferal program:</span><br><br>
+                    <i class="icon-link"></i><a href="{{ base_url }}security/edit"> My Account </a>
+                </h3>
+            {% endif %}
+        {% else %}
+            <h3 class="ui-title"><span>Please login to see your referral code.</span></h3>
+        {% endif %}
+        <a href="#" data-role="button" data-inline="true" data-rel="back" data-transition="none" data-theme="b" data-go="yes">OK</a>
+    </div>
+</div>

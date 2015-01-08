@@ -1,0 +1,170 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    {% include 'base/cartFooter.html.twig' %}
+
+    <div data-role="content">
+        <div class="menu-background-image" id="main-content">
+            <div class="clear"></div>
+
+            <div data-role="controlgroup" class="get-space align-center" data-theme="a">
+                {{ settings.offlinecontent }}
+                {{ settings.mobileSubheader }}
+                {{ promoText.value }}
+                {#{{ settings.SITETITLE }}#}
+                {#<a data-role="button" href="{{ base_url }}page/about-us" data-transition="none">About Us</a>#}
+                {#{% if logged is defined and logged == 1 %}#}
+                    {#<a data-role="button" href="{{ base_url }}security/edit"#}
+                       {#data-transition="slide" data-direction="reverse">My Account</a>#}
+                {#{% else %}#}
+                    {#<a data-role="button" href="{{ base_url }}security/login_page"#}
+                       {#data-transition="slide" data-direction="reverse">Login</a>#}
+                {#{% endif %}#}
+                    {#<a data-role="button" onclick="$('#popup-refer').popup('open')">Refer-A-Friend</a>#}
+            </div>
+
+            <!-- Reffer a friend popup -->
+            {#{% include ('page/popups/menuReferFriend.html.twig') %}#}
+            <!-- END Reffer a friend popup -->
+
+            {% if log_ord is defined and log_ord == 1 %}
+                <input type="hidden" id="log_ord-popup" data-popup="logged">
+            {% else %}
+                <input type="hidden" id="log_ord-popup" data-popup="no">
+            {% endif %}
+
+            <div class="menu-content">
+
+                {% if notice is defined %}
+                    <div class="get-space">
+                        <div class="notice">
+                            <i class="icon-exclamation-sign"></i> {{ notice }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <h1>Select Category</h1>
+
+                <!-- Search products holder -->
+                <div class="menu-products get-space">
+                    <ul data-role="listview" data-inset="true" data-filter="true" data-filter-reveal="true" data-filter-placeholder="Search products and ingredients..." data-theme="b" data-content-theme="b">
+                        {% for cat in products %}
+
+                            {% for prod in cat.items %}
+                                <li data-filtertext="{{ prod.product_name }} {{ prod.description|striptags }}">
+
+                                    <a href="{{ base_url }}product/{{ prod.product_id }}{% if cat.category_name == 'FREE' %}/points{% endif %}"
+                                       data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
+                                        {% if cat.withImage %}
+                                            {% if prod.product_image is not empty  %}
+                                                <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                            {% else %}
+                                                <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                            {% endif %}
+                                        {% endif %}
+                                        <h2>{{ prod.product_name }}</h2>
+                                        <p>
+                                            {#{% if prod.description|length|striptags > 45 %}#}
+                                                {#{{ prod.description|striptags|slice(0,45) }}#}
+                                            {#{% else %}#}
+                                                {{ prod.description|striptags }}
+                                            {#{% endif %}#}
+                                        </p>
+                                        {% if prod.price_description is not empty %}
+                                            <p class="listing-price">{{ prod.price_description }}</p>
+                                        {% endif %}
+                                    </a>
+                                </li>
+                            {% endfor %}
+                        {% endfor %}
+                    </ul>
+                </div>
+                <!-- END Search products holder -->
+
+
+                <!-- Menu listing -->
+                <div data-role="collapsible-set" data-theme="b" data-content-theme="b"
+                     data-collapsed-icon="arrow-r" data-expanded-icon="arrow-d" data-iconpos="right" class="menu-products">
+                    {% if products.loyalty is defined and loyalityProgram == 'enable' %}
+                        <div data-role="collapsible" class="products">
+                            <h3>{{ products.loyalty.category_name }}</h3>
+
+                            <ul data-role="listview" data-split-theme="d" data-inset="true">
+                                {% for prod in products.loyalty.items %}
+                                        <li>
+                                            <a href="{{ base_url }}product/{{ prod.product_id }}/points" data-transition="none"
+                                               data-transition="none" {% if settings.loyalty_page == 'disable' %} class="no-image-product" {% endif %}>
+
+                                                {% if settings.loyalty_page == 'enable' %}
+                                                    {% if prod.product_image is not empty  %}
+                                                        <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                                    {% else %}
+                                                        <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                                    {% endif %}
+                                                {% endif %}
+
+                                                <h2>{{ prod.product_name }}</h2>
+                                                <p>
+                                                    {#{% if prod.description|length|striptags > 45 %}#}
+                                                        {#{{ prod.description|striptags|slice(0,45) }}#}
+                                                    {#{% else %}#}
+                                                        {{ prod.description|striptags }}
+                                                    {#{% endif %}#}
+                                                </p>
+                                                {% if prod.price_description is not empty %}
+                                                    <p class="listing-price">{{ prod.price_description }}</p>
+                                                {% endif %}
+                                            </a>
+                                        </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                    {% endif %}
+
+                    {% for key, cat in products %}
+                        {% if key != 'loyalty' %}
+
+                            <div data-role="collapsible" class="products">
+                                <h3>{{ cat.category_name }}</h3>
+
+                                <ul data-role="listview" data-split-theme="d" data-inset="true">
+                                    {% for prod in cat.items %}
+                                        {% if cat.category_name == 'FREE' and loyalityProgram == 'disable' %}
+                                        {% else %}
+                                            <li><a href="{{ base_url }}product/{{ prod.product_id }}{%- if cat.category_name == 'FREE' -%}/points{%- endif -%}"
+                                                   data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
+                                                    {% if cat.withImage %}
+                                                        {% if prod.product_image is not empty  %}
+                                                            <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                                        {% else %}
+                                                            <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                                        {% endif %}
+                                                    {% endif %}
+                                                <h2>{{ prod.product_name }}</h2>
+                                                <p>
+                                                    {#{% if prod.description|length|striptags > 45 %}#}
+                                                        {#{{ prod.description|striptags|slice(0,45) }}#}
+                                                    {#{% else %}#}
+                                                        {{ prod.description|striptags }}
+                                                    {#{% endif %}#}
+                                                </p>
+                                                {% if prod.price_description is not empty %}
+                                                    <p class="listing-price">{{ prod.price_description }}</p>
+                                                {% endif %}
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endfor %}
+                                </ul>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                <!-- END Menu listing -->
+        </div>
+
+    </div><!-- /content -->
+
+{% endblock content %}

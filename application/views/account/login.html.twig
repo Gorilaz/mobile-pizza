@@ -1,0 +1,44 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+
+    <div data-role="content">
+        <div class="get-space">
+            <form>
+                <span id="login-error" class="hide">Invalid username or password.</span>
+                <span id="login-required" class="hide">Username and password are required.</span>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="text-basic">Email Address:</label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="user" id="user" value="">
+                    </div>
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="text-basic">Password:</label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="password" name="pass" id="pass" value="">
+                    </div>
+                </div>
+                <button data-theme="a" id="login" type="button">Login</button>
+            </form>
+
+            <div class="login-facebook">
+                <a href="#" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
+            </div>
+            <div>
+                <a href="{{ base_url }}security/reset">Recover Password</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block footerjs %}
+    <script type="text/javascript" src="{{ base_url }}assets/js/account/login.js"></script>
+
+    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>#}
+{% endblock %}

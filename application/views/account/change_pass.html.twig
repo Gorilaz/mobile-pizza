@@ -1,0 +1,18 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    <div data-role="content">
+        <div class="get-space">
+            <div id="page-change">
+                <span class="recover-error" id="error-required"></span>
+                <label for="email">New Password</label>
+                <input type="password" id="pass" >
+                <label for="email">Confirm Password</label>
+                <input type="password" id="conf">
+                <a href="#" data-role="button" data-theme="a" id="save">Save</a>
+
+                <input type="hidden" id="code" data-code="{{ code }}">
+            </div>
+        </div>
+    </div>
+{% endblock %}

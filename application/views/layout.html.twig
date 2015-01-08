@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <title>{{ page.title }} | {{ settings.SITETITLE }}</title>
+
+    <link href='http://fonts.googleapis.com/css?family=Abel|News+Cycle:400,700' rel='stylesheet' type='text/css'>
+
+    <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/css/font-awesome/css/font-awesome.min.css">
+
+    {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.10.2.min.js"></script>#}
+    {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.9.1.js"></script>#}
+
+    <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/js/library/jquery_mobile/jquery.mobile.custom.structure.min.css" />
+    <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/css/jqueryMobile/pizzaBoy.css" />
+    {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery_mobile/jquery.mobile.custom.min.js"></script>#}
+    <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/css/animate-custom.css" />
+
+    {#<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>#}
+    {#<script src="http://code.jquery.com/mobile/1.4.0/jquery.mobile-1.4.0.min.js"></script>#}
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.3.2/jquery.mobile-1.3.2.min.js"></script>
+    <script src="{{ base_url }}assets/js/library/fastclick.js"></script>
+
+    <script type="text/javascript" src="{{ base_url }}assets/js/main.js"></script>
+
+    <!-- Social Locker scripts begin here -->
+    <link href="{{ base_url }}/assets/social_loker/css/jquery.op.sociallocker.min.css" rel="stylesheet" type="text/css" />
+    <script type="text/javascript" src="{{ base_url }}/assets/social_loker/js/jquery.op.sociallocker.min.js"></script>
+    {#<script type="text/javascript" src="{{ base_url }}/assets/js/social_loker.js"></script>#}
+    <!-- END Social Locker -->
+
+    <script type="text/javascript" src="{{ base_url }}/assets/js/jquery_validator/jquery.validate.min.js"></script>
+    <script type="text/javascript" src="{{ base_url }}/assets/js/jquery_validator/additional-methods.min.js"></script>
+
+    <script type="text/javascript">
+        var desktopUrl = '{{ settings.desktop_url }}';
+        $(function() {
+            FastClick.attach(document.body);
+        });
+        $(document).bind("mobileinit", function(){
+            $.extend(  $.mobile , {
+                defaultPageTransition: 'none'
+            });
+        });
+    </script>
+
+</head>
+<body>
+
+<div data-role="{{ page.role }}" {% if page.url is defined %}data-url="{{ page.url }}"{% endif %}
+    {% if page.id is defined %} id="{{ page.id }}"{% endif %}
+    {% if page.theme is defined %} data-theme="{{ page.theme }}" {% endif %}
+>
+
+    {#{% if internalPage and page.role == 'page' %}#}
+        {#{% include ('base/assetNavigation.html.twig') %}#}
+    {#{% endif %}#}
+
+    {% if internalPage and page.role == 'page' %}
+        {% include ('base/assetTopBar.html.twig') %}
+    {% endif %}
+
+    {% block content %}
+    {% endblock %}
+
+    {% if page.backButton is defined and page.backButton %}
+        <div data-role="footer" data-theme="pizza" data-position="fixed">
+            <a class="btn btn-grey" data-role="button" data-rel="back">
+                Back
+            </a>
+        </div>
+    {% endif %}
+
+    {% if menuPage is defined and menuPage %}
+        <div data-role="footer" data-theme="pizza" data-position="fixed">
+            <a href="{{ base_url }}menu" class="btn btn-grey" data-role="button" >
+                Back To Menu
+            </a>
+        </div>
+    {% endif %}
+
+    {% block footerjs %} {% endblock %}
+</div><!-- /page -->
+{% block out_datarole %} {% endblock %}
+</body>
+</html>

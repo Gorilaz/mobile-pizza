@@ -1,0 +1,137 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: GabrielCol
+ * Date: 11/11/13
+ * Time: 7:10 PM
+ */
+
+class product extends WMDS_Controller {
+
+    /**
+     * Information about product: Single Page
+     * @param $id
+     * @param $points
+     */
+    public function view($id, $points = false) {
+        $this->load->model('products_model');
+        $this->load->model('order_model');
+
+        /**
+         * Get product from database
+         * redirect to 404 if not found
+         */
+        $product = $this->products_model->getProductById($id);
+
+        if(!$product) {
+            redirect(base_url().'page/404');
+        }
+
+        /**
+         * Calculate left points
+         */
+        $this->load->library('cart');
+        $cart = $this->cart->contents();
+        $userdPoints = 0;
+        foreach($cart as $item){
+            if(isset($item['points']) && !empty($item['points'])){
+                $userdPoints += $item['points'];
+            }
+        }
+        $user = $this->session->userdata('logged');
+
+        $pointsLeft = $user['order_points'] - $userdPoints;
+        $this->twiggy->set('pointsLeft', $pointsLeft);
+
+        /**
+         * Get and format product images
+         */
+        $image = false;
+        if (!empty($product->product_image)) {
+            $image['full']      = $product->product_image;
+            $image_extension    = substr($product->product_image, -4, 4);
+            $image_name         = substr($product->product_image, 0, -4);
+            $image['thumb']     = $image_name . '_thumb' . $image_extension;
+        }
+
+        /**
+         * Deal with variations
+         */
+
+        $variationsGroups   = $this->products_model->getProductVariations($product->product_id);
+
+        $productType        = $this->products_model->getProductType($variationsGroups['variations']);
+
+        $withPoints         = ($product->product_points > 0 && $points == 'points')?true:false;
+
+        /*echo '<pre>';
+        print_r($product);
+        echo '<hr />';
+        print_r($productType);
+        echo '<hr />';
+        print_r($variationsGroups);
+        die;*/
+
+        $this->twiggy
+            ->set('product',$product)
+            ->set('image',  $image)
+            ->set('options',$variationsGroups['variations'])
+            ->set('halfs',  $variationsGroups['halfs'])
+            ->set('withPoints', $withPoints)
+            ->set($productType);
+
+
+        $this->twiggy->set('page', array(
+            'title'  => $product->product_name,
+            'role'   => 'page',
+            'theme'  => 'a',
+            'id'     => 'page-product'
+        ));
+
+        $this->twiggy->set(array(
+                'itemsNo'   => $this->cart->total_items(),
+                'total'     => $this->cart->total(),
+                'minOrder'  => $this->order_model->getMinimumOrder()
+            )
+        );
+
+        $this->twiggy->template('product/details')->display();
+    }
+
+    /**
+     * Used for dynamically getting product ingredients based on variation
+     * @param $variationId
+     * @return string
+     */
+    public function ingredients($variationId) {
+
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+
+        $this->load->model('products_model');
+
+        $ingredients = $this->products_model->getIngredientsByVariation($variationId);
+
+//        print_r($ingredients);
+
+        header('Content-type: application/json');
+        echo json_encode($ingredients);
+    }
+
+    /**
+     * Remove one item from the cart
+     * @param $rowid
+     */
+    public function removeItemFromCart($rowid) {
+        if (!$this->input->is_ajax_request()) {
+            exit('No direct script access allowed');
+        }
+        $data = array(
+            'rowid' => $rowid,
+            'qty'   => 0
+        );
+
+        $this->cart->update($data);
+    }
+} 

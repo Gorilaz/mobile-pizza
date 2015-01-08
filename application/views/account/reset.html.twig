@@ -1,0 +1,22 @@
+{% extends 'layout.html.twig' %}
+
+{% block content %}
+    <div data-role="content">
+        <div class="get-space">
+            <div id="page-recover">
+                <span class="recover-error" id="error-valid"></span>
+                <label for="email">Email Address</label>
+                <input type="text" id="email">
+                <a href="#" data-role="button" data-theme="a" id="recover">Recover Password</a>
+            </div>
+            <div data-role="popup" id="popupRecover" data-theme="d" class="ui-corner-all" >
+                <form id="form-signin">
+                    <div id="signin-div">
+                        <h3>An email was sent to your address containing information about how to recover your password.</h3>
+                        <button type="button" data-theme="b" data-icon="check">Ok</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

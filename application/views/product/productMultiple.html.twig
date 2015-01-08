@@ -1,0 +1,18 @@
+<div class="single-options get-space clear-heights">
+{% for option,entries in options %}
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            {{ option }}
+        </div>
+        <div class="ui-block-b">
+            <select name="variation[{{ option|lower }}]" data-mini="true" class="calculate">
+                {% for item in entries %}
+                    <option value="{{ item.variation_id }}" {% if item.variation_price == 0 %} selected{% endif %} data-price="{{ item.variation_price }}">
+                        {{ item.variation_name }} - ${{ item.variation_price }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+{% endfor %}
+</div>

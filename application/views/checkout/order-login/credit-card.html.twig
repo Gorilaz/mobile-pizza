@@ -1,0 +1,125 @@
+<!-----  Credit card  --->
+<script type="text/javascript" src="{{ base_url }}assets/maskedinput/jquery.maskedinput.min.js" charset="utf-8"></script>
+<form id="form-credit">
+
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <label>Cardholder Name : </label>
+        </div>
+        <div class="ui-block-b">
+            <input type="text" name="card_holder" id="cardholder-input" value="{%- if logged.first_name is defined -%} {{ logged.first_name }}{%- endif -%} {% if logged.first_name is defined %} {{ logged.last_name }}{%- endif -%}"/>
+
+        </div>
+    </div>
+
+
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <label for="form_firstname" >Credit Card: </label>
+        </div>
+        <div class="ui-block-b">
+
+            <fieldset data-role="controlgroup">
+                <label for="radio-choice-1">MasterCard</label>
+                <input type="radio" name="credit_card" id="radio-choice-1" value="MasterCard" checked="checked">
+                <label for="radio-choice-2">Visa</label>
+                <input type="radio" name="credit_card" id="radio-choice-2" value="Visa">
+            </fieldset>
+
+        </div>
+    </div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <label>Credit Card Number: </label>
+        </div>
+        <div class="ui-block-b">
+            {#<input type="text" name="card_number" value="" id="card-number"/>#}
+            <input type="number" class="card-number" name="card_number[1]" data-id="item-2" id="item-1" data-length="4" >
+            <input type="number" class="card-number" name="card_number[2]"data-id="item-3" id="item-2" data-length="4"  >
+            <input type="number" class="card-number" name="card_number[3]"data-id="item-4" id="item-3" data-length="4" >
+            <input type="number"class="card-number" name="card_number[4]" data-id="cvv" id="item-4" data-length="4" >
+        </div>
+    </div>
+    {#<div class="ui-grid-a">#}
+        {#<div class="ui-block-a">#}
+            {#<label>Cardholder Name: </label>#}
+        {#</div>#}
+        {#<div class="ui-block-b">#}
+            {#<input type="text" name="card_number" value="" id="card-number"/>#}
+            {#<span>No spaces or punctuation.</span>#}
+        {#</div>#}
+    {#</div>#}
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <label>Expiration Date: </label>
+        </div>
+        <div class="ui-block-b">
+            <select name="expiration[month]">
+                <option value="01">Jan</option>
+                <option value="02">Feb</option>
+                <option value="03">Mar</option>
+                <option value="04">Apr</option>
+                <option value="05">May</option>
+                <option value="06">Jun</option>
+                <option value="07">Jul</option>
+                <option value="08">Aug</option>
+                <option value="09">Sep</option>
+                <option value="10">Oct</option>
+                <option value="11">Nov</option>
+                <option value="12">Dec</option>
+            </select>
+            {% set year = now|date('Y') %}
+            <select name="expiration[year]">
+            {% for i in 0..10 %}
+                <option value="{{ year+i }}">{{ year+i }}</option>
+            {% endfor %}
+            </select>
+
+        </div>
+    </div>
+    <div class="ui-grid-a">
+        <div class="ui-block-a">
+            <label >CVV Number: </label>
+        </div>
+        <div class="ui-block-b">
+            <div class="left" id="div-cvv">
+                <input type="text" name="security"  maxlength="3" id="cvv"/>
+
+            </div>
+            <div class="left" style="width: 50%">
+                <div>
+
+                    <img src="{{ base_url }}assets/images/padlock.jpeg" id="secure-by">
+                </div>
+            </div>
+            <div class="clear"></div>
+            <div style="width: 100%">
+                <span>The 3 digits on the back of your card.</span>
+            </div>
+        </div>
+    </div>
+
+    {#<div id="optional" class="hide">#}
+        {#<div class="ui-grid-a">#}
+            {#<div class="ui-block-a">#}
+                {#<label for="issued">Month and year that Maestro or Solo card was issued.  MMDDYYYY: </label>#}
+            {#</div>#}
+            {#<div class="ui-block-b">#}
+                {#<input type="text" name="issued" id="issued" value="" />#}
+                {#<span>Format is MMYYYY.</span>#}
+            {#</div>#}
+        {#</div>#}
+        {#<div class="ui-grid-a">#}
+            {#<div class="ui-block-a">#}
+                {#<label for="form_address"> Issue number of Maestro or Solo card.</label>#}
+            {#</div>#}
+            {#<div class="ui-block-b">#}
+                {#<input type="text" name="issue_number" value="" maxlength="3" id="issue-number" />#}
+                {#<span>Two numeric digits max.</span>#}
+            {#</div>#}
+        {#</div>#}
+    {#</div>#}
+        <input type="hidden" name="total" value="{{ total }}">
+</form>
+
+

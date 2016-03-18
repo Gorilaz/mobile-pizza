@@ -223,6 +223,11 @@ abstract class BaseFacebook
    * @param array $config The application configuration
    */
   public function __construct($config) {
+    
+    // Get config from db
+    //$appId = $this->db->select('value')->where('type', 'facebook_app_id')->get('sitesetting')->row();
+    //$secret = $this->db->select('value')->where('type', 'facebook_secret')->get('sitesetting')->row();
+    
     $this->setAppId($config['appId']);
     $this->setAppSecret($config['secret']);
     if (isset($config['fileUpload'])) {

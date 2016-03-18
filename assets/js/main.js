@@ -933,7 +933,16 @@ $( document ).on('pageinit', '#page-checkout', function() {
         $('#show-social-loker').removeClass('hide');
     });
 
-
+    /**
+     * Need to check is present global vars
+     * @type String|FACEBOOKAPPID
+     */
+    var FBAppID = '';
+    if( typeof FACEBOOKAPPID == 'string' )
+    {
+        FBAppID = FACEBOOKAPPID;
+    }
+    /* use after for Facebook App ID - FBAppID */
 
     $("#social-loker").sociallocker({
 
@@ -952,8 +961,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
             message: "Free coke? Like us and it's yours!"
         },
         facebook: {
-            // facebook app id (get the one here: https://developers.facebook.com/apps)
-            appId: "242472032595714",
+            appId: FBAppID,
             share: {
                 title: 'share it',
                 url: "http://m.pizzaboy.bywmds.us/"

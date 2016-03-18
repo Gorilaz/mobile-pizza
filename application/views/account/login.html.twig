@@ -23,15 +23,20 @@
                         <input type="password" name="pass" id="pass" value="">
                     </div>
                 </div>
-                <button data-theme="a" id="login" type="button">Login</button>
+                <div>
+                    <button data-theme="a" id="login" type="button">Login</button>
+                    <a href="{{ base_url }}security/reset">Recover Password</a>
+                </div>
             </form>
 
             <div class="login-facebook">
                 <a href="#" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
             </div>
-            <div>
-                <a href="{{ base_url }}security/reset">Recover Password</a>
+
+            <div class="login-3dparty">
+                <a href="#" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
             </div>
+
         </div>
     </div>
 

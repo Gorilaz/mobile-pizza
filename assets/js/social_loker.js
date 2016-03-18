@@ -5,6 +5,18 @@
 // IMPORTANT: this is an obligatory wrapper, it runs after loading a page
 jQuery(document).ready(function ($) {
 
+
+    /**
+     * Need to check is present global vars
+     * @type String|FACEBOOKAPPID
+     */
+    var FBAppIDLock = '';
+    if( typeof FACEBOOKAPPID == 'string' )
+    {
+        FBAppIDLock = FACEBOOKAPPID;
+    }
+    /* use after for Facebook App ID - FBAppIDLock */
+
     // --
     // Secrets style
     // --
@@ -34,8 +46,7 @@ jQuery(document).ready(function ($) {
             // url to share
             url: "http://pizzaboy.y11.in/"
             },
-        // facebook app id (get the one here: https://developers.facebook.com/apps)
-        appId: "242472032595714"
+            appId: FBAppIDLock
         },
 
         twitter: {

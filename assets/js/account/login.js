@@ -1,8 +1,20 @@
 
 window.fbAsyncInit = function() {
+    
+    /**
+     * Need to check is present global vars
+     * @type String|FACEBOOKAPPID
+     */
+    var FBAppIDAsync = '';
+    if( typeof FACEBOOKAPPID == 'string' )
+    {
+        FBAppIDAsync = FACEBOOKAPPID;
+    }
+    /* use after for Facebook App ID - FBAppIDLock */
+    
     // init the FB JS SDK
     FB.init({
-        appId      : '242472032595714',                   // App ID from the app dashboard
+        appId      : FBAppIDAsync,                   // App ID from the app dashboard
         status     : true                                 // Check Facebook Login status
     });
 
@@ -21,6 +33,9 @@ window.fbAsyncInit = function() {
 $(function(){
     $('#loginButton').click(function(){
         authFBUser();
+    });
+    $('#googleLoginButton').click(function(){
+        document.location.href = '/security/googleplus_page';
     });
 });
 

@@ -28,6 +28,38 @@ class Security extends WMDS_Controller {
 
         $this->twiggy->display('account/login');
     }
+    
+    function googleplus_page()
+    {
+        $this->load->library('googleplus');
+        /*
+        if( isset($_GET['code']) ) {
+            $this->googleplus->client->authenticate();
+            $this->session->set_userdata('token', $this->googleplus->client->getAccessToken());
+            $redirect = 'http://' . $_SERVER['HTTP_HOST'] . $_SERVER['PHP_SELF'];
+            //header('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
+            die('Location: ' . filter_var($redirect, FILTER_SANITIZE_URL));
+        }
+        if( $this->session->userdata('token') )
+        {
+            $this->googleplus->client->setAccessToken($this->session->userdata('token'));
+        }
+
+        if( $this->googleplus->client->getAccessToken() )
+        {
+            $this->googleplus->people->get('1112222');
+            $activities = $this->googleplus->activities->listActivities('1112222', 'public');
+            print 'Your Activities: <pre>' . print_r($activities, true) . '</pre>';
+            $this->session->set_userdata('token', $this->googleplus->client->getAccessToken());
+        }
+        else
+        {*/
+            $authUrl = $this->googleplus->client->createAuthUrl();
+            print "<a href='$authUrl'>Connect Me!</a>";
+        /*}
+         * 
+         */
+    }
 
     /**
      * Verify if logged (ajax)

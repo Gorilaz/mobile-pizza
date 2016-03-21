@@ -325,17 +325,30 @@
 
 
 {% block footerjs %}
+    
+    <script type="text/javascript" src="{{ base_url }}assets/js/social-ids.js"></script>
+    
     {#<script type="text/javascript" src="{{ base_url }}assets/js/account/login.js"></script>#}
 
     {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>#}
 
     <script type="text/javascript">
 
+        /**
+         * Need to check is present global vars
+         * @type String|FACEBOOKAPPID
+         */
+        var FBAppIDAsync = '';
+        if( typeof FACEBOOKAPPID == 'string' )
+        {
+            FBAppIDAsync = FACEBOOKAPPID;
+        }
+        /* use after for Facebook App ID - FBAppIDLock */
 
         window.fbAsyncInit = function() {
             // init the FB JS SDK
             FB.init({
-                appId      : '459434800844351',                   // App ID from the app dashboard
+                appId      : FBAppIDAsync,                   // App ID from the app dashboard
                 status     : true                                 // Check Facebook Login status
             });
 

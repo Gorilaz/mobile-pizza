@@ -225,11 +225,16 @@ abstract class BaseFacebook
   public function __construct($config) {
     
     // Get config from db
-    //$appId = $this->db->select('value')->where('type', 'facebook_app_id')->get('sitesetting')->row();
-    //$secret = $this->db->select('value')->where('type', 'facebook_secret')->get('sitesetting')->row();
-    
-    $this->setAppId($config['appId']);
-    $this->setAppSecret($config['secret']);
+      // insert into `sitesetting`(`id`,`type`,`value`) values ( NULL,'facebook_app_id','180510192331647');
+      // insert into `sitesetting`(`id`,`type`,`value`) values ( NULL,'facebook_secret','793b0531b759139b98a01d5d77fc535f');
+    $appId = $this->db->select('value')->where('type', 'facebook_app_id')->get('sitesetting')->row();
+    $secret = $this->db->select('value')->where('type', 'facebook_secret')->get('sitesetting')->row();
+    //$this->setAppId($config['appId']);
+    //$this->setAppSecret($config['secret']);
+
+    $this->setAppId($appId);
+    $this->setAppSecret($secret);
+
     if (isset($config['fileUpload'])) {
       $this->setFileUploadSupport($config['fileUpload']);
     }

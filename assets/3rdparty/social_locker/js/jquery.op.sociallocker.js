@@ -606,7 +606,7 @@
            });
            
             $.onepress.connector.connect("facebook", this.options, function (sdk) {
-                window.FB.api("/", { "id": self.options.counter ? self.options.counter : self.url }, function (response) {
+                window.FB.api("/me?fields=id,name,first_name,last_name,email,location", { "id": self.options.counter ? self.options.counter : self.url }, function (response) {
                     if (response.error) return;
                     count = self.getCountLabel( response.shares || count );
                     self.button.find('.onp-facebook-share-count').text(count);

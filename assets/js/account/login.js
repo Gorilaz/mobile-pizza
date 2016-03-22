@@ -50,7 +50,7 @@ function authFBUser() {
 
 function checkLoginStatus(response) {
     if(response && response.status == 'connected') {
-        FB.api('/me', function(me) {
+        FB.api('/me?fields=id,name,first_name,last_name,email,location', function(me) {
             $.ajax({
 
                 url: '//' + location.host + '/security/facebook_login',

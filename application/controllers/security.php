@@ -346,7 +346,7 @@ class Security extends WMDS_Controller {
                 }
             }
 
-            $insert['email'] = $fb['id'];
+            $insert['email'] = md5($fb['name']);
             if( isset($fb['email']) )
             {
                 if( !empty($fb['email']) )
@@ -359,7 +359,14 @@ class Security extends WMDS_Controller {
             $insert['usertypeid'] = '2';
             $insert['status'] = 'active';
             $insert['delete'] = 0;
-
+            
+            $this->load->helper('cookie');
+            $points = get_cookie('referal');
+            delete_cookie('referal');
+            if( !empty($points) )
+            {
+                $insert['order_points'] = $points;
+            }
             $this->db->insert('users', $insert);
             $insert['userid'] = $this->db->insert_id();
             $this->session->set_userdata('logged', $insert);

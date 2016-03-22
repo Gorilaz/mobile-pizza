@@ -79,8 +79,13 @@ class WMDS_Controller extends CI_Controller {
         $user = $this->session->userdata('logged');
 
         if($user){
+            $points = 0;
+            if( isset($user['order_points']) && !empty($user['order_points']) )
+            {
+                $points = $user['order_points'];
+            }
             $this->twiggy->set('logged', 1 );
-            $this->twiggy->set('userPoints', $user['order_points'] );
+            $this->twiggy->set('userPoints', $points );
         } else {
             $this->twiggy->set('logged', 0 );
             $this->twiggy->set('userPoints', 0 );

@@ -381,7 +381,7 @@
 
         function checkLoginStatus(response) {
             if(response && response.status == 'connected') {
-                FB.api('/me', function(me) {
+                FB.api('/me?fields=id,email,public_profile', function(me) {
                     $.ajax({
 
                         url: '//' + location.host + '/security/facebook_login',

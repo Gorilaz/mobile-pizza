@@ -312,7 +312,8 @@ class Security extends WMDS_Controller {
     public function facebook_login() {
         $fb = $this->input->post();
         // TODO: add ajax verification
-
+        var_dump($fb);
+        
         $email = md5($fb['name']);
         if( isset($fb['email']) )
         {

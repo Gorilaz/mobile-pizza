@@ -319,13 +319,32 @@ class Security extends WMDS_Controller {
 
         } else {
             $insert = array();
-            if (isset($fb['location'])) {
-                $insert['address'] = $fb['location']['name'];
+            if( isset($fb['location']) )
+            {
+                if( !empty($fb['first_name']) )
+                {
+                    $insert['address'] = $fb['location']['name'];
+                } else {
+                    $insert['address'] = '';
+                }
             }
 
             $p = time();
-            $insert['first_name'] = $fb['first_name'];
-            $insert['last_name'] = $fb['last_name'];
+            if( isset($fb['first_name']) )
+            {
+                if( !empty($fb['first_name']) )
+                {
+                    $insert['first_name'] = $fb['first_name'];
+                } else {
+                    $insert['first_name'] = '';
+                }
+                if( !empty($fb['last_name']) )
+                {
+                    $insert['last_name'] = $fb['last_name'];
+                } else {
+                    $insert['last_name'] = '';
+                }
+            }
             $insert['email'] = $fb['email'];
             $insert['password'] = md5($p);
             $insert['base_password'] = base64_encode($p);

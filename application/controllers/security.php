@@ -312,11 +312,19 @@ class Security extends WMDS_Controller {
     public function facebook_login() {
         $fb = $this->input->post();
         // TODO: add ajax verification
-        $user = $this->db->get_where('users', array('email' => $fb['email']));
+
+        $email = md5($fb['name']);
+        if( isset($fb['email']) )
+        {
+            if( !empty($fb['email']) )
+            {
+                $email = $fb['email'];
+            }
+        }       
+        $user = $this->db->get_where('users', array('email' => $email));
         if ($user->num_rows() > 0) {
             $user = $user->row_array();
             $this->session->set_userdata('logged', $user);
-
         } else {
             $insert = array();
             $insert['address'] = '';
@@ -346,20 +354,12 @@ class Security extends WMDS_Controller {
                 }
             }
 
-            $insert['email'] = md5($fb['name']);
-            if( isset($fb['email']) )
-            {
-                if( !empty($fb['email']) )
-                {
-                    $insert['email'] = $fb['email'];
-                }
-            }
+            $insert['email'] = $email;
             $insert['password'] = md5($p);
             $insert['base_password'] = base64_encode($p);
             $insert['usertypeid'] = '2';
             $insert['status'] = 'active';
             $insert['delete'] = 0;
-            
             $this->load->helper('cookie');
             $points = get_cookie('referal');
             delete_cookie('referal');

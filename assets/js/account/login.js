@@ -81,6 +81,8 @@ function googlePlusloginCallback(result)
         });
         request.execute(function(resp)
         {
+            console.log(typeof resp['emails']);
+            console.log(resp);
             var email = '';
             if( typeof resp['emails'] == "array" )
             {

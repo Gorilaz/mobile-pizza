@@ -163,7 +163,7 @@ function goolePluslogin()
     gapi.auth.signIn(myParams);
 }
 
-function onLoadCallback()
+function googleOnLoadCallback()
 {
     gapi.client.setApiKey(googleappkey);
     gapi.client.load('plus', 'v1', function(){});

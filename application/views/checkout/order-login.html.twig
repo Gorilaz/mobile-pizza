@@ -83,6 +83,7 @@
             {% if logged == 0 %}
                 <div class="get-space">
                     <a href="#" data-role="button" data-theme="c" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
+                    <a href="#" data-role="button" data-theme="c" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
                     {#<div class="ui-grid-a">#}
                         {#<div class="ui-block-a">#}
                             {#<a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="pop">Register</a>#}
@@ -327,106 +328,7 @@
 {% block footerjs %}
     
     <script type="text/javascript" src="{{ base_url }}assets/js/social"></script>
-    
-    {#<script type="text/javascript" src="{{ base_url }}assets/js/account/login.js"></script>#}
+        <script type="text/javascript" src="https://apis.google.com/js/client.js?onload=onLoadCallback" async defer></script>
+    <script type="text/javascript" src="{{ base_url }}assets/js/account/login.js"></script>
 
-    {#<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>#}
-
-    <script type="text/javascript">
-
-        /**
-         * Need to check is present global vars
-         * @type String|FACEBOOKAPPID
-         */
-        var FBAppIDAsync = '';
-        if( typeof FACEBOOKAPPID == 'string' )
-        {
-            FBAppIDAsync = FACEBOOKAPPID;
-        }
-        /* use after for Facebook App ID - FBAppIDLock */
-
-        window.fbAsyncInit = function() {
-            // init the FB JS SDK
-            FB.init({
-                appId      : FBAppIDAsync,                   // App ID from the app dashboard
-                status     : true                                 // Check Facebook Login status
-            });
-
-            // Additional initialization code such as adding Event Listeners goes here
-        };
-
-        // Load the SDK asynchronously
-        (function(d, s, id){
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) {return;}
-            js = d.createElement(s); js.id = id;
-            js.src = "//connect.facebook.net/en_US/all.js";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
-
-        $(function(){
-            $('#loginButton').click(function(){
-                authFBUser();
-            });
-        });
-
-        function authFBUser() {
-
-            FB.login(checkLoginStatus, {scope:'email'});
-
-        }
-
-
-        // Check the result of the user status and display login button if necessary
-
-        function checkLoginStatus(response) {
-            if(response && response.status == 'connected') {
-                FB.api('/me?fields=id,name,first_name,last_name,email,location', function(me) {
-                    $.ajax({
-
-                        url: '//' + location.host + '/security/facebook_login',
-
-                        data: me,
-
-                        type: "POST",
-
-                        success: function(result) {
-                            window.location.href = '//' + location.host + '/payment/socialLoker';
-
-                        },
-
-                        error: function(e){
-
-                            console.error(e);
-
-                        }
-
-                    });
-
-                });
-
-
-
-                // Hide the login button
-
-//        document.getElementById('loginButton').style.display = 'none';
-
-            } else {
-
-//        alert('User is not authorized');
-
-
-
-                // Display the login button
-
-//        document.getElementById('loginButton').style.display = 'block';
-
-            }
-
-        }
-
-        /** By default country is Australia - get states */
-
-
-    </script>
 {% endblock %}

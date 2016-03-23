@@ -1,3 +1,15 @@
+    if( typeof SOCIALRETURNURL == 'string' )
+    {
+        if( SOCIALRETURNURL == '' )
+        {
+            SOCIALRETURNURL = '//' + location.host + '/menu';
+        } else {
+            SOCIALRETURNURL = '//' + location.host + '/' + SOCIALRETURNURL;
+        }
+    } else {
+        SOCIALRETURNURL = '//' + location.host + '/menu';
+    }
+
 
 window.fbAsyncInit = function() {
     
@@ -52,7 +64,7 @@ function checkLoginStatus(response) {
                 data: me,
                 type: "POST",
                 success: function(result) {
-                    window.location.href = '//' + location.host + '/menu';
+                    window.location.href = SOCIALRETURNURL;
                 },
                 error: function(e){
                     console.error(e);
@@ -111,7 +123,7 @@ function googlePlusloginCallback(result)
                 data: formdata,
                 type: "POST",
                 success: function(result) {
-                    window.location.href = '//' + location.host + '/menu';
+                    window.location.href = SOCIALRETURNURL;
                 },
                 error: function(e){
                     console.error(e);

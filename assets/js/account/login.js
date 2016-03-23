@@ -71,7 +71,7 @@ function checkLoginStatus(response) {
 /** By default country is Australia - get states */
 
 /** Google Plus --------------------------------------------------- **/
-function loginCallback(result)
+function googlePlusloginCallback(result)
 {
     if(result['status']['signed_in'])
     {
@@ -79,10 +79,45 @@ function loginCallback(result)
         {
             'userId': 'me'
         });
-        request.execute(function (resp)
+        request.execute(function(resp)
         {
-           console.log(resp);
-           alert('stop');
+            var email = '';
+            if( typeof resp['emails'] == "array" )
+            {
+                for(i = 0; i < resp['emails'].length; i++)
+                {
+                    if(resp['emails'][i]['type'] == 'account')
+                    {
+                        email = resp['emails'][i]['value'];
+                    }
+                }
+            }
+            var firstName = '';
+            var lastName = '';
+            if( typeof resp['name'] == "object" )
+            {
+                var tmp = resp['name'];
+                firstName = tmp.familyName;
+                lastName = tmp.givenName;
+            }
+            var formdata = [
+                            { name: "first_name", value: firstName },
+                            { name: "last_name", value: lastName },
+                            { name: "email", value: email}
+                           ];
+console.log(formdata);
+            $.ajax({
+                url: '//' + location.host + '/security/googleplus_login',
+                data: formdata,
+                type: "POST",
+                success: function(result) {
+                    //window.location.href = '//' + location.host + '/menu';
+                    console.log(result);
+                },
+                error: function(e){
+                    console.error(e);
+                }
+            });
         });
      }
 }
@@ -90,6 +125,7 @@ function loginCallback(result)
 /**
  * Need to check is present global vars
  * @type String|GOOGLEPLUSAPPKEY
+ * @type String|GOOGLEPLUSCLIENTID
  */
 var googleappkey = '';
 if( typeof GOOGLEPLUSAPPKEY == 'string' )
@@ -109,7 +145,7 @@ function goolePluslogin()
     var myParams = {
         'clientid' : googleclientid,
         'cookiepolicy' : 'http://mobile.bluestarpizza.com.au',
-        'callback' : 'loginCallback',
+        'callback' : 'googlePlusloginCallback',
         'approvalprompt':'force',
         'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
     };

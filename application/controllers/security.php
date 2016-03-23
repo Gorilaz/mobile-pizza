@@ -32,9 +32,55 @@ class Security extends WMDS_Controller {
     function googleplus_login()
     {
         $post = $this->input->post();
-        
-        var_dump($post);
-        
+        $email = '';
+        if( isset($post['email']) )
+        {
+            if( !empty($post['email']) )
+            {
+                $email = $post['email'];
+            }
+        }
+        $user = $this->db->get_where('users', array('email' => $email));
+        if( $user->num_rows() > 0 )
+        {
+            $user = $user->row_array();
+            $this->session->set_userdata('logged', $user);
+        } else {
+            $insert = array();
+            $p = time();
+            $insert['first_name'] = '';
+            if( isset($post['first_name']) )
+            {
+                if( !empty($post['first_name']) )
+                {
+                    $insert['first_name'] = $post['first_name'];                   
+                }
+            }
+            $insert['last_name'] = '';
+            if( isset($post['first_name']) )
+            {
+                if( !empty($post['last_name']) )
+                {
+                    $insert['last_name'] = $post['last_name'];
+                }
+            }
+            $insert['email'] = $email;
+            $insert['password'] = md5($p);
+            $insert['base_password'] = base64_encode($p);
+            $insert['usertypeid'] = '2';
+            $insert['status'] = 'active';
+            $insert['delete'] = 0;
+            $this->load->helper('cookie');
+            $points = get_cookie('referal');
+            delete_cookie('referal');
+            if( !empty($points) )
+            {
+                $insert['order_points'] = $points;
+            }
+            $this->db->insert('users', $insert);
+            $insert['userid'] = $this->db->insert_id();
+            $this->session->set_userdata('logged', $insert);
+        }        
     }
 
     /**

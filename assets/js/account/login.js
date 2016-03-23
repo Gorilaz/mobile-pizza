@@ -92,9 +92,7 @@ function googlePlusloginCallback(result)
                     }
                 }
             }
-            
-            console.log(resp['emails'][0]['value']);
-            
+           
             var firstName = '';
             var lastName = '';
             if( typeof resp['name'] == "object" )
@@ -108,7 +106,6 @@ function googlePlusloginCallback(result)
                             { name: "last_name", value: lastName },
                             { name: "email", value: email}
                            ];
-console.log(formdata);
             $.ajax({
                 url: '//' + location.host + '/security/googleplus_login',
                 data: formdata,

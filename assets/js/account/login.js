@@ -111,8 +111,7 @@ function googlePlusloginCallback(result)
                 data: formdata,
                 type: "POST",
                 success: function(result) {
-                    //window.location.href = '//' + location.host + '/menu';
-                    console.log(result);
+                    window.location.href = '//' + location.host + '/menu';
                 },
                 error: function(e){
                     console.error(e);

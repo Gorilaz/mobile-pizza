@@ -391,7 +391,12 @@ class checkout extends WMDS_Controller {
 
             $this->load->model('order_model');
             /** delivery fee */
-            $delivery_fee = $this->order_model->getDeliveryFee($logged['suburb']);
+            $suburb = 0;
+            if( isset($logged['suburb']) )
+            {
+                $suburb = $logged['suburb'];
+            }
+            $delivery_fee = $this->order_model->getDeliveryFee($suburb);
             $this->twiggy->set('delivery_fee', $delivery_fee);
 
         } else {

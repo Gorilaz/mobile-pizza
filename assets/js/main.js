@@ -365,11 +365,12 @@ function populateIngredients(variationId, pizzaNo) {
                  */
                 else {
                     contentExtra += '<li data-role="list-divider">Extra</li>';
+                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" id="searchIngredientsId" value=" " data-theme="a"></li>';
 
                     $.each(items, function( ecategory,ingredients ) {
                         contentExtra += '<li>';
-                        contentExtra += '<div data-role="collapsible" data-inset="false" data-theme="a" data-inset="false" data-content-theme="a">';
-                        contentExtra += '<h4 class="no-margin">'+ecategory+'</h4>';
+                        //contentExtra += '<div data-role="collapsible" data-inset="false" data-theme="a" data-inset="false" data-content-theme="a">';
+                        //contentExtra += '<h4 class="no-margin">'+ecategory+'</h4>';
                         contentExtra += '<fieldset data-role="controlgroup">';
 
 //                        content += '<legend>'+ecategory+'</legend>';
@@ -398,7 +399,7 @@ function populateIngredients(variationId, pizzaNo) {
 
 
                         contentExtra += '</fieldset>';
-                        contentExtra += '</div>';
+                       // contentExtra += '</div>';
                         contentExtra += '</li>';
                     });
                 }
@@ -411,7 +412,7 @@ function populateIngredients(variationId, pizzaNo) {
         }
 
             content += '</ul>';
-            content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" data-icon="delete" data-inline="true" data-mini="true">Close</a></p>';
+            content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
             content += '</form>';
 
             $(targetBlock).html(content);

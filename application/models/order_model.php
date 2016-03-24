@@ -16,14 +16,17 @@ class Order_model extends CI_Model{
      * @return mixed
      */
     public function getDeliveryFee($suburbId){
-
         $delivery = $this->db->
             select('delivery_fee')->
             where('id', $suburbId)->
             where('status', 'active')->
             get('tbl_suburb')->
             row();
-        return $delivery->delivery_fee;
+        if( $delivery )
+        {
+            return $delivery->delivery_fee;
+        }
+        return 0;
     }
 
     /**

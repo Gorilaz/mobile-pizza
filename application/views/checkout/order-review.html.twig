@@ -8,10 +8,10 @@
     </script>
 
     <div data-role="content">
-    <form id="form-checkout" action="{{ settings.subdomain_url }}payment" method="post" data-ajax="false">
+    <!-- form id="form-checkout" action="{{ settings.subdomain_url }}payment" method="post" data-ajax="false" -->
+    <form id="form-checkout" action="{{ base_url }}payment" method="post" data-ajax="false">
         <div id="main-content">
             <div class="get-space">
-
                 <div class="notice-holder{% if itemsNo !=0 %} hide{% endif %}">
                     <div class="notice">
                         <i class="icon-exclamation-sign"></i> Your cart is empty.

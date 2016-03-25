@@ -286,23 +286,25 @@ function calculateOrderPrice() {
  * Used on product details page
  *
  */
-function populateIngredients(variationId, pizzaNo) {
-
-    if(variationId === undefined) {
+function populateIngredients( variationId, pizzaNo )
+{
+    if( variationId === undefined )
+    {
         variationId = $('select[name=variation]:last').val();
     }
 
+console.log('here=' + variationId);
 
-    if(pizzaNo === undefined || pizzaNo == 1) {
+    if( pizzaNo === undefined || pizzaNo == 1 )
+    {
         pizzaNo     = 1;
         var targetBlock = '#ingredients';
     } else {
         pizzaNo     = 2;
         var targetBlock = '#ingredients2';
     }
-
     $.ajax({
-        url: "/get/ingredients/"+variationId,
+        url: '/get/ingredients/' + variationId,
         context: document.body
 //        beforeSend: function() {
 //            $.mobile.loading( 'show', {
@@ -314,10 +316,27 @@ function populateIngredients(variationId, pizzaNo) {
 //            });
 //        }
     })
-        .complete(function() {
+    .complete(function() {
 //            $.mobile.loading( "hide" );
-        })
-        .done(function(data) {
+        $( '#searchIngredientsId' ).keyup( function( env ){
+            $( '.ui-checkbox' ).show();
+            var searchString = this.value;
+            if( searchString != '' )
+            {
+                $('.order-ingredients input[type=checkbox]').each(function(){
+                    var contentString = $(this).attr('data-value');
+                    if ( contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0 ) {
+                        $(this).parent().hide();
+                    }
+                });
+            }
+            if( env.keyCode == 13 )
+            {
+                return false;
+            }
+        });
+    })
+    .done(function(data) {
 
         var content = '<form class="order-ingredients" data-pizza="'+ pizzaNo +'">';
         content += '<ul data-role="listview" data-inset="true" data-divider-theme="c" class="ingredients-list">';
@@ -326,20 +345,17 @@ function populateIngredients(variationId, pizzaNo) {
         var contentExtra    = '';
 
         if(data) {
-            $.each(data, function( type, items ) {
 
+            $.each(data, function( type, items ) {
                 /**
                  * Included items comes as a single array
                  */
                 if(type == 'included') {
 
-
-
                     contentIncluded += '<li data-role="list-divider">Included</li>';
                     contentIncluded += '<li>';
                     contentIncluded += '<fieldset data-role="controlgroup">';
-
-                    $.each(items, function( key,item ) {
+                    $.each(items, function( key, item ) {
                         contentIncluded += '<input type="checkbox" name="ingredient[]" ';
                         contentIncluded += 'id="ingredient-'+item.ingredient_id+'" value="'+item.ingredient_id+'" ';
                             //if(item.status == 'DF') {
@@ -365,9 +381,9 @@ function populateIngredients(variationId, pizzaNo) {
                  */
                 else {
                     contentExtra += '<li data-role="list-divider">Extra</li>';
-                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" id="searchIngredientsId" value=" " data-theme="a"></li>';
+                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" id="searchIngredientsId" value="" data-mini="true" data-theme="a" /></li>';
 
-                    $.each(items, function( ecategory,ingredients ) {
+                    $.each(items, function( ecategory, ingredients ) {
                         contentExtra += '<li>';
                         //contentExtra += '<div data-role="collapsible" data-inset="false" data-theme="a" data-inset="false" data-content-theme="a">';
                         //contentExtra += '<h4 class="no-margin">'+ecategory+'</h4>';
@@ -375,7 +391,7 @@ function populateIngredients(variationId, pizzaNo) {
 
 //                        content += '<legend>'+ecategory+'</legend>';
 
-                        $.each(ingredients, function( key,item ) {
+                        $.each(ingredients, function( key, item ) {
 //                            content += '<input type="checkbox" name="ingredient['+item.ingredient_id+']" id="ingredient['+item.ingredient_id+']" value="'+item.ingredient_id+'" data-theme="a">';
 //                            content += '<label for="ingredient['+item.ingredient_id+']">'+item.ingredient_name+' <span class="price">$'+item.price+'</span> </label>';
 
@@ -385,6 +401,8 @@ function populateIngredients(variationId, pizzaNo) {
                                 //    content += 'checked data-default="1" ';
                                 //} else {
                             contentExtra += 'data-default="0" ';
+                            var str = item.ingredient_name;
+                            contentExtra += 'data-value="' + str.replace(/"/gi, '\"') + '" ';
                                 //}
                             contentExtra += 'data-price="'+ item.price +'" data-theme="a" class="p-ingredient">';
                             contentExtra += '<label for="ingredient-'+item.ingredient_id+'">'+item.ingredient_name+' ';
@@ -402,31 +420,33 @@ function populateIngredients(variationId, pizzaNo) {
                        // contentExtra += '</div>';
                         contentExtra += '</li>';
                     });
+                    
                 }
             });
-
             content += contentIncluded;
             content += contentExtra;
+
         } else {
             content += '<li>This product doesn\'t have ingredients that you can modify</li>';
         }
 
-            content += '</ul>';
-            content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
-            content += '</form>';
+        content += '</ul>';
+        content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
+        content += '</form>';
 
-            $(targetBlock).html(content);
+        $(targetBlock).html(content);
 
-            if(data) {
-                $('.ingredientsHolder').removeClass('hide');
-            }
+        if(data) {
+            $('.ingredientsHolder').removeClass('hide');
+        }
 
-            /**
-             * Refresh the layout - dynamic content injected
-             */
-            $( ".ingredients-list" ).listview().listview('refresh');
-            $( ".ingredients-list" ).trigger('create');
+        /**
+         * Refresh the layout - dynamic content injected
+         */
+        $( ".ingredients-list" ).listview().listview('refresh');
+        $( ".ingredients-list" ).trigger('create');
     });
+
 }
 
 /***********************************************************************************************************************

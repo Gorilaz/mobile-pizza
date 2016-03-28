@@ -20,7 +20,7 @@ class checkout extends WMDS_Controller {
 
         /** verify if products has discount */
         $haveCoupon = $this->productsHaveCoupon();
-//        var_dump($haveCoupon);die;
+
         if($haveCoupon){
             $this->twiggy->set('haveCoupon', 'havecoupon');
 

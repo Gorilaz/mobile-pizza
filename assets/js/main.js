@@ -161,7 +161,7 @@ function initHalfOrder() {
 
         var halfGroup = sizeOption.data( "half-group" );
         var halfPrice = sizeOption.data( "half-fee" );
-        console.log(halfGroup);
+
         if(halfGroup === undefined) {
             $('input[name=half-group-id]').val('');
             $('input[name=half-fee]').val('');
@@ -293,8 +293,6 @@ function populateIngredients( variationId, pizzaNo )
         variationId = $('select[name=variation]:last').val();
     }
 
-console.log('here=' + variationId);
-
     if( pizzaNo === undefined || pizzaNo == 1 )
     {
         pizzaNo     = 1;
@@ -325,7 +323,10 @@ console.log('here=' + variationId);
             {
                 $('.order-ingredients input[type=checkbox]').each(function(){
                     var contentString = $(this).attr('data-value');
-                    if ( contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0 ) {
+                    var checked = $(this).parent().find('.ui-icon-checkbox-on');
+                    if ( 
+                           (contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0) && checked.length == 0
+                       ) {
                         $(this).parent().hide();
                     }
                 });

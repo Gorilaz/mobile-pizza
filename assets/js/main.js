@@ -2,7 +2,7 @@
  * Events used on product page
  * @url /home
  **********************************************************************************************************************/
-$( document ).on("pageinit", "#page-home",function() {
+$( document ).on("pageinit", "#page-home", function() {
 
 //    if(referal){
 //        $('#popup-refer2').popup('open');
@@ -10,13 +10,45 @@ $( document ).on("pageinit", "#page-home",function() {
 
 });
 
-
+/**
+ * Show/Hide footer panel for Done button
+ * @returns true
+ */
+function manageDoneButtonForRightPanel()
+{
+    var position = 0;
+    for( position = 1; position < 3; position++ )
+    {
+        if( $('#doneBtnForRightPanelingredients' + position).hasClass('ui-panel-closed') )
+        {
+            $('#doneBtnForRightPanelingredients' + position).removeClass('ui-panel-closed');
+            $('#doneBtnForRightPanelingredients' + position).addClass('ui-panel-open');
+        } else {
+            $('#doneBtnForRightPanelingredients' + position).removeClass('ui-panel-open');
+            $('#doneBtnForRightPanelingredients' + position).addClass('ui-panel-closed');
+        }
+    }
+    return true;
+}
 
 /***********************************************************************************************************************
  * Events used on product page
  * @url /product/id
  **********************************************************************************************************************/
-$( document ).on("pageinit", "#page-product",function() {
+$( document ).on("pageinit", "#page-product", function() {
+    
+    $( "#ingredients" ).on( "panelclose", function( event, ui ){
+        manageDoneButtonForRightPanel();
+    });
+    $( "#ingredients" ).on( "panelopen", function( event, ui ){
+        manageDoneButtonForRightPanel();
+    });
+    $( "#ingredients2" ).on( "panelclose", function( event, ui ){
+        manageDoneButtonForRightPanel();
+    });
+    $( "#ingredients2" ).on( "panelopen", function( event, ui ){
+        manageDoneButtonForRightPanel();
+    });
 
     /* Unbind everything */
     $(document).off('change','.calculate');
@@ -47,31 +79,18 @@ $( document ).on("pageinit", "#page-product",function() {
         populateIngredients();
     }
 
-
-    /**
-     * Scroll page when a category is expanded
-     */
-//    $(document).on("expand", 'div.ui-collapsible', function(e) {
-//        var top = $(e.target).offset().top - 55;
-////        $(window).scrollTop(top);
-//        $("html, body").animate({scrollTop: top});
-//    });
-
-//
     $(document).on('change','.calculate, #p-quantity, #half-order', function(e) {
         calculateOrderPrice();
     })
     $(document).on('change','.p-ingredient', function(e) {
         calculateOrderPrice();
     })
-
     $(document).on('change','select[data-type=Size]', function(e) {
         initHalfOrder();
     });
     $('document').on('change','select[name=variation]',function() {
         populateIngredients();
     })
-
 
     /**
      * Send order
@@ -106,20 +125,20 @@ $( document ).on("pageinit", "#page-product",function() {
     });
 
 
-
     /**
      * Handle half pizza change
      * Populates ingredients for half pizza
      */
-    $(document).on('change','#halfPizzaSelector', function() {
+    $(document).on('change', '#halfPizzaSelector', function() {
 
         var halfVariation = $(this).find('option').filter(':selected').val();
         var halfPizza     = halfs[$(this).data('variation')][halfVariation];
 
         if(halfVariation && halfVariation > 0) {
-
-        var contentBlock  = ' \
-            <div class="single-top" '+ ((halfPizza.product_image != '')?'style="background-image: url('+desktopUrl+'templates/demotest/uploads/products/thumb/'+halfPizza.product_image+')"':'') +' > \
+            var contentBlock  = ' \
+            <div class="single-top" '+ ((halfPizza.product_image != '')?'style="background-image: url(' +
+                    desktopUrl + 'templates/demotest/uploads/products/thumb/' + 
+                    halfPizza.product_image+')"':'') +' > \
                 <div class="single-content get-space"> \
                     <h1>'+halfPizza.product_name+'</h1> \
                     <div class="single-description"> \
@@ -129,13 +148,12 @@ $( document ).on("pageinit", "#page-product",function() {
             </div>\
             <div class="single-options get-space clear-heights"> \
                 <div class="row ingredientsHolder"> \
-                    <a href="#ingredients2" class="ui-link"><i class="icon-chevron-sign-right"></i> Add/Modify Ingredients</a> \
+                    <a href="#ingredients2" class="ui-link add-modify-btn">\n\
+                    <i class="icon-chevron-sign-right"></i> Add/Modify Ingredients</a> \
                 </div> \
             </div> \
             ';
-
             $('.halfPizzaBlock').html(contentBlock);
-
             populateIngredients(halfVariation, 2);
             calculateOrderPrice();
             $('input[name=isHalf]').val(1);
@@ -145,10 +163,7 @@ $( document ).on("pageinit", "#page-product",function() {
             calculateOrderPrice();
             $('input[name=isHalf]').val(0);
         }
-
-
     });
-
 });
 
 
@@ -288,6 +303,7 @@ function calculateOrderPrice() {
  */
 function populateIngredients( variationId, pizzaNo )
 {
+
     if( variationId === undefined )
     {
         variationId = $('select[name=variation]:last').val();
@@ -316,7 +332,7 @@ function populateIngredients( variationId, pizzaNo )
     })
     .complete(function() {
 //            $.mobile.loading( "hide" );
-        $( '#searchIngredientsId' ).keyup( function( env ){
+        $( '.searchIngredientsId' ).keyup( function( env ){
             $( '.ui-checkbox' ).show();
             var searchString = this.value;
             if( searchString != '' )
@@ -385,7 +401,7 @@ function populateIngredients( variationId, pizzaNo )
                  */
                 else {
                     contentExtra += '<li data-role="list-divider">Extra</li>';
-                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" id="searchIngredientsId" value="" data-mini="true" data-theme="a" /></li>';
+                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" class="searchIngredientsId" value="" data-mini="true" data-theme="a" /></li>';
 
                     $.each(items, function( ecategory, ingredients ) {
                         contentExtra += '<li>';
@@ -435,10 +451,14 @@ function populateIngredients( variationId, pizzaNo )
         }
 
         content += '</ul>';
-        content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
+        //content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
         content += '</form>';
+       // content += '<div class="right-panel-footer"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></div>';
 
         $(targetBlock).html(content);
+        $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
+                '" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link done-btn-right-panel"\n\
+                     data-inline="true" data-mini="true">Done</a></p></div>');
 
         if(data) {
             $('.ingredientsHolder').removeClass('hide');
@@ -458,7 +478,6 @@ function populateIngredients( variationId, pizzaNo )
  * @url /menu
  **********************************************************************************************************************/
 $( document ).on('pageinit', '#page-menu', function() {
-
     $(document).on('click', '#click-checkout', function(){
         window.location.href = '//' + location.host + '/checkout';
     });
@@ -468,19 +487,15 @@ $( document ).on('pageinit', '#page-menu', function() {
  * Events used on page review page
  * @url /checkout
  **********************************************************************************************************************/
-
 $( document ).on('pageinit', '#page-checkout', function() {
-
     $(document).off('change','.footer-change');
     $(document).off('click','.checkout-footer a');
     $(document).off('change','#date');
-
     $('.control-1').show().addClass('animated bounce');
 
     var count = 1;
 
-   $(document).on('change','.footer-change', function() {
-
+    $(document).on('change','.footer-change', function() {
 
        count++;
 

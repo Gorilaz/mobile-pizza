@@ -60,7 +60,7 @@
                                     <td class="order-price">{{ item.points }}</td>
                                 {% else %}
                                     <td class="order-item">Total</td>
-                                    <td class="order-price">$ {{ item.subtotal }}</td>
+                                    <td class="order-price" data-coupon="{{ productsWithCoupon[item.id] }}" data-value="{{ item.subtotal }}">$ {{ item.subtotal }}</td>
                                 {% endif %}
                             </tr>
 

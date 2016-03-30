@@ -17,43 +17,9 @@ class checkout extends WMDS_Controller {
      */
     public function index() {
 
-
-        /** verify if products has discount */
-        $haveCoupon = $this->productsHaveCoupon();
-
-        if($haveCoupon){
-            $this->twiggy->set('haveCoupon', 'havecoupon');
-
-            /**
-             * Coupons
-             */
-
-            $logged = $this->session->userdata('logged');
-            if($logged){
-                $coupons = $this->products_model->getCoupons($logged['userid']);
-            } else {
-                $coupons = $this->products_model->getCoupons();
-            }
-//            print_r($coupons);die;
-            $hasSocialLocker = $this->products_model->getSocialLocker();
-            if($hasSocialLocker){
-                $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
-            }
-            $this->twiggy->set('coupons', $coupons);
-
-            /** end Coupons */
-        }
-
-        /** end  */
-
         $this->load->model('products_model');
-
-
 //        $cart = $this->cart->contents();
-//        print_r($cart);die;
-
 //        $productsIds = array();
-
 //        foreach($cart as $c){
 //            $products = explode('_', $c['id']);
 //            foreach($products as $p){
@@ -62,40 +28,31 @@ class checkout extends WMDS_Controller {
 //        }
 //        $productsHasDiscount = $this->products_model->productsHasDiscount($productsIds);
 
+        
         /** verify if holliday fee */
-
         $holiday = $this->products_model->getPublicHoliday();
-
         if($holiday){
             $arr_hol = explode(',', $holiday);
             $dateNow = date('d/m/Y');
-
             foreach($arr_hol as $holiday){
                 if($holiday == $dateNow){
                     $holidayFee = $this->products_model->getHolidayFee();
-
                     $totalCart = $this->cart->total();
-                    $holidayPrice = number_format((($totalCart/100)*$holidayFee), 2, '.', '');
+                    $holidayPrice = number_format( ( ($totalCart/100) * $holidayFee), 2, '.', '' );
                     $this->twiggy->set('holidayFee', array(
                         'discount'    => $holidayFee,
                         'price'  => $holidayPrice
                     ));
-
                     $this->session->set_userdata('holiday_fee', $holidayFee);
                 }
             }
-
         }
-
         /** end holliday fee */
 
         /** order text from admin */
         $this->load->model('order_model');
         $text = $this->order_model->getAdminText();
         $this->twiggy->set('text', $text);
-
-        $datesForOrder = $this->general->shopSchedule();
-
 
         /**
          * Payment Methods &&
@@ -107,8 +64,34 @@ class checkout extends WMDS_Controller {
         /**
          * Send cart data to view
          */
+        $items = $this->getProductIdsWithCoupon();
+        if( in_array('1', $items) )
+        {
+            /** verify if products has discount */
+            $this->twiggy->set('haveCoupon', 'havecoupon');
+            /**
+             * Coupons
+             */
+            $logged = $this->session->userdata('logged');
+            if($logged){
+                $coupons = $this->products_model->getCoupons($logged['userid']);
+            } else {
+                $coupons = $this->products_model->getCoupons();
+            }
+            $hasSocialLocker = $this->products_model->getSocialLocker();
+            if($hasSocialLocker){
+                $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
+            }
+            $this->twiggy->set('coupons', $coupons);
+            /** end Coupons */
+
+        }
+        
+        $datesForOrder = $this->general->shopSchedule();
+        $cartContents = $this->cart->contents();
         $this->twiggy->set(array(
-                'cart'      => $this->cart->contents(),
+                'productsWithCoupon'          => $items,
+                'cart'      => $cartContents,
                 'itemsNo'   => $this->cart->total_items(),
                 'total'     => $this->cart->total(),
                 'paymentMethods' => $paymentMethods,
@@ -116,16 +99,12 @@ class checkout extends WMDS_Controller {
                 'schedule'  => array('forTwig' => $datesForOrder['forTwig'], 'forJquery' => json_encode($datesForOrder['forJquery']))
             )
         );
-
-
         $this->twiggy->set('page', array(
             'title'  => 'Checkout',
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-checkout'
         ));
-
-
         $this->twiggy->template('checkout/order-review')->display();
     }
 
@@ -136,15 +115,18 @@ class checkout extends WMDS_Controller {
 
         $this->load->model('products_model');
 
-        $hasCoupon = true;
+        //$hasCoupon = true;
+        $hasCoupon = false;
         $cart = $this->cart->contents();
 
         foreach($cart as $product){
             $ids = explode('_', $product['id']);
             foreach($ids as $id){
                 $productHasCoupon = $this->products_model->productHasCoupon($id);
-                if($productHasCoupon == 0) {
-                    $hasCoupon = false;
+                //if($productHasCoupon == 0) {
+                //    $hasCoupon = false;
+                if($productHasCoupon == 1) {
+                    $hasCoupon = true;
                     break;
                 }
             }
@@ -152,13 +134,32 @@ class checkout extends WMDS_Controller {
 
         return $hasCoupon;
     }
+    
+    /**
+     * Detect all products with coupon
+     */
+    public function getProductIdsWithCoupon()
+    {
+        $out = array();
+        $this->load->model('products_model');
+        $cart = $this->cart->contents();
+        foreach($cart as $product)
+        {
+            $ids = explode('_', $product['id']);
+            foreach($ids as $id)
+            {
+                $out[$id] = $this->products_model->productHasCoupon($id);
+            }
+        }
+        return $out;
+    }
+
 
     /**
      * Get Coupons (ajax)
      */
     public function getCoupons(){
         $this->load->model('general');
-
         $coupon = $this->input->post('coupon');
         $coupons = $this->general->getCoupons($coupon);
         if($coupons){

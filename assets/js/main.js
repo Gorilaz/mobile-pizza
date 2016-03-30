@@ -457,7 +457,7 @@ function populateIngredients( variationId, pizzaNo )
 
         $(targetBlock).html(content);
         $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
-                '" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link done-btn-right-panel"\n\
+                '" data-rel="close" data-role="button" class="panel-list btn btn-blue ui-link done-btn-right-panel"\n\
                      data-inline="true" data-mini="true">Done</a></p></div>');
 
         if(data) {
@@ -746,58 +746,84 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
         $('.order-total-price').html('$ ' + total).data('value',total);
     }
+    
+    /**
+     * Apply percent
+     * @param int amountPercent
+     * @param float price
+     * @returns float
+     */
+    function applyPercentForPrice( amountPercent, price )
+    {
+        return ( (parseFloat(price) / 100) * parseInt(amountPercent) ).toFixed(2);
+    }
+    
+    /**
+     * Sum two values
+     * @param float value1
+     * @param float value2
+     * @returns float or false
+     */
+    function prepareMathFloatValues( operandOne, operandTwo, operation )
+    {
+        operation = operation || '+';
+        if( operation == '+' )
+        {
+            return (parseFloat(operandOne) + parseFloat(operandTwo)).toFixed(2);            
+        } else {
+        if( operation == '-' )
+        {
+            return (parseFloat(operandOne) - parseFloat(operandTwo)).toFixed(2);
+        }}
+        return false;
+    }
 
-    function discountPrice(discountpercet, type){
-
-        if(type === undefined) {
-            var type = false;
-        }
-
+    /**
+     * Apply discounts for price
+     * @param int discountpercet
+     * @param string type
+     * @returns null
+     */
+    function discountPrice( discountpercet, type )
+    {
+        type = type || '';
         $('#has_discount').data('discountper', discountpercet);
-
-
         var total = $('.order-total-price').data('default');
-
-        var discount = ((parseFloat(total) / 100)* parseInt(discountpercet)).toFixed(2);
-
-        var newTotal  = (total - discount).toFixed(2);
-
-        if($('#holiday-fee').data('fee') != 'no'){
-            var feeDiscount = $('#holiday-fee').data('fee');
-
-            var feePrice = ((parseFloat(total)/100)*parseFloat(feeDiscount)).toFixed(2);
-            $('#fee-prince').html('+' + feePrice);
-
-            newTotal = (parseFloat(newTotal) + parseFloat(feePrice)).toFixed(2);
+        var couponPriceTotal = 0;
+        $('.order-subtotal').find('.order-price').each(function(){
+            if( $(this).css('display') != 'none' )
+            {
+                var subTotal = $(this).data('value');
+                if( $(this).data('coupon') == 0 )
+                {
+                    total = total - subTotal;
+                    couponPriceTotal = couponPriceTotal + subTotal;
+                }
+            }
+        })
+        var discount = applyPercentForPrice(discountpercet, total);
+        var newTotal = prepareMathFloatValues(total, discount, '-');
+        newTotal = prepareMathFloatValues(newTotal, couponPriceTotal);
+        if( $('#holiday-fee').data('fee') != 'no' )
+        {
+            var feePrice = applyPercentForPrice( $('#holiday-fee').data('fee'), total );
+            $('#fee-prince').html( '+' + feePrice );
+            newTotal = prepareMathFloatValues(newTotal, feePrice);
         }
-        if(type == 'low_amount'){
-            newTotal = (parseFloat(newTotal) + parseFloat(rules.order_less)).toFixed(2);
-            $('#low_order_fee').html('+$'+rules.order_less);
+        if( type == 'low_amount' || type == 'online_low_amount' )
+        {
+            newTotal = prepareMathFloatValues(newTotal, rules.order_less);
+            $('#low_order_fee').html( '+$' + rules.order_less );
             $('#low_order').removeClass('hide');
         }
-
-
-
-
-        if(type == 'online') {
+        if( type == 'online' || type == 'online_low_amount' )
+        {
             $('#icon-remove-coupon').removeClass('hide');
             $('#coupon-des').html('Online Order Discount');
         }
-
-        if(type == 'online_low_amount') {
-            newTotal = (parseFloat(newTotal) + parseFloat(rules.order_less)).toFixed(2);
-            $('#low_order_fee').html('+$'+rules.order_less);
-            $('#low_order').removeClass('hide');
-            $('#icon-remove-coupon').removeClass('hide');
-            $('#coupon-des').html('Online Order Discount');
-        }
-
-        $('.order-total-price').html('$ '+newTotal);
-        $('.order-total-price').data('value',newTotal);
-
-        $('#coupon-dis').html('-$' + discount);
-
-
+        $('.order-total-price').html( '$ ' + newTotal );
+        $('.order-total-price').data( 'value', newTotal );
+        $('#coupon-dis').html( '-$' + discount );
     }
 
     /**  Coupon  */
@@ -838,44 +864,37 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
 
     /** other coupon */
-    $(document).on('click','#voucher', function(){
-
+    $(document).on('click','#voucher', function()
+    {
         var el = $('#coupon').val();
         var request = $.ajax({
             url: '//' + location.host + '/checkout/getCoupons',
             type: "POST",
-            data: { coupon : el },
+            data: { 
+                coupon : el 
+            },
             dataType: "json"
         });
-
-        request.done(function( data ) {
-            if(data != 'false'){
+        request.done(function( data )
+        {
+            if( data != 'false' )
+            {
                 $('#coupon-des').html(data.coupondescription);
-
                 var discountpercet = parseInt(data.discountper) ;
-
                 discountPrice(discountpercet);
-
-
                 $('#icon-remove-coupon').removeClass('hide');
                 $('#coupon-row').removeClass('hide');
-
                 $('#tr-coupon').addClass('hide');
-                $('#other').val(data.id);
-
+                $('#other').val( data.id );
             } else {
-
                 defaultPrice();
-
                 $('#icon-remove-coupon').addClass('hide');
-
                 $('#coupon-des').html('');
                 $('#coupon-dis').html('');
-
             }
         });
-
-        request.fail(function( jqXHR, textStatus ) {
+        request.fail(function( jqXHR, textStatus )
+        {
             alert( "Request failed: " + textStatus );
         });
     });

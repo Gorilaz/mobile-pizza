@@ -810,6 +810,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
         type = type || '';
         $('#has_discount').data('discountper', discountpercet);
         var total = $('.order-total-price').data('default');
+console.log(type);
+
         var couponPriceTotal = 0;
         $('.order-subtotal').find('.order-price').each(function(){
             if( $(this).css('display') != 'none' )
@@ -821,16 +823,19 @@ $( document ).on('pageinit', '#page-checkout', function() {
                     couponPriceTotal = couponPriceTotal + subTotal;
                 }
             }
-        })
+        });
         var discount = applyPercentForPrice(discountpercet, total);
         var newTotal = prepareMathFloatValues(total, discount, '-');
         newTotal = prepareMathFloatValues(newTotal, couponPriceTotal);
+       
+        // add holiday fee
         if( $('#holiday-fee').data('fee') != 'no' )
         {
             var feePrice = applyPercentForPrice( $('#holiday-fee').data('fee'), total );
             $('#fee-prince').html( '+' + feePrice );
             newTotal = prepareMathFloatValues(newTotal, feePrice);
         }
+
         if( type == 'low_amount' || type == 'online_low_amount' )
         {
             newTotal = prepareMathFloatValues(newTotal, rules.order_less);
@@ -842,45 +847,42 @@ $( document ).on('pageinit', '#page-checkout', function() {
             $('#icon-remove-coupon').removeClass('hide');
             $('#coupon-des').html('Online Order Discount');
         }
+
         $('.order-total-price').html( '$ ' + newTotal );
         $('.order-total-price').data( 'value', newTotal );
         $('#coupon-dis').html( '-$' + discount );
     }
 
     /**  Coupon  */
-    $(document).on('change', '.choose-coupon', function(){
-
+    $(document).on( 'change', '.choose-coupon', function(){
         var discountpercet = $(this).data('discount');
-        if(discountpercet == 'other'){
-
+        if( discountpercet == 'other' )
+        {
             $('#tr-coupon').removeClass('hide');
             $('#coupon-row').removeClass('hide');
             $('#coupon').prop('disabled', false);
-
-            if($('#radio-choice-v-2a').is(':checked')){
-
+            if( $('#radio-choice-v-2a').is(':checked') )
+            {
                 defaultPrice('low_amount');
             } else {
-
                 defaultPrice();
             }
-
         } else {
-
+            if( $('#coupon-des').html() != '' )
+            {
+                $('#icon-remove-coupon').click();
+            }
+            
             $('#tr-coupon').addClass('hide');
             $('#coupon').prop('disabled', true);
             $('#coupon-row').removeClass('hide');
-
-            if($('#radio-choice-v-2a').is(':checked')){
-
+            if( $('#radio-choice-v-2a').is(':checked') )
+            {
                 discountPrice(discountpercet, 'online_low_amount');
             } else {
-
-                discountPrice(discountpercet);
-            }
-
+                discountPrice(discountpercet, '');
+            }            
         }
-
     });
 
 
@@ -923,28 +925,24 @@ $( document ).on('pageinit', '#page-checkout', function() {
     /** remove coupon  */
     $(document).on('click', '#icon-remove-coupon', function(){
         var didConfirm = confirm("Remove voucher ?");
-        if (didConfirm == true) {
+        if( didConfirm == true )
+        {
             $('#tr-coupon').removeClass('hide');
-            $('.choose-coupon').prop('checked', false).checkboxradio('refresh');
-            $('#other').prop('checked', true).checkboxradio('refresh');
+          //  $('.choose-coupon').prop('checked', false).checkboxradio('refresh');
+          //  $('#other').prop('checked', true).checkboxradio('refresh');
             $('#coupon').prop('disabled', false);
-
-            if($('#radio-choice-v-2a').is(':checked')){
+            if($('#radio-choice-v-2a').is(':checked'))
+            {
                 defaultPrice('low_amount');
             } else {
                 defaultPrice();
             }
-
             $('#icon-remove-coupon').addClass('hide');
-
             $('#coupon-des').html('');
             $('#coupon-dis').html('');
-
             $('#coupon').val('');
-
         }
     });
-
     /**  END Coupon  */
 
     $(document).on('click','.remove-order-item', function(e) {

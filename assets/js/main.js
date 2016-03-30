@@ -297,6 +297,36 @@ function calculateOrderPrice() {
 }
 
 /**
+ * Hide or show list elements for search string
+ * @param string searchString
+ * @returns true
+ */
+function searchItemsForRightPanel( searchString )
+{
+    $( '.ui-checkbox' ).show();
+    if( 
+        typeof searchString != 'undefined' 
+        && searchString != '' 
+      )
+    {
+        $('.order-ingredients input[type=checkbox]').each(function(){
+            var contentString = $(this).attr('data-value');
+            if( typeof contentString != 'undefined' )
+            {
+                var checked = $(this).parent().find('.ui-icon-checkbox-on');
+                if ( 
+                    (contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0) 
+                    && checked.length == 0
+                   ) {
+                    $(this).parent().hide();
+                }
+            }
+        });
+    }
+    return true;
+}
+
+/**
  * Get Ingredients based on Variation
  * Used on product details page
  *
@@ -331,29 +361,22 @@ function populateIngredients( variationId, pizzaNo )
 //        }
     })
     .complete(function() {
-//            $.mobile.loading( "hide" );
+
+        // for symbol keys
         $( '.searchIngredientsId' ).keyup( function( env ){
-            $( '.ui-checkbox' ).show();
-            var searchString = this.value;
-            if( searchString != '' )
-            {
-                $('.order-ingredients input[type=checkbox]').each(function(){
-                    var contentString = $(this).attr('data-value');
-                    if( typeof contentString != 'undefined' )
-                    {
-                        var checked = $(this).parent().find('.ui-icon-checkbox-on');
-                        if ( 
-                               (contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0) && checked.length == 0
-                           ) {
-                            $(this).parent().hide();
-                        }
-                    }
-                });
-            }
+            searchItemsForRightPanel(this.value);
+        });
+        // disable enter press
+        $( '.searchIngredientsId' ).keypress( function( env ){
             if( env.keyCode == 13 )
             {
-              //  return false;
+                env.preventDefault();
+                return false;
             }
+        });
+        // clear button in search field
+        $('.ui-input-clear').on('click', function( env ){
+            searchItemsForRightPanel(this.value);
         });
     })
     .done(function(data) {
@@ -371,7 +394,6 @@ function populateIngredients( variationId, pizzaNo )
                  * Included items comes as a single array
                  */
                 if(type == 'included') {
-
                     contentIncluded += '<li data-role="list-divider">Included</li>';
                     contentIncluded += '<li>';
                     contentIncluded += '<fieldset data-role="controlgroup">';
@@ -459,7 +481,6 @@ function populateIngredients( variationId, pizzaNo )
         $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
                 '" data-rel="close" data-role="button" class="panel-list btn btn-blue ui-link done-btn-right-panel"\n\
                      data-inline="true" data-mini="true">Done</a></p></div>');
-
         if(data) {
             $('.ingredientsHolder').removeClass('hide');
         }

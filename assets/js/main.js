@@ -378,6 +378,11 @@ function populateIngredients( variationId, pizzaNo )
         $('.ui-input-clear').on('click', function( env ){
             searchItemsForRightPanel(this.value);
         });
+        
+        $('.searchIngredientsId').bind('focus', function(e) {
+            $('html,body').animate({scrollTop: $(this).offset().top}, 800);
+        });
+        
     })
     .done(function(data) {
 
@@ -481,6 +486,7 @@ function populateIngredients( variationId, pizzaNo )
         $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
                 '" data-rel="close" data-role="button" class="panel-list btn btn-blue ui-link done-btn-right-panel"\n\
                      data-inline="true" data-mini="true">Done</a></p></div>');
+        
         if(data) {
             $('.ingredientsHolder').removeClass('hide');
         }

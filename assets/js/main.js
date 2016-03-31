@@ -378,7 +378,7 @@ function populateIngredients( variationId, pizzaNo )
         $('.ui-input-clear').on('click', function( env ){
             searchItemsForRightPanel(this.value);
         });
-        
+        // move to top search fields
         $('.searchIngredientsId').bind('focus', function(e) {
             $('html,body').animate({scrollTop: $(this).offset().top}, 800);
         });
@@ -816,7 +816,6 @@ $( document ).on('pageinit', '#page-checkout', function() {
         type = type || '';
         $('#has_discount').data('discountper', discountpercet);
         var total = $('.order-total-price').data('default');
-console.log(type);
 
         var couponPriceTotal = 0;
         $('.order-subtotal').find('.order-price').each(function(){
@@ -833,6 +832,8 @@ console.log(type);
         var discount = applyPercentForPrice(discountpercet, total);
         var newTotal = prepareMathFloatValues(total, discount, '-');
         newTotal = prepareMathFloatValues(newTotal, couponPriceTotal);
+       
+        console.log(newTotal);
        
         // add holiday fee
         if( $('#holiday-fee').data('fee') != 'no' )

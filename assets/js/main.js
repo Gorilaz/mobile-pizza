@@ -1,3 +1,41 @@
+function signInRequest( obj )
+{
+    var user = $('#user').val();
+    var pass = $('#pass').val();
+    var request = $.ajax({
+        url: '//' + location.host + '/security/login',
+        type: "POST",
+        data: { user : user, pass : pass },
+        dataType: "json"
+    });
+    request.done(function( data ) {
+        if(data.login == 'true')
+        {
+            var type = $(obj).attr('data-position');
+            $( "#popupLogin" ).popup( "close" );
+            if( type == 'order' )
+            {
+                window.location.href = '//' + location.host + '/payment';
+            } else {
+                window.location.href = '//' + location.host + '/menu';
+            }
+        } else {
+        if(data.login == 'required fields')
+        {
+            $('#login-error').addClass('hide');
+            $('#login-required').removeClass('hide');
+        } else {
+            $('#login-error').removeClass('hide');
+            $('#login-required').addClass('hide');
+        }}
+    });
+    request.fail(function( jqXHR, textStatus ) {
+        alert( "Request failed: " + textStatus );
+    });
+    return false;
+}
+
+
 /***********************************************************************************************************************
  * Events used on product page
  * @url /home
@@ -1168,41 +1206,12 @@ $( document ).on('pageinit', "#page-payment", function() {
     });
 
     /** end  */
+    
+    /** Login **/
+    $(document).off('click','#sign-in');
     $(document).on('click','#sign-in',function(){
-
-        var user = $('#user').val();
-        var pass = $('#pass').val();
-
-        var request = $.ajax({
-            url: '//' + location.host + '/security/login',
-            type: "POST",
-            data: { user : user, pass : pass },
-            dataType: "json"
-        });
-
-        request.done(function( data ) {
-
-            if(data.login == 'true'){
-                var page = $('#page').data('page');
-                $( "#popupLogin" ).popup( "close" );
-                window.location.href = '//' + location.host + '/payment';
-
-            }else if (data.login == 'required fields'){
-
-                $('#login-required').removeClass('hide');
-                $('#login-error').addClass('hide');
-
-            } else {
-
-                $('#login-error').removeClass('hide');
-                $('#login-required').addClass('hide');
-            }
-        });
-
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
-        });
-    });
+        signInRequest( this );
+     });
 
     /** log out */
     $(document).on('click', '#log-out', function(){
@@ -1593,43 +1602,9 @@ $( document ).on('pageinit', "#your-orders", function() {
 
     /* Unbind everything */
     $(document).off('click','#order-signin');
-
     $(document).on('click','#order-signin',function(){
-
-        var user = $('#user').val();
-        var pass = $('#pass').val();
-
-        var request = $.ajax({
-            url: '//' + location.host + '/security/login',
-            type: "POST",
-            data: { user : user, pass : pass },
-            dataType: "json"
-        });
-
-        request.done(function( data ) {
-
-            if(data.login == 'true'){
-                var page = $('#page').data('page');
-                $( "#popupLogin" ).popup( "close" );
-                window.location.href = '//' + location.host + '/orders';
-
-            }else if (data.login == 'required fields'){
-
-                $('#login-required').removeClass('hide');
-                $('#login-error').addClass('hide');
-
-            } else {
-
-                $('#login-error').removeClass('hide');
-                $('#login-required').addClass('hide');
-            }
-        });
-
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
-        });
+        signInRequest( this );
     });
-
 
 
     $(document).on('click', '.change-page', function(){
@@ -1708,40 +1683,9 @@ $( document ).on('pageinit', "#your-orders", function() {
 $( document ).on('pageinit', "#security-login", function() {
 
     /* Unbind everything */
-    $(document).off('click','#login');
-
-    $(document).on('click', '#login', function(){
-
-        var user = $('#user').val();
-        var pass = $('#pass').val();
-
-        var request = $.ajax({
-            url: '//' + location.host + '/security/login',
-            type: "POST",
-            data: { user : user, pass : pass },
-            dataType: "json"
-        });
-
-        request.done(function( data ) {
-
-            if(data.login == 'true'){
-                window.location.href = '//' + location.host + '/menu';
-
-            }else if (data.login == 'required fields'){
-
-                $('#login-required').removeClass('hide');
-                $('#login-error').addClass('hide');
-
-            } else {
-
-                $('#login-error').removeClass('hide');
-                $('#login-required').addClass('hide');
-            }
-        });
-
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
-        });
+    $(document).off('click','#sign-in');
+    $(document).on('click', '#sign-in', function(){
+        signInRequest( this );
     });
 
 });

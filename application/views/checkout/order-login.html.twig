@@ -82,8 +82,34 @@
             <!-- Start Login  -->
             {% if logged == 0 %}
                 <div class="get-space">
-                    <a href="#" data-role="button" data-theme="c" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
-                    <a href="#" data-role="button" data-theme="c" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
+                    <hr class="solid" />
+            <form>
+                <span id="login-error" class="hide">Invalid username or password.</span>
+                <span id="login-required" class="hide">Username and password are required.</span>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="text-basic">Email Address:</label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="text" name="user" id="user"  placeholder="email@address" value="" />
+                    </div>
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="text-basic">Password:</label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="password" name="pass" id="pass" value="" />
+                    </div>
+                </div>
+                <div>
+                    <button data-theme="a" id="sign-in" data-position="order" type="button">Login</button>
+                    <a href="{{ base_url }}security/reset">Recover Password</a>
+                </div>
+            </form>
+
+                    <a href="#" data-role="button" data-theme="a" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
+                    <a href="#" data-role="button" data-theme="a" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
                     {#<div class="ui-grid-a">#}
                         {#<div class="ui-block-a">#}
                             {#<a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="pop">Register</a>#}
@@ -92,18 +118,19 @@
                             {#<a href="#popupLogin" id="allready-login" data-rel="popup" data-position-to="window" data-role="button" data-inline="true" data-icon="check" data-theme="a" data-transition="pop">Login</a>#}
                         {#</div>#}
                     {#</div>#}
+                    <legend>OR:</legend>
+                    <h4 class="center">Register</h4>
 
-                    <fieldset data-role="controlgroup" data-type="horizontal" class="checkout-final">
+                    <!-- fieldset data-role="controlgroup" data-type="horizontal" class="checkout-final">
                         <legend>OR:</legend>
-
                         <input type="radio" name="registerorlogin" id="radio-choice-h-2a" value="register" checked="checked" class="registerorlogin">
                         <label for="radio-choice-h-2a">Register</label>
                         <input type="radio" name="registerorlogin" id="radio-choice-h-2b" value="login" class="registerorlogin">
                         <label for="radio-choice-h-2b">Login</label>
-                    </fieldset>
+                    </fieldset -->
 
 
-                    <div data-role="popup" id="popupLogin" data-theme="d" class="ui-corner-all" >
+                    <!-- div data-role="popup" id="popupLogin" data-theme="d" class="ui-corner-all" >
                         <form id="form-signin">
                             <div id="signin-div">
                                 <h3>Please sign in</h3>
@@ -121,7 +148,7 @@
                                 {#<div class="ui-block-b"><a href="#" data-role="button" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a></div>#}
                             {#</div>#}
                         </form>
-                    </div>
+                    </div -->
 
                     <input type="hidden" id="page" data-page="{{ static.page }}">
                 </div>
@@ -130,8 +157,9 @@
                     <a href="#" data-role="button" data-theme="a" id="log-out"> Not You? Log Out</a>
                 </div>
             {% endif %}
-
             <!-- End Login  -->
+           
+            
         <div class="get-space single-options">
             <!-- Start Register  -->
             <form id="register_form" class="single-options">
@@ -154,7 +182,6 @@
                         <input type="text" name="last_name" id="form_lastname" value="{%- if logged.last_name is defined -%} {{ logged.last_name }}{%- endif -%}" />
                     </div>
                 </div>
-
 
                 <div class="ui-grid-a">
                     <div class="ui-block-a">
@@ -190,7 +217,6 @@
                     </div>
                 </div>
 
-
                 <div class="ui-grid-a">
                     <div class="ui-block-a">
                         <label for="email">Email: </label>
@@ -199,25 +225,25 @@
                         <input type="email" name="email"class="required email" id="email" value="{%- if logged.email is defined -%} {{ logged.email }}{%- endif -%}" />
                     </div>
                 </div>
+                    
                 {% if logged is not defined or logged == 0 %}
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                                <label for="form_password">Password: </label>
-                        </div>
-                        <div class="ui-block-b">
-                            <input type="password" name="password" id="form_password" value="" />
-                        </div>
+                    
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                            <label for="form_password">Password: </label>
                     </div>
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <label for="form_passconfirm">Confirm Password: </label>
-                        </div>
-                        <div class="ui-block-b">
-                            <input type="password" name="conf_password" id="form_passconfirm" value="" />
-                        </div>
+                    <div class="ui-block-b">
+                        <input type="password" name="password" id="form_password" value="" />
                     </div>
-
-
+                </div>
+                <div class="ui-grid-a">
+                    <div class="ui-block-a">
+                        <label for="form_passconfirm">Confirm Password: </label>
+                    </div>
+                    <div class="ui-block-b">
+                        <input type="password" name="conf_password" id="form_passconfirm" value="" />
+                    </div>
+                </div>
 
                 <div class="ui-grid-a">
                     <div class="ui-block-a">
@@ -235,12 +261,10 @@
                     </div>
                 </div>
 
-
                 <div class="ui-grid-a" >
 
                     <div class="ui-block-a" >
                         <label for="sms-code">Verif. Code</label>
-
                     </div>
 
                     <div class="ui-block-b  {% if logged != 0 %} hide{% endif %}" id="sms-verify">
@@ -256,7 +280,6 @@
                         <div style="width: 100%">
                             <span class="hide" id="sms-code-error">Incorect Verification code.</span>
                         </div>
-
                     </div>
                 </div>
 
@@ -265,8 +288,8 @@
                             {{ regText }}
                         {% endif %}
                     </div>
+                <hr class="solid" />
                 {% endif %}
-                <hr/>
 
                 {% if pg is defined and pg == 'paypal' %}
                     <input type="hidden" name="paypal" value="yes">

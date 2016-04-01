@@ -1299,3 +1299,10 @@ a.panel-list span {
     min-width: 200px;
     width:15%;
 }
+
+.solid {
+    border: 1px solid #cccccc!important;  
+}
+h4.center{
+    text-align: center;
+}

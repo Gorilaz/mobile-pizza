@@ -1,14 +1,14 @@
-    if( typeof SOCIALRETURNURL == 'string' )
+if( typeof SOCIALRETURNURL == 'string' )
+{
+    if( SOCIALRETURNURL == '' )
     {
-        if( SOCIALRETURNURL == '' )
-        {
-            SOCIALRETURNURL = '//' + location.host + '/menu';
-        } else {
-            SOCIALRETURNURL = '//' + location.host + '/' + SOCIALRETURNURL;
-        }
-    } else {
         SOCIALRETURNURL = '//' + location.host + '/menu';
+    } else {
+        SOCIALRETURNURL = '//' + location.host + '/' + SOCIALRETURNURL;
     }
+} else {
+    SOCIALRETURNURL = '//' + location.host + '/menu';
+}
 
 
 window.fbAsyncInit = function() {

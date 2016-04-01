@@ -1291,11 +1291,11 @@ a.panel-list span {
 }
 
 .right-panel-footer {
+    z-index: 1002;
     bottom:0%;
     width: 100%;
     right: 0px;
     position: fixed;
-    z-index: 1002;
     min-width: 200px;
     width:15%;
 }

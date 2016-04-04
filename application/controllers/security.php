@@ -14,20 +14,6 @@ class Security extends WMDS_Controller {
     }
 
     /*******  Login   *********/
-
-    public function login_page(){
-
-        $this->twiggy->set('page', array(
-            'title'  => 'Login',
-            'role'   => 'page',
-            'theme'  => 'a',
-            'id'     => 'security-login',
-            'backButton'=> true,
-        ));
-
-
-        $this->twiggy->display('account/login');
-    }
     
     function googleplus_login()
     {
@@ -83,34 +69,43 @@ class Security extends WMDS_Controller {
         }        
     }
 
+
+    /**
+     * Generate Login page
+     */
+    public function login_page(){
+        $this->twiggy->set('page', array(
+            'title'  => 'Login',
+            'role'   => 'page',
+            'theme'  => 'a',
+            'id'     => 'security-login',
+            'backButton'=> true,
+        ));
+        $out = prepareProfilePage($this->twiggy);
+        $out->display('account/login');
+    } // login_page
+
     /**
      * Verify if logged (ajax)
      */
-    public function login(){
-
+    public function login()
+    {
+        $flag = 'false';
         $user = $this->input->post();
-
-        if($user['user'] && $user['pass'] ){
-
-            $is_login  = $this->security_model->login($user);
-            if($is_login != 'no_user'){
-
+        if( $user['user'] && $user['pass'] )
+        {
+            $is_login = $this->security_model->login($user);
+            if( $is_login != 'no_user' )
+            {
                 $this->session->set_userdata('logged', $is_login);
-                echo json_encode(array(
-                    'login' => 'true'
-                ));
-            } else {
-                echo json_encode(array(
-                    'login' => 'false'
-                ));
+                $flag = 'true';
             }
-
-
         } else {
-            echo json_encode(array(
-                'login' => 'required fields'
-            ));
+            $flag = 'required fields';
         }
+        echo json_encode(array(
+            'login' => $flag
+        ));
     }
 
     /**********  Reset Password  ********************************/
@@ -187,40 +182,45 @@ class Security extends WMDS_Controller {
     /************************  Edit / Register  *******************/
 
 
+    /**
+     * Generate edit profile page
+     */
     public function edit(){
-
+/*
         $logged = $this->session->userdata('logged');
-//        print_r($logged);die;
-
         $this->twiggy->set('logged', $logged);
 
         $this->load->model('general');
         $suburbs = $this->general->getSub();
-
         $this->twiggy->set('static',array(
             'suburb' => $suburbs,
         ));
-
         $sms = $this->security_model->smsSettings();
         $this->twiggy->set('sms', $sms['sms_verification']);
-
+        
         $this->twiggy->set('page', array(
             'title'  => 'Edit Profile',
             'role'   => 'page',
             'theme'  => 'a',
             'backButton'=> true,
         ));
-
+*/
         $this->twiggy->set('page', array(
             'title'  => 'Edit Profile',
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-edit',
-            'backButton'=> true,
+            'backButton' => true,
         ));
 
-        $this->twiggy->display('account/edit');
-    }
+        // TODO: Clear dublicate code in JS for 
+        // save and order and edit with profile fields
+        // This is placeholder for template for current state
+        $this->twiggy->set('editprofile','1');
+
+        $out = prepareProfilePage($this->twiggy);
+        $out->display('account/edit');
+    } // edit
 
     /**
      * Insert / Update  user
@@ -228,9 +228,8 @@ class Security extends WMDS_Controller {
     public function save(){
 
         $user = $this->input->post();
-
-
         unset($user['paypal']);
+
         if(isset($user['conf_password']) && isset($user['password']))
         {
             unset($user['conf_password']);
@@ -238,7 +237,6 @@ class Security extends WMDS_Controller {
         }
 
         $userLogged = $this->session->userdata('logged');
-
         $this->load->model('security_model');
 
         if($userLogged['userid']){
@@ -246,21 +244,15 @@ class Security extends WMDS_Controller {
             $newUser = $this->security_model->save($user, $userLogged['userid']);
 
         } else {
-
             $this->load->helper('cookie');
             $points = get_cookie('referal');
             delete_cookie('referal');
-
             if($points){
                 $user['order_points'] = $points;
             }
-
             $newUser = $this->security_model->save($user, 'no_id');
         }
-
         $this->session->set_userdata('logged', $newUser);
-
-
     }
 
     public function checkUniqueEmail(){
@@ -331,33 +323,39 @@ class Security extends WMDS_Controller {
 
     }
 
-    public function facebook_login() {
+    public function facebook_login()
+    {
+        $flag = false;
         $fb = $this->input->post();
-        
-        $email = md5($fb['name']);
+        $email = '';
         if( isset($fb['email']) )
         {
             if( !empty($fb['email']) )
             {
                 $email = $fb['email'];
             }
-        }       
-        $user = $this->db->get_where('users', array('email' => $email));
-        if ($user->num_rows() > 0) {
-            $user = $user->row_array();
-            $this->session->set_userdata('logged', $user);
-        } else {
-            $insert = array();
-            $insert['address'] = '';
-            if( isset($fb['location']) )
+        }
+        if( !empty($email) )
+        {
+            $user = $this->db->get_where( 'users', array('email' => $email) );
+            if( $user->num_rows() > 0 )
             {
-                if( !empty($fb['first_name']) )
-                {
-                    $insert['address'] = $fb['location']['name'];                   
-                }
+                $user = $user->row_array();
+                $this->session->set_userdata('logged', $user);
+                $flag = true;
             }
-
+        }
+        if( !$flag )
+        {
             $p = time();
+            $insert = array();
+            $insert['email'] = $email;
+            $insert['password'] = md5($p);
+            $insert['base_password'] = base64_encode($p);
+            $insert['usertypeid'] = '2';
+            $insert['status'] = 'active';
+            $insert['delete'] = 0;
+            $insert['address'] = '';
             $insert['first_name'] = '';
             if( isset($fb['first_name']) )
             {
@@ -367,7 +365,7 @@ class Security extends WMDS_Controller {
                 }
             }
             $insert['last_name'] = '';
-            if( isset($fb['first_name']) )
+            if( isset($fb['last_name']) )
             {
                 if( !empty($fb['last_name']) )
                 {
@@ -375,12 +373,7 @@ class Security extends WMDS_Controller {
                 }
             }
 
-            $insert['email'] = $email;
-            $insert['password'] = md5($p);
-            $insert['base_password'] = base64_encode($p);
-            $insert['usertypeid'] = '2';
-            $insert['status'] = 'active';
-            $insert['delete'] = 0;
+            
             $this->load->helper('cookie');
             $points = get_cookie('referal');
             delete_cookie('referal');
@@ -388,6 +381,7 @@ class Security extends WMDS_Controller {
             {
                 $insert['order_points'] = $points;
             }
+            
             $this->db->insert('users', $insert);
             $insert['userid'] = $this->db->insert_id();
             $this->session->set_userdata('logged', $insert);

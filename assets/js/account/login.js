@@ -1,3 +1,4 @@
+
 if( typeof SOCIALRETURNURL == 'string' )
 {
     if( SOCIALRETURNURL == '' )
@@ -29,7 +30,6 @@ window.fbAsyncInit = function() {
         appId      : FBAppIDAsync,                   // App ID from the app dashboard
         status     : true                                 // Check Facebook Login status
     });
-
     // Additional initialization code such as adding Event Listeners goes here
 };
 
@@ -58,7 +58,7 @@ function authFBUser() {
 // Check the result of the user status and display login button if necessary
 function checkLoginStatus(response) {
     if(response && response.status == 'connected') {
-        FB.api('/me?fields=id,name,first_name,last_name,email,location', function(me) {
+        FB.api('/me?fields=id,name,first_name,last_name,email', function(me) {
             $.ajax({
                 url: '//' + location.host + '/security/facebook_login',
                 data: me,

@@ -195,11 +195,9 @@ class checkout extends WMDS_Controller {
                 if(isset($session['logged']) && !empty($session['logged'])){
                     $this->session->unset_userdata('logged');
                     $this->session->set_userdata('logged', $session['logged']);
-
                 }else {
-                        $this->session->unset_userdata('logged');
+                    $this->session->unset_userdata('logged');
                 }
-
 
                 /** if session storeOpen */
                 if(isset($session['storeOpen']) && !empty($session['storeOpen'])){
@@ -245,7 +243,6 @@ class checkout extends WMDS_Controller {
                 'comment'   => $post['comment']
             );
 
-
             /** save checkout on cart*/
             if(!empty($post['coupon']) && is_numeric($post['coupon'])){
                 $coupon                  = $this->general->getCoupon($post['coupon']);
@@ -266,10 +263,8 @@ class checkout extends WMDS_Controller {
             }
 
             $this->load->library('cart');
-
             $this->session->set_userdata('checkout', $check);
             /** end cart */
-
 
             $paymentFee = array();
             /** payment type */
@@ -286,7 +281,6 @@ class checkout extends WMDS_Controller {
                         'value' => $ccFee,
                     );
                 }
-
                 $pg = 'credit-card';
             } elseif($post['payment'] == 1){
                 $paymentFee = '';
@@ -304,7 +298,6 @@ class checkout extends WMDS_Controller {
                         'value' => $paypalFee,
                     );
                 }
-
                 $pg = 'paypal';
             }
 
@@ -318,15 +311,13 @@ class checkout extends WMDS_Controller {
             $pg = $this->session->userdata('pg');
 
         }
+        $this->twiggy->set('pg', $pg);
+
 
         $paymentFee2 = $this->session->userdata('surchange');
-//            print_r($paymentFee2);die;
         if(!empty($paymentFee2)){
             $this->twiggy->set('paymentFee', $paymentFee2);
         }
-
-
-        $this->twiggy->set('pg', $pg);
 
         /** holiday fee */
         $holiday = $this->session->userdata('holiday_fee');
@@ -336,9 +327,7 @@ class checkout extends WMDS_Controller {
 
         /** total */
         $total = $this->cart->total();
-
         $this->twiggy->set('total', $total);
-
         /** coupon */
         $check = $this->session->userdata('checkout');
         $logged = $this->session->userdata('logged');
@@ -354,22 +343,19 @@ class checkout extends WMDS_Controller {
                     $this->session->set_userdata('checkout', $check);
                     $hasCoupon = false;
                 }
-
                 if($hasCoupon){
-
                     $this->twiggy->set('coupon', array(
                         'name'      => $check['couponName'],
                         'discount'  => $check['couponDiscount']
-
                     ));
                 }
             } else {
                 $this->twiggy->set('coupon', array(
                     'name'      => $check['couponName'],
                     'discount'  => $check['couponDiscount']
-
                 ));
             }
+
 //
 
             //  $discount = number_format(($total/100)*$check['couponDiscount'], 1, '.', '');
@@ -383,34 +369,29 @@ class checkout extends WMDS_Controller {
         } else {
             $this->twiggy->set('hasDeliveryFee', 1);
         }
-
         /** verify if is logged */
 
         if(!empty($logged)){
-
+/*
             $this->twiggy->set('logged', $logged);
-
-            $this->load->model('order_model');
-            /** delivery fee */
             $suburb = 0;
             if( isset($logged['suburb']) )
             {
                 $suburb = $logged['suburb'];
             }
+*/
+            /** delivery fee */
+            $this->load->model('order_model');
             $delivery_fee = $this->order_model->getDeliveryFee($suburb);
             $this->twiggy->set('delivery_fee', $delivery_fee);
 
-        } else {
-
+        }/* else {
             $this->twiggy->set('logged', 0);
-            /** get register text */
-
             $text = $this->general->getRegisterText();
             $this->twiggy->set('regText', $text);
         }
-
+*/
         /** verify if low order */
-
         if($surcharge->order_less > 0){
             if(isset($check['couponDiscount']) && $check['couponDiscount'] ){
                 $discount = number_format(($total/100)*$check['couponDiscount'], 1, '.', '');
@@ -418,8 +399,6 @@ class checkout extends WMDS_Controller {
             } else {
                 $totalWithDiscount = $total;
             }
-
-
             if($totalWithDiscount < $surcharge->min_order_amt){
                 $low_order = $surcharge->order_less;
             } else {
@@ -432,17 +411,16 @@ class checkout extends WMDS_Controller {
         $this->session->set_userdata('low_order', $low_order);
         /** end */
 
-        /** have sms verification */
+        /** have sms verification 
         $this->load->model('security_model');
         $sms = $this->security_model->smsSettings();
         $this->twiggy->set('sms', $sms['sms_verification']);
-
+/*
         $suburbs = $this->general->getSub();
-
         $this->twiggy->set('static',array(
             'suburb' => $suburbs,
         ));
-
+*/
 
         $this->twiggy->set('page', array(
             'title'  => 'Payment',
@@ -451,7 +429,8 @@ class checkout extends WMDS_Controller {
             'id'     => 'page-payment'
         ));
 
-        $this->twiggy->template('checkout/order-login')->display();
+        $out = prepareProfilePage($this->twiggy);
+        $out->template('checkout/order-login')->display();
 
     }
 

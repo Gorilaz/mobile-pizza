@@ -125,8 +125,6 @@
                         </div>
                     </div>
 
-                    <button data-theme="a" id="save-edit" type="button">Save</button>
-
                 {% else %}
                     <div class="ui-grid-a" >
                         <div class="ui-block-a" >
@@ -160,6 +158,9 @@
                     <input type="hidden" id="pg" data-pg="{{ pg }}">
                 {% endif %}
                 
+                {% if saveBtn is defined %}
+                    <button data-theme="a" id="save-edit" type="button">Save</button>
+                {% endif %}    
                 
             </form>
             {% if pg is defined and pg == 'credit-card' %}

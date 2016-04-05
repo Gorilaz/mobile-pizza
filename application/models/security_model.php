@@ -13,7 +13,6 @@ class Security_model extends CI_Model{
             ->where('password', md5($user['pass']))
             ->where('email', $user['user'])
             ->get();
-
         if ($find_user->num_rows() > 0) {
             return $find_user->row_array();
         } else {
@@ -144,6 +143,21 @@ class Security_model extends CI_Model{
 
         $user = $this->db->where('userid', $userId)->get('users')->row_array();
         return $user;
+    }
+    
+    /**
+     * Get User fields by Email
+     * @param $email
+     */
+    public function getUserByEmail($email)
+    {
+        $this->db->where('email', $email);
+        $query = $this->db->get('users');
+        if( $query->num_rows == 1 )
+        {
+            return $query->row_array();
+        }
+        return false;
     }
 
     /**

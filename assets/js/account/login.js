@@ -62,21 +62,24 @@ function checkLoginStatus(response) {
             $.ajax({
                 url: '//' + location.host + '/security/facebook_login',
                 data: me,
-                type: "POST",
+                type: 'POST',
+                dataType: 'json',
                 success: function(result) {
-                    window.location.href = SOCIALRETURNURL;
+                    if( 
+                        typeof result.fields != 'undefined' 
+                        && result.fields == 'requare' 
+                       )
+                    {
+                        window.location.href = '//' + location.host + '/security/edit';
+                    } else {
+                        window.location.href = SOCIALRETURNURL;
+                    }
                 },
                 error: function(e){
-                    console.error(e);
+                    console.log(e);
                 }
             });
         });
-        // Hide the login button
-//        document.getElementById('loginButton').style.display = 'none';
-    } else {
-//        alert('User is not authorized');
-        // Display the login button
-//        document.getElementById('loginButton').style.display = 'block';
     }
 }
 
@@ -123,7 +126,15 @@ function googlePlusloginCallback(result)
                 data: formdata,
                 type: "POST",
                 success: function(result) {
-                    window.location.href = SOCIALRETURNURL;
+                    if( 
+                        typeof result.fields != 'undefined' 
+                        && result.fields == 'requare' 
+                       )
+                    {
+                        window.location.href = '//' + location.host + '/security/edit';
+                    } else {
+                        window.location.href = SOCIALRETURNURL;
+                    }
                 },
                 error: function(e){
                     console.error(e);

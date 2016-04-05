@@ -61,7 +61,11 @@
     {#{% endif %}#}
 
     {% if internalPage and page.role == 'page' %}
+        
+        {% if backToLogin is not defined or backToLogin != 'requare' %}
         {% include ('base/assetTopBar.html.twig') %}
+        {% endif %}
+
     {% endif %}
 
     {% block content %}

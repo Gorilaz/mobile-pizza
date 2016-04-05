@@ -41,9 +41,60 @@ if ( !function_exists('prepareProfilePage') )
 
 if ( !function_exists('saveProfile') )
 {
-    function saveProfile( $template )
+    function saveProfile( $user )
     {
-        die('saveProfile');
+        $temp = time();
+        unset($user['mobile_code']);
         $obj =& get_instance();
+        if(
+                isset($user['conf_password']) 
+                && isset($user['password']) 
+                && ( $user['conf_password'] === $user['password'] )
+          )
+        {
+            unset($user['conf_password']);
+            $user['password'] = md5($user['password']);
+        }
+        if( $obj->session->userdata('backToLogin') )
+        {
+            $user['password'] = md5($temp);
+        }
+        if( !isset($user['base_password']) && isset($user['password']) )
+        {
+            $user['base_password'] = base64_encode($user['password']);
+        }
+        if( !isset($user['usertypeid']) )
+        {
+            $user['usertypeid'] = '2';
+        }
+        if( !isset($user['status']) )
+        {
+            $user['status'] = 'active';
+        }
+        if( !isset($user['delete']) )
+        {
+            $user['delete'] = 0;
+        }
+        if( !isset($user['signup_date']) )
+        {
+            $user['signup_date'] = date('Y-m-d H:i:s', time());
+        }
+        $userLogged = $obj->session->userdata('logged');
+        $obj->load->model('security_model');
+        if( $userLogged['userid'])
+        {
+            $newUser = $obj->security_model->save( $user, $userLogged['userid'] );
+        } else {
+            $obj->load->helper('cookie');
+            $points = get_cookie('referal');
+            delete_cookie('referal');
+            if($points)
+            {
+                $user['order_points'] = $points;
+            }
+            $newUser = $obj->security_model->save($user, 'no_id');
+        }
+        $obj->session->set_userdata('logged', $newUser);
+        return true;
     } // saveProfile
 }

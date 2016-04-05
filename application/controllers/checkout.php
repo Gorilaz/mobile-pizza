@@ -177,6 +177,8 @@ class checkout extends WMDS_Controller {
         $this->load->library('session');
         $this->load->model('general');
         $this->load->model('order_model');
+        
+        $this->session->set_userdata('firstPointLogin', 'order');
 
         $surcharge = $this->order_model->getMinOrder();
         $total = $this->cart->total();
@@ -538,31 +540,21 @@ class checkout extends WMDS_Controller {
 //         $code = rand(1000, 9999);
         $code = 1111;
 
-
         $this->load->library('email');
-
         $from = $sms['sending_address'];
         $from_name = 'admin_tastypizza';
-
         $to = $post['mobile'] . '@' . $sms['domain_name'];
-
         $this->email->from($from, $from_name);
         $this->email->to($to);
-
         $this->email->subject($sms['subject']);
-
         $message = $mail_content->message;
         $message = str_replace("[[email]]", $post['email'], $message);
         $message = str_replace("[[code]]", $code, $message);
         $message = str_replace("[[firstname]]", $post['fname'], $message);
         $message = str_replace("[[lastname]]", $post['lname'], $message);
-
         $content_message = str_replace("[sitename]", base_url(), $message);
-
         $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
-
         $this->email->message($email_template);
-
         $this->email->send();
 
         $this->session->set_userdata('sms_code', $code);
@@ -575,8 +567,8 @@ class checkout extends WMDS_Controller {
     public function verifyCode(){
         $code      = $this->input->post('code');
         $sess_code = $this->session->userdata('sms_code');
-
-        if($code == $sess_code){
+        if($code == $sess_code)
+        {
             $this->session->unset_userdata('sms_code');
             echo json_encode(array(
                 'valid' => true

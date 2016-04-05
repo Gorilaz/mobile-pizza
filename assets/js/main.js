@@ -1701,7 +1701,6 @@ $( document ).on('pageinit', "#page-edit", function() {
     $(document).off('click','#save-edit');
     $(document).off('click','#verify-btn2');
 
-
     var verified = 'no';
     $('#register_form1').validate({
         rules: {
@@ -1847,13 +1846,19 @@ $( document ).on('pageinit', "#page-edit", function() {
             url: '//' + location.host + '/security/save',
             type: "POST",
             data: $('#register_form1').serialize()
-
         });
-
         request.done(function( data ) {
-            window.location.href = '//' + location.host + '/security/edit'
+            if( data == 'login' )
+            {
+                window.location.href = '//' + location.host + '/menu';
+            } else {
+            if( data == 'order' )
+            {
+                window.location.href = '//' + location.host + '/payment/socialLoker';
+            } else {
+                window.location.href = '//' + location.host + '/security/edit'
+            }}
         });
-
         request.fail(function( jqXHR, textStatus ) {
             alert( "Request failed: " + textStatus );
         });

@@ -1,3 +1,5 @@
+/*
+ * 
 $(function(){
     $('#register_form1').validate({
         rules: {
@@ -60,3 +62,5 @@ $(function(){
 
 
 });
+
+*/

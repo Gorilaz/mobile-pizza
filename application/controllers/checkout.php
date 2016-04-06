@@ -522,27 +522,27 @@ class checkout extends WMDS_Controller {
 
 
     /**
-     * SMS verification
+     * Ajax method for send SMS verification code
      */
-    public function verifyMobile(){
-
+    public function verifyMobile()
+    {
         $this->load->model('security_model');
         $sms = $this->security_model->smsSettings();
         $post = $this->input->post();
-
-
         $user = $this->security_model->changeMobile($post['mobile'], $post['email']);
         $this->session->set_userdata('logged', $user);
+        $mail_content = $this->security_model->getEmailById(3); // 3 - id for verify email template
+        $code = rand(1000, 9999);
 
-
-        $mail_content = $this->security_model->getEmailById(3);
-
-//         $code = rand(1000, 9999);
+        /* TODO: Placeholder for check */
         $code = 1111;
+        /* -- */
 
         $this->load->library('email');
         $from = $sms['sending_address'];
+
         $from_name = 'admin_tastypizza';
+        
         $to = $post['mobile'] . '@' . $sms['domain_name'];
         $this->email->from($from, $from_name);
         $this->email->to($to);
@@ -556,13 +556,11 @@ class checkout extends WMDS_Controller {
         $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
         $this->email->message($email_template);
         $this->email->send();
-
         $this->session->set_userdata('sms_code', $code);
-
     }
 
     /**
-     * verify sms code
+     * Ajax method verify sms code
      */
     public function verifyCode(){
         $code      = $this->input->post('code');

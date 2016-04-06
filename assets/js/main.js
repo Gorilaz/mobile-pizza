@@ -1120,6 +1120,7 @@ $( document ).on('pageinit', "#page-payment", function() {
     $(document).off('keyup','#first_name');
     $(document).off('keyup','#form_lastname');
 
+alert('fff');
 
 
     /** card number format */
@@ -1700,11 +1701,28 @@ $( document ).on('pageinit', "#page-edit", function() {
     /* Unbind everything */
     $(document).off('click','#save-edit');
     $(document).off('click','#verify-btn2');
+    
+    verifyClean();
 
     var verified = 'no';
-    $('#register_form1').validate({
+    
+    $.validator.addMethod('smsVerification', function (value, element) {
+        var sms = $('#sms').data('sms');
+        if( sms == 'enable')
+        {
+            if( $('#form_mobile').data('current') != $('#form_mobile').val() )
+            {
+                $('#verify-div').show();
+                return false;
+            } else {
+                verifyClean();
+            }
+        }
+        return true;
+    }, 'You need to verify this mobile number');
+
+    $('#register_form').validate({
         rules: {
-            // simple rule, converted to {required:true}
             first_name: "required",
             last_name: "required",
             address: "required",
@@ -1719,7 +1737,7 @@ $( document ).on('pageinit', "#page-edit", function() {
             },
             conf_password: {
                 required: true,
-                equalTo: "#form_password1",
+                equalTo: "#form_password",
                 minlength: 5
             },
             suburb: "required",
@@ -1729,123 +1747,79 @@ $( document ).on('pageinit', "#page-edit", function() {
                 maxlength: 10,
                 minlength: 10,
                 digits: true,
-                remote: '//' + location.host + '/security/checkUniqueMobile'
+                remote: '//' + location.host + '/security/checkUniqueMobile',
+                smsVerification: true,
+            }
+        },
+        messages: {
+            mobile: {
+                remote: "The mobile number already used",
             }
         }
     });
 
-    function saveEdit(){
-        var old_m = $('#old_mobile1').val();
-        var m = $('#form_mobile1').val();
-        var final =  $('#sms-code1').data('final');
-
-        if( old_m != m  && final == 'no' ){
-            changeMobile1();
-        } else {
-
-            if($('#register_form1').valid()){
-                saveForm();
+    /*
+     * Bind click action for Verify button on profile page
+     */
+    $(document).on('click', '#verify-btn', function(){
+        var final = $('#sms-code').data('final');
+        if( final == 'no' )
+        {
+            if( $('#form_mobile').val() != '' )
+            {
+                changeMobile();
             }
-        }
-    }
-
-    $(document).on('click', '#verify-btn2', function(){
-        var final = $('#sms-code1').data('final');
-
-        if(final == 'yes'){
-            $('#sms-code-error').addClass('hide');
-            $('#sms-verify1 input').prop('disabled', true);
-            $('#verify-btn2').prop('disabled', true);
-            $('#sms-code-error1').addClass('hide');
         } else {
-            var code = $('#sms-code1').val();
-
-            if(code !== ''){
+            var code = $('#sms-code').val();
+            if( code !== '' )
+            {
                 var request = $.ajax({
                     url: '//' + location.host + '/checkout/verifyCode',
                     type: "POST",
                     data: { code : code },
                     dataType: "json"
                 });
-
                 request.done(function( data ) {
-
-                    if(data.valid){
-                        $('#sms-code1').data('final', 'yes');
-
-                        $('#sms-code-error').addClass('hide');
-                        $('#sms-verify1 input').prop('disabled', true);
-                        $('#verify-btn2').prop('disabled', true);
-                        $('#sms-code-error1').addClass('hide');
+                    if( data.valid )
+                    {
+                        verifyClean();
+                        $('#form_mobile').data('current', $('#form_mobile').val());                        
+                        $('#register_form').valid();
                     } else {
-                        $('#sms-code-error1').removeClass('hide');
+                        $('#sms-error-label').show();
                     }
                 });
-
                 request.fail(function( jqXHR, textStatus ) {
                     alert( "Request failed: " + textStatus );
                 });
-
             } else {
-                $('#sms-code-error1').removeClass('hide');
+                $('#sms-error-label').show();
             }
         }
     });
 
+    /*
+     * Bind click action for save button for edit profile
+     */
     $(document).on('click', '#save-edit', function(){
-        if($('#register_form1').valid()){
-
-            if(sms == 'enable'){
-                var verified =  $('#sms-code1').data('sendcode');
-                var final = $('#sms-code1').data('final');
-
-                if(final == 'yes'){
-                    saveForm();
-                } else if(verified == 'no'){
-
-                    var verified = smsVerify1();
-                } else {
-                    var code = $('#sms-code1').val();
-
-                    if(code !== ''){
-                        var request = $.ajax({
-                            url: '//' + location.host + '/checkout/verifyCode',
-                            type: "POST",
-                            data: { code : code },
-                            dataType: "json"
-                        });
-
-                        request.done(function( data ) {
-                            if(data.valid){
-                                $('#sms-code1').data('final', 'yes');
-                                saveForm();
-                            } else {
-                                $('#sms-code-error1').removeClass('hide');
-                            }
-                        });
-
-                        request.fail(function( jqXHR, textStatus ) {
-                            alert( "Request failed: " + textStatus );
-                        });
-
-                    } else {
-
-                        $('#sms-code-error').removeClass('hide');
-
-                    }
-                }
-            } else {
-                saveForm();
-            }
+        if($('#register_form').valid())
+        {
+            /*
+            * TODO: Check again on server side
+            */
+            saveForm();
         }
     });
 
 
+    /*
+     * Ajax submit profile form and route
+     */
     function saveForm(){
         var request = $.ajax({
             url: '//' + location.host + '/security/save',
             type: "POST",
-            data: $('#register_form1').serialize()
+            data: $('#register_form').serialize()
         });
         request.done(function( data ) {
             if( data == 'login' )
@@ -1864,37 +1838,74 @@ $( document ).on('pageinit', "#page-edit", function() {
         });
     }
 
-    function changeMobile1(){
-        var mobile  = $('#form_mobile1').val();
-        var email   = $('#email1').val();
-        var fname   = $('#form_firstname1').val();
-        var lname   = $('#form_lastname1').val();
-
+    /*
+     * Function for sent verify code
+     */
+    function changeMobile()
+    {
+        var mobile  = $('#form_mobile').val();
+        var email   = $('#email').val();
+        var fname   = $('#form_firstname').val();
+        var lname   = $('#form_lastname').val();
         var request = $.ajax({
             url: '//' + location.host + '/checkout/verifyMobile',
             type: "POST",
-            data: { mobile : mobile, email : email, fname : fname, lname : lname}
-
+            data: { 
+                mobile : mobile, 
+                email : email, 
+                fname : fname, 
+                lname : lname
+            }
         });
-
         request.done(function( data ) {
-
-            $('#popupCode').popup('open');
-            $('#sms-verify1 input').prop('disabled', false);
-            $('#sms-verify1').removeClass('hide');
-            $('#sms-code1').data('sendcode', 'yes');
-
-            $('#form_mobile1').prop('readonly', true);
+            $('#form_mobile').attr('readonly', 'readonly');
+            $('#popupDialog').popup('open');
+            $('#sms-code').data('final', 'yes');
+            $('#sms-code').show();
+            $('#verify-btn')
+                 .find('.ui-btn-text').html($('#verify-btn').data('titlefinal'));
         });
-
         request.fail(function( jqXHR, textStatus ) {
             alert( "Request failed: " + textStatus );
         });
     }
+    
+    /*
+     * Clear profile template to default point
+     */
+    function verifyClean()
+    {
+        $('#verify-div').hide();
+        $('#form_mobile').removeAttr('readonly');
+        $('#sms-error-label').hide();
+        $('#sms-code').hide();
+        $('#sms-code').data('final', 'no');
+        $('#sms-code').val('');
+        $('#verify-btn')
+             .find('.ui-btn-text').html($('#verify-btn').data('titlestart'));
+        return true;
+    }
+/*
+    function smsVerify1()
+    {
+        var old_m = $('#old_mobile1').val();
+        var m = $('#form_mobile1').val();
+        var final =  $('#sms-code1').data('final');
+        if( old_m != m  && final == 'no' )
+        {
+            changeMobile1();
+        } else {
+            if($('#register_form1').valid())
+            {
+                saveForm();
+            }
+        }
+    }
+*/
 
-    function smsVerify1(){
-
-
+/*
+    function saveEdit()
+    {
         var old_m = $('#old_mobile1').val();
         var m = $('#form_mobile1').val();
         var final =  $('#sms-code1').data('final');
@@ -1907,8 +1918,7 @@ $( document ).on('pageinit', "#page-edit", function() {
                 saveForm();
             }
         }
-
-
     }
+*/
 
 });

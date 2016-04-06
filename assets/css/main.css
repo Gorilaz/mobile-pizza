@@ -1120,7 +1120,7 @@ h1 {
 }
 
 /*****  /payment  ***/
-#register_form label.error {
+#register_form label.error, #register_form1 label.error {
     float: left;
     color: red;
     padding-top: .5em;
@@ -1250,7 +1250,7 @@ h1 {
 
 #verify-div{
     float: left;
-    margin-top: -10px;
+    margin-top: -7px;
     margin-left: 15px;
 }
 

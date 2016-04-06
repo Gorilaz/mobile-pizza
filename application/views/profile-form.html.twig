@@ -1,7 +1,7 @@
             
         <div class="get-space single-options">
             <!-- Start Register  -->
-            <form id="register_form{{editprofile}}" class="single-options">
+            <form id="register_form" class="single-options">
                 <div class="error_form_message" id="error_note"></div>
 
                 <div class="ui-grid-a">
@@ -9,7 +9,7 @@
                         <label for="form_firstname">First Name: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="text" name="first_name" id="form_firstname{{editprofile}}" value="{%- if logged.first_name is defined -%} {{ logged.first_name }}{%- endif -%}" />
+                        <input type="text" name="first_name" id="form_firstname" value="{%- if logged.first_name is defined -%} {{ logged.first_name }}{%- endif -%}" />
                     </div>
                 </div>
 
@@ -18,7 +18,7 @@
                         <label for="form_lastname">Last Name: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="text" name="last_name" id="form_lastname{{editprofile}}" value="{%- if logged.last_name is defined -%} {{ logged.last_name }}{%- endif -%}" />
+                        <input type="text" name="last_name" id="form_lastname" value="{%- if logged.last_name is defined -%} {{ logged.last_name }}{%- endif -%}" />
                     </div>
                 </div>
 
@@ -27,7 +27,7 @@
                         <label for="form_company">Company Name: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="text" name="company_name" id="form_company{{editprofile}}" value="{%- if logged.company_name is defined -%} {{ logged.company_name }}{%- endif -%}" />
+                        <input type="text" name="company_name" id="form_company" value="{%- if logged.company_name is defined -%} {{ logged.company_name }}{%- endif -%}" />
                     </div>
                 </div>
 
@@ -36,7 +36,7 @@
                         <label for="form_address">Address: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="text" name="address" id="form_address{{editprofile}}" value="{%- if logged.address is defined -%} {{ logged.address }}{%- endif -%}" />
+                        <input type="text" name="address" id="form_address" value="{%- if logged.address is defined -%} {{ logged.address }}{%- endif -%}" />
                     </div>
                 </div>
 
@@ -45,7 +45,7 @@
                         <label for="form_suburb">Suburb: </label>
                     </div>
                     <div class="ui-block-b">
-                        <select id="form_suburb{{editprofile}}" name="suburb" data-mini="true">
+                        <select id="form_suburb" name="suburb" data-mini="true">
                             <option value="">Choose Suburb</option>
                             {% for item in static.suburb %}
                                 <option value="{{ item.id }}" data-fee="{{ item.delivery_fee }}" {% if logged.suburb is defined and logged.suburb ==  item.id %} selected{% endif %}>
@@ -61,7 +61,7 @@
                         <label for="email">Email: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="email" name="email" class="required email" {%- if logged is defined and logged != 0 -%} readonly="readonly" {%- endif -%} id="email{{editprofile}}" value="{%- if logged.email is defined -%} {{ logged.email }}{%- endif -%}" />
+                        <input type="email" name="email" class="required email" {%- if logged is defined and logged != 0 -%} readonly="readonly" {%- endif -%} id="email" value="{%- if logged.email is defined -%} {{ logged.email }}{%- endif -%}" />
                     </div>
                 </div>
                     
@@ -72,7 +72,7 @@
                             <label for="form_password">Password: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="password" name="password" id="form_password{{editprofile}}" value="" />
+                        <input type="password" name="password" id="form_password" value="" />
                     </div>
                 </div>
                 <div class="ui-grid-a">
@@ -80,7 +80,7 @@
                         <label for="form_passconfirm">Confirm Password: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="password" name="conf_password" id="form_passconfirm{{editprofile}}" value="" />
+                        <input type="password" name="conf_password" id="form_passconfirm" value="" />
                     </div>
                 </div>
 
@@ -91,63 +91,30 @@
                         <label for="form_mobile">Mobile: </label>
                     </div>
                     <div class="ui-block-b" >
-                         {% if editprofile is defined and editprofile is not empty %}
-                            <input type="text" name="mobile" id="form_mobile{{editprofile}}" maxlength="10" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
-                            <input type="hidden" id="old_mobile1" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
-                         {% else %}
                         <div id="mobile-div">
-                            <input type="text" name="mobile" id="form_mobile{{editprofile}}" maxlength="10" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
-                            <input type="hidden" id="old_mobile1" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
+                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
                         </div>
                         <div id="verify-div">
-                            <label for="form_mobile"> </label>
-                            <a href="#" data-role="button" id="verify{{editprofile}}" data-verify="no" data-inline="true">Verify</a>
+                            <div class="left">
+                                <input type="text" name="mobile_code" id="sms-code" data-final="no" maxlength="4" style="width:40px; margin-top: 15px;" />
+                            </div>
+                            <div class="left" style="padding-left: 10px;">
+                                <a href="#" data-role="button" data-inline="true" data-titlestart="Get code" data-titlefinal="Verify" id="verify-btn">Verify</a>
+                            </div>
+                            <div class="left">
+                                <label for="form_mobile_code" id="sms-error-label" class="error" style="margin-left: 10px; margin-top: 15px;">Incorect Verification code</label>
+                            </div>
                         </div>
-                        {% endif %}
                     </div>
                 </div>
 
-                {% if editprofile is defined and editprofile is not empty %}
-                    <div class="ui-grid-a">
-                        <div class="ui-block-a">
-                            <label for=""></label>
-                        </div>
-                        <div class="ui-block-b">
-                            <div class="hide" id="sms-verify1">
-                                <div class="left">
-                                    <a href="#" data-role="button" data-inline="true" id="verify-btn2" >Verify</a>
-                                </div>
-                                <div class="left">
-                                    <input type="text" id="sms-code1" data-sendcode="no" maxlength="4" data-final="no" />
-                                    <span class="hide" id="sms-code-error1">Incorect Verification code.</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
 
-                {% else %}
-                    <div class="ui-grid-a" >
-                        <div class="ui-block-a" >
-                            <label for="sms-code">Verif. Code</label>
+
+                    {% if regText is not empty %}
+                        <div id="reg-text">
+                        {{ regText }}
                         </div>
-                        <div class="ui-block-b  {% if logged != 0 %} hide{% endif %}" id="sms-verify{{editprofile}}">
-                            <div class="ui-grid-a">
-                                <div class="left" id="mobile-code-div">
-                                    <input type="text" name="mobile_code" id="sms-code{{editprofile}}"  data-sendcode="no" maxlength="4" data-final="{%- if logged != 0 -%}yes{%- else -%}no{%- endif -%}"/>
-                                </div>
-                            </div>
-                            <div class="clear"></div>
-                            <div style="width: 100%">
-                                <span class="hide" id="sms-code-error{{editprofile}}">Incorect Verification code.</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div id="reg-text">
-                        {% if regText is not empty %}
-                            {{ regText }}
-                        {% endif %}
-                    </div>
-                {% endif %}
+                    {% endif %}
 
                 {% if pg is defined and pg == 'paypal' %}
                     <input type="hidden" name="paypal" value="yes">
@@ -161,7 +128,7 @@
                 {% if saveBtn is defined %}
                     <button data-theme="a" id="save-edit" type="button">Save</button>
                 {% endif %}    
-                
+                  <input type="hidden" id="sms" data-sms="{{ sms }}" />
             </form>
             {% if pg is defined and pg == 'credit-card' %}
                 {% include 'checkout/order-login/credit-card.html.twig' %}

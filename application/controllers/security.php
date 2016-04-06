@@ -302,25 +302,33 @@ die();
         }
     }
 
-    public function checkUniqueMobile(){
-
+    /**
+     * Ajax method for check exists Mobile
+     */
+    public function checkUniqueMobile()
+    {
+        $flag = 'false';
         $mobile = urldecode($this->input->get('mobile'));
-
         $this->load->library('session');
         $logged = $this->session->userdata('logged');
-        if($logged){
-            $mobile_user = $logged['mobile'];
-            if(!empty($mobile_user) && $mobile == $mobile_user){
-                echo 'true';
-            }
-        } else {
-            $is_unique = $this->security_model->checkUniqueMobile($mobile);
-            if($is_unique){
-                echo 'true';
-            } else {
-                echo 'false';
+        if( $logged )
+        {
+            if( 
+                !empty($logged['mobile'])
+                && $mobile == $logged['mobile']
+            )
+            {
+                $flag = 'true';
             }
         }
+        if( 'false' == $flag )
+        {
+            if( $this->security_model->checkUniqueMobile($mobile) )
+            {
+                $flag = 'true';
+            }
+        }
+        echo $flag;
     }
 
     public function logout($payment = null){

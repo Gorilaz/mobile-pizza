@@ -10,6 +10,8 @@
         {% else %}
         var logged = 1;
         {% endif %}
+        var sms = '{{ sms }}';
+
     </script>
 
 
@@ -125,7 +127,7 @@
             {% endif %}
             <!-- End Login  -->
 
-            {% include 'profile-form.html.twig' %}      
+            {% include 'profile-form.html.twig' %}
 
     </div>
 
@@ -143,7 +145,6 @@
             </a>
         </div>
     </div>
-    <input type="hidden" id="sms" data-sms="{{ sms }}">
     </div><!-- /content -->
 
 {% endblock content %}

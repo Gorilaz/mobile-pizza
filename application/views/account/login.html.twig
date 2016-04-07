@@ -4,36 +4,7 @@
 
     <div data-role="content">
    
-        <div class="get-space">
-            <form>
-                <span id="login-error" class="hide">Invalid username or password.</span>
-                <span id="login-required" class="hide">Username and password are required.</span>
-                <div class="ui-grid-a">
-                    <div class="ui-block-a">
-                        <label for="text-basic">Email Address:</label>
-                    </div>
-                    <div class="ui-block-b">
-                        <input type="text" name="user" id="user" value="">
-                    </div>
-                </div>
-                <div class="ui-grid-a">
-                    <div class="ui-block-a">
-                        <label for="text-basic">Password:</label>
-                    </div>
-                    <div class="ui-block-b">
-                        <input type="password" name="pass" id="pass" value="">
-                    </div>
-                </div>
-                <div>
-                    <button data-theme="a" id="sign-in" data-position="login" type="button">Login</button>
-                    <a href="{{ base_url }}security/reset">Recover Password</a>
-                </div>
-            </form>
-                
-            <a href="#" data-role="button" data-theme="a" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
-            <a href="#" data-role="button" data-theme="a" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
-
-        </div>
+       {% include 'login-form.html.twig' %}
                 
     </div>
 

@@ -92,7 +92,7 @@
                     </div>
                     <div class="ui-block-b" >
                         <div id="mobile-div">
-                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" value="{%- if logged.mobile is defined -%} {{ logged.mobile }}{%- endif -%}" />
+                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}" />
                         </div>
                         <div id="verify-div">
                             <div class="left">
@@ -108,29 +108,32 @@
                     </div>
                 </div>
 
-
-
                     {% if regText is not empty %}
                         <div id="reg-text">
                         {{ regText }}
                         </div>
                     {% endif %}
 
+                    
                 {% if pg is defined and pg == 'paypal' %}
                     <input type="hidden" name="paypal" value="yes">
                 {% else %}
                     <input type="hidden" name="paypal" value="no">
                 {% endif %}
+                
                 {% if pg is defined %}
                     <input type="hidden" id="pg" data-pg="{{ pg }}">
                 {% endif %}
                 
                 {% if saveBtn is defined %}
                     <button data-theme="a" id="save-edit" type="button">Save</button>
-                {% endif %}    
+                {% endif %}
+
                   <input type="hidden" id="sms" data-sms="{{ sms }}" />
             </form>
+
             {% if pg is defined and pg == 'credit-card' %}
+                 <hr class="solid" />
                 {% include 'checkout/order-login/credit-card.html.twig' %}
             {% endif %}
 

@@ -30,7 +30,6 @@ window.fbAsyncInit = function() {
         appId      : FBAppIDAsync,                   // App ID from the app dashboard
         status     : true                                 // Check Facebook Login status
     });
-    // Additional initialization code such as adding Event Listeners goes here
 };
 
 // Load the SDK asynchronously
@@ -94,6 +93,7 @@ function googlePlusloginCallback(result)
         {
             'userId': 'me'
         });
+        
         request.execute(function(resp)
         {
             var email = '';

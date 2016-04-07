@@ -3,15 +3,14 @@
 {% block content %}
 
     <script type="text/javascript">
-        var low_order = {{ low_order }};
-        var has_delivery = {{ hasDeliveryFee }};
+        var low_order = '{{ low_order }}';
+        var has_delivery = '{{ hasDeliveryFee }}';
+
         {% if logged == 0  %}
         var logged = 0;
         {% else %}
         var logged = 1;
         {% endif %}
-        var sms = '{{ sms }}';
-
     </script>
 
 
@@ -82,50 +81,24 @@
             <!-- End Total -->
         <input type="hidden" id="cc" data-cc="{%- if paymentFee is defined and paymentFee is not null -%}{{ paymentFee.value }}{%- else -%}0{%- endif -%}" >
         
-            <!-- Start Login  -->
+
             {% if logged == 0 %}
 
+                <hr class="solid" />
+                
+                {% include 'login-form.html.twig' %}
+                
                 <div class="get-space">
-                    <hr class="solid" />
-            <form>
-                <span id="login-error" class="hide">Invalid username or password.</span>
-                <span id="login-required" class="hide">Username and password are required.</span>
-                <div class="ui-grid-a">
-                    <div class="ui-block-a">
-                        <label for="text-basic">Email Address:</label>
-                    </div>
-                    <div class="ui-block-b">
-                        <input type="text" name="user" id="user"  placeholder="email@address" value="" />
-                    </div>
-                </div>
-                <div class="ui-grid-a">
-                    <div class="ui-block-a">
-                        <label for="text-basic">Password:</label>
-                    </div>
-                    <div class="ui-block-b">
-                        <input type="password" name="pass" id="pass" value="" />
-                    </div>
-                </div>
-                <div>
-                    <button data-theme="a" id="sign-in" data-position="order" type="button">Login</button>
-                    <a href="{{ base_url }}security/reset">Recover Password</a>
-                </div>
-            </form>
-
-                    <a href="#" data-role="button" data-theme="a" id="loginButton"><i class="icon icon-facebook-sign"></i> Login with facebook</a>
-                    <a href="#" data-role="button" data-theme="a" id="googleLoginButton"><i class="icon icon-google-plus-sign"></i> Login with google</a>
-
                     <legend>OR:</legend>
                     <h4 class="center">Register</h4>
-
                     <input type="hidden" id="page" data-page="{{ static.page }}">
                 </div>
+
             {% else %}
                 <div class="get-space">
                     <a href="#" data-role="button" data-theme="a" id="log-out"> Not You? Log Out</a>
                 </div>
             {% endif %}
-            <!-- End Login  -->
 
             {% include 'profile-form.html.twig' %}
 

@@ -1120,7 +1120,7 @@ h1 {
 }
 
 /*****  /payment  ***/
-#register_form label.error, #register_form1 label.error {
+#register_form label.error, #form-singin label.error {
     float: left;
     color: red;
     padding-top: .5em;

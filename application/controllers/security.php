@@ -20,8 +20,6 @@ class Security extends WMDS_Controller {
         $backToLogin = '';
         $flag = false;
         $google = $this->input->post();
-print_r($google);
-die();
         $email = '';
         if( isset($google['email']) )
         {
@@ -91,6 +89,7 @@ die();
             'id'     => 'security-login',
             'backButton'=> true,
         ));
+        $this->twiggy->set('pageposition', 'login');
         $out = prepareProfilePage($this->twiggy);
         $out->display('account/login');
     } // login_page

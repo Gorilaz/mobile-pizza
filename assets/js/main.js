@@ -1,3 +1,87 @@
+/***********************************************************************************************************************
+ * Global functions for multiple page
+ * @url none
+ **********************************************************************************************************************/
+
+
+/*
+ * Select payment method and pay
+ * @returns none
+ */
+function saveOrder()
+{
+    var pg = $('#pg').data('pg');
+    if( pg == 'credit-card' 
+        && $('#form-credit').valid() )
+    {
+        var request = $.ajax({
+            url: '//' + location.host + '/payment/Do_direct_payment',
+            type: "POST",
+            data: $('#form-credit').serialize(),
+            dataType: "json"
+        });
+        request.done(function( data ) {
+            /* 
+             * TODO: Need to review this strange code
+             */
+            if(data.error){
+                $('#errors').html('');
+                var new_errors = '';
+                $.each(data.message, function( index, value ) {
+                    new_errors += value + '  ';
+                });
+                alert(new_errors);
+                /* -- */
+            } else {
+                window.location.href = '//' + location.host 
+                        + '/order/save_order/credit';
+            }
+        });
+        request.fail(function( jqXHR, textStatus ) {
+            alert( "Request failed: " + textStatus );
+        });
+
+    } else if(pg == 'cash') {
+        window.location.href = '//' + location.host 
+                + '/order/save_order/cash';
+    } else if(pg == 'paypal') {
+        window.location.href = '//' + location.host 
+                + '/order/save_order/paypal';
+    }
+} // saveOrder
+
+/*
+ * Ajax submit profile form and route
+ */
+function saveForm(){
+    var request = $.ajax({
+        url: '//' + location.host + '/security/save',
+        type: "POST",
+        data: $('#register_form').serialize()
+    });
+    request.done(function( data ) {
+        if( data == 'login' )
+        {
+            window.location.href = '//' + location.host + '/menu';
+        } else if( data == 'order' )
+        {
+            saveOrder();
+            // window.location.href = '//' + location.host + '/payment/socialLoker';
+        } else {
+            window.location.href = '//' + location.host + '/security/edit'
+        }
+    });
+    request.fail(function( jqXHR, textStatus ) {
+        alert( "Request failed: " + textStatus );
+    });
+} // saveForm
+
+/*
+ * Sign In process by standart login form
+ * 
+ * @param object obj
+ * @returns false
+ */
 function signInRequest( obj )
 {
     var user = $('#user').val();
@@ -5,35 +89,228 @@ function signInRequest( obj )
     var request = $.ajax({
         url: '//' + location.host + '/security/login',
         type: "POST",
-        data: { user : user, pass : pass },
+        data: { 
+            user : user, 
+            pass : pass 
+        },
         dataType: "json"
     });
-    request.done(function( data ) {
+    request.done(function( data ){
         if(data.login == 'true')
         {
             var type = $(obj).attr('data-position');
-            $( "#popupLogin" ).popup( "close" );
             if( type == 'order' )
             {
                 window.location.href = '//' + location.host + '/payment';
             } else {
                 window.location.href = '//' + location.host + '/menu';
             }
-        } else {
-        if(data.login == 'required fields')
+        } else if(data.login == 'required fields')
         {
             $('#login-error').addClass('hide');
             $('#login-required').removeClass('hide');
         } else {
             $('#login-error').removeClass('hide');
             $('#login-required').addClass('hide');
-        }}
+        }
     });
     request.fail(function( jqXHR, textStatus ) {
         alert( "Request failed: " + textStatus );
     });
     return false;
-}
+} // signInRequest
+
+/*
+ * Apply for login form validation schem
+ * 
+ * @returns bool
+ */
+function prepareLoginFormValidation()
+{
+    if( typeof $.validator == 'function' )
+    {
+        $("#form-singin").validate({
+            rules: {
+                user: {
+                    required: true,
+                    email: true
+                },
+                pass: {
+                    required: true,
+                    minlength: 5
+                }
+            }
+        });
+        return true;
+    }
+    return false;
+} // prepareLoginFormValidation
+   
+/*
+ * Apply for profile form validation schem
+ * 
+ * @returns bool
+ */
+function prepareProfileFormValidation()
+{
+    if( typeof $.validator == 'function' )
+    {
+        /*
+         * Custom validate function for check mobile number
+         */
+        $.validator.addMethod('smsVerification', function (value, element) {
+            var sms = $('#sms').data('sms');
+            if( sms == 'enable')
+            {
+                if( $('#form_mobile').data('current') != $('#form_mobile').val() )
+                {
+                    $('#verify-div').show();
+                    return false;
+                } else {
+                    verifyClean();
+                }
+            }
+            return true;
+        }, 'You need to verify this mobile number');
+
+        /*
+         * Activate validation for profile form
+         */
+        $('#register_form').validate({
+            rules: {
+                first_name: "required",
+                last_name: "required",
+                address: "required",
+                email: {
+                    required: true,
+                    email: true,
+                    remote: '//' + location.host + '/security/checkUniqueEmail'
+                },
+                password: {
+                    required: true,
+                    minlength: 5
+                },
+                conf_password: {
+                    required: true,
+                    equalTo: "#form_password",
+                    minlength: 5
+                },
+                suburb: "required",
+                state: "required",
+                mobile: {
+                    required: true,
+                    maxlength: 10,
+                    minlength: 10,
+                    digits: true,
+                    remote: '//' + location.host + '/security/checkUniqueMobile',
+                    smsVerification: true,
+                }
+            },
+            messages: {
+                mobile: {
+                    remote: "The mobile number already used",
+                }
+            }
+        });
+        return true;
+    }
+    return false;
+} // prepareProfileFormValidation
+
+/*
+ * Function for sent verify code
+ */
+function changeMobile()
+{
+    var mobile  = $('#form_mobile').val();
+    var email   = $('#email').val();
+    var fname   = $('#form_firstname').val();
+    var lname   = $('#form_lastname').val();
+    var request = $.ajax({
+        url: '//' + location.host + '/checkout/verifyMobile',
+        type: "POST",
+        data: { 
+            mobile : mobile, 
+            email : email, 
+            fname : fname, 
+            lname : lname
+        }
+    });
+    request.done(function( data ) {
+        $('#form_mobile').attr('readonly', 'readonly');
+        $('#popupDialog').popup('open');
+        $('#sms-code').data('final', 'yes');
+        $('#sms-code').show();
+        $('#verify-btn')
+             .find('.ui-btn-text').html($('#verify-btn').data('titlefinal'));
+    });
+    request.fail(function( jqXHR, textStatus ) {
+        alert( "Request failed: " + textStatus );
+    });
+} // changeMobile
+
+/*
+ * Clear profile template to default point
+ */
+function verifyClean()
+{
+    $('#verify-div').hide();
+    $('#form_mobile').removeAttr('readonly');
+    $('#sms-error-label').hide();
+    $('#sms-code').hide();
+    $('#sms-code').data('final', 'no');
+    $('#sms-code').val('');
+    $('#verify-btn')
+         .find('.ui-btn-text').html($('#verify-btn').data('titlestart'));
+    return true;
+} // verifyClean
+
+/*
+ * Two ways 
+ * - one for get sms code,
+ * - two for validate mobile number
+ * 
+ * @returns none
+ */
+function verifyMobileBySMS()
+{
+    var final = $('#sms-code').data('final');
+    if( final == 'no' )
+    {
+        if( $('#form_mobile').val() != '' )
+        {
+            changeMobile();
+        }
+    } else {
+        var code = $('#sms-code').val();
+        if( code !== '' )
+        {
+            var request = $.ajax({
+                url: '//' + location.host + '/checkout/verifyCode',
+                type: "POST",
+                data: { code : code },
+                dataType: "json"
+            });
+            request.done(function( data ) {
+                if( data.valid )
+                {
+                    verifyClean();
+                    $('#form_mobile').data('current', $('#form_mobile').val());                        
+                    $('#register_form').valid();
+                } else {
+                    $('#sms-error-label').show();
+                }
+            });
+            request.fail(function( jqXHR, textStatus ) {
+                alert( "Request failed: " + textStatus );
+            });
+        } else {
+            $('#sms-error-label').show();
+        }
+    }
+} // verifyMobileBySMS
+
+
 
 
 /***********************************************************************************************************************
@@ -1112,416 +1389,122 @@ $( document ).on('pageinit', "#page-payment", function() {
 
     /* Unbind everything */
     $(document).off('click','#sign-in');
-    $(document).off('click','#send-order');
-    $(document).off('change','#credit-card');
+    $(document).off('click','#verify-btn');
+    $(document).off('click','#log-out');
     $(document).off('change','#form_suburb');
-    $(document).off('change','.registerorlogin');
-    $(document).off('click','#verify');
-    $(document).off('keyup','#first_name');
+    $(document).off('click','#send-order');
+    $(document).off('click','.card-number');
+    $(document).off('keyup','.card-number');
+    $(document).off('keyup','#form_firstname');
     $(document).off('keyup','#form_lastname');
-
-alert('fff');
-
-
-    /** card number format */
-//    if($('#card-number').length != 0 ){
-//        $('#card-number').mask("9999-9999-9999-9999");
-//    }
-
-    /** card number format */
-//    if($('#cvv').length != 0 ){
-//        $('#cvv').mask("999");
-//    }
-
-    /** verify mobile */
-    $(document).on('click', '#verify', function(){
-        var logged = $('#verify').data('verify');
-        if(logged = 0){
-
-        }
-
-    });
-
-    $("#cvv").attr('maxlength','3');
-    /** card number inputs */
-    $(document).on('click', '.card-number',function () {
-        $(this).val('');
-    });
-
-    $(document).on('keyup', '.card-number',function () {
-
-        if($(this).val().length == $(this).data('length')) {
-            var id = $(this).data('id');
-
-            if( id != 'cvv'){
-                $('#'+id).val('').focus();
-            } else {
-                $('#cvv').focus();
-            }
-
-        }
-    });
-
-    /** Copy first and last name of the cardholder */
-    if($('#cardholder-input').length) {
-        $('#form_firstname, #form_lastname').on('keyup', function() {
-            $('#cardholder-input').val($('#form_firstname').val() +' '+$('#form_lastname').val());
-        });
-    }
-
-
-
-    /** change suburb, calculate total */
-    $(document).on('change', '#form_suburb', function(){
-
-        if(has_delivery == 1){
-            var subtotal = $('#subtotal').html();
-            subtotal = subtotal.replace('$','');
-
-            var discount = $('#discount').val();
-            if(discount !== undefined){
-                subtotal = parseFloat(subtotal) - parseFloat(discount)
-            }
-
-            var fee = $('#form_suburb option:selected').data('fee');
-
-            /** payment fee  */
-            var payment = $('#cc').data('cc');
-            if( payment != 0){
-                subtotal = parseFloat(subtotal) + parseFloat(payment);
-            }
-
-            var total = parseFloat(fee) + parseFloat(subtotal) + parseFloat(low_order);
-
-            $('#delivery-fee').html('+$'+fee);
-
-            $('#total').html(total);
-        }
-
-    });
-
-    $(document).on('change','.registerorlogin',function() {
-        if($(this).val() == 'login') {
-            $('#popupLogin').popup('open');
-        }
-    });
-
-    /** end  */
     
-    /** Login **/
-    $(document).off('click','#sign-in');
-    $(document).on('click','#sign-in',function(){
-        signInRequest( this );
-     });
+    verifyClean();
+    prepareProfileFormValidation();
+    prepareLoginFormValidation();
 
-    /** log out */
+    /*
+     * Bind click action for standart login form
+     */
+    $(document).on('click','#sign-in',function(){
+        if($('#form-singin').valid())
+        {
+            signInRequest( this );
+        }
+    });
+
+    /*
+     * Bind click action for log out 
+     */
     $(document).on('click', '#log-out', function(){
         window.location.href = '//' + location.host + '/security/logout/payment';
     });
 
-    $('#form-credit').validate({
-        rules: {
-            credit_card: "required",
-            card_number: "required",
-            expiration: {
-                required: true,
-                number: true,
-                minlength:6,
-                maxlength:6
-            },
-            first_name:"required",
-            security: {
-                required: true,
-                number: true
+    /*
+     * Bind click action for Verify button on profile page
+     */
+    $(document).on('click', '#verify-btn', function(){
+        verifyMobileBySMS();
+    });
+
+    /*
+     *  change suburb, calculate total 
+     */
+    $(document).on('change', '#form_suburb', function(){
+        if( typeof has_delivery != 'undefined' 
+            && has_delivery == '1'
+           )
+        {
+            var subtotal = $('#subtotal').html();
+            subtotal = subtotal.replace('$','');
+
+            var discount = $('#discount').val();
+            if( discount !== 'undefined' )
+            {
+                subtotal = parseFloat(subtotal) - parseFloat(discount);
             }
-        }
-    });
+            var fee = $('#form_suburb option:selected').data('fee');
 
-    $("#form-singin").validate({
-        rules: {
-            // simple rule, converted to {required:true}
-            user: "required",
-            // compound rule
-            pass: "required"
-        }
-    });
-
-    $('#register_form').validate({
-        rules: {
-            // simple rule, converted to {required:true}
-            first_name: "required",
-            last_name: "required",
-            address: "required",
-            email: {
-                required: true,
-                email: true,
-                remote: '//' + location.host + '/security/checkUniqueEmail'
-            },
-            password: {
-                required: true,
-                minlength: 5
-            },
-            conf_password: {
-                required: true,
-                equalTo: "#form_password",
-                minlength: 5
-            },
-            suburb: "required",
-            state: "required",
-            mobile: {
-                required: true,
-                minlength: 10,
-                maxlength: 10,
-                digits: true,
-                remote: '//' + location.host + '/security/checkUniqueMobile'
+            /** payment fee  */
+            var payment = $('#cc').data('cc');
+            if( payment != 0 )
+            {
+                subtotal = parseFloat(subtotal) + parseFloat(payment);
             }
+            var total = parseFloat(fee) + parseFloat(subtotal) + parseFloat(low_order);
+            $('#delivery-fee').html('+$' + fee);
+            $('#total').html(total);
         }
-    });
+    }); // onchange form_suburb
 
-
-    function smsVerify(){
-
-        var mobile  = $('#form_mobile').val();
-        var email   = $('#email').val();
-        var fname   = $('#form_firstname').val();
-        var lname   = $('#form_lastname').val();
-        var request = $.ajax({
-            url: '//' + location.host + '/checkout/smsMobile',
-            type: "POST",
-            data: { mobile : mobile, email : email, fname : fname, lname : lname }
-
-        });
-
-        request.done(function( data ) {
-
-            $('#popupDialog').popup('open');
-            $('#sms-verify input').prop('disabled', false);
-
-            $('#sms-code').data('sendcode', 'yes');
-            $('#form_mobile').prop('readonly', true);
-
-        });
-
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+    /** Copy first and last name of the cardholder */
+    if($('#cardholder-input').length)
+    {
+        $('#form_firstname, #form_lastname').on('keyup', function(){
+            $('#cardholder-input').val($('#form_firstname').val()
+                    + ' ' + $('#form_lastname').val());
         });
     }
 
-
-    $(document).on('click', '#verify', function(){
-        var sendcode = $('#sms-code').data('sendcode');
-        if(sendcode == 'no'){
-            var email = $('#email').val();
-            var mobile = $('#form_mobile').val();
-            var fname   = $('#form_firstname').val();
-            var lname   = $('#form_lastname').val();
-
-            if($.isNumeric(mobile) && IsEmail(email) && fname && lname){
-                smsVerify();
-            } else {
-                alert('Please enter first name, last name, a valid email and mobile for verification.');
-            }
-        } else {
-            var code = $('#sms-code').val();
-            if(code !== ''){
-                var request = $.ajax({
-                    url: '//' + location.host + '/checkout/verifyCode',
-                    type: "POST",
-                    data: { code : code },
-                    dataType: "json"
-                });
-
-                request.done(function( data ) {
-                    if(data.valid){
-                        $('#sms-code-error').addClass('hide');
-                        $('#sms-code').data('final', 'yes');
-                        $('#sms-verify input').prop('disabled', true);
-                    } else {
-                        $('#sms-code-error').removeClass('hide');
-                    }
-                });
-
-                request.fail(function( jqXHR, textStatus ) {
-                    alert( "Request failed: " + textStatus );
-                });
-            } else {
-                $('#sms-code-error').removeClass('hide');
-            }
-        }
-
+    /** card number inputs */
+    $(document).on('click', '.card-number', function() {
+        $(this).val('');
     });
 
-    function IsEmail(email) {
-        var regex = /^([a-zA-Z0-9_.+-])+\@(([a-zA-Z0-9-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-        return regex.test(email);
-    }
-//    function changeMobile(){
-//        var mobile  = $('#form_mobile').val();
-//        var email   = $('#email').val();
-//        var fname   = $('#form_firstname').val();
-//        var lname   = $('#form_lastname').val();
-//        var request = $.ajax({
-//            url: '//' + location.host + '/checkout/verifyMobile',
-//            type: "POST",
-//            data: { mobile : mobile, email : email, fname : fname, lname : lname, changeMobile : 1 },
-//            dataType: "json"
-//        });
-//
-//        request.done(function( data ) {
-//            console.log('4');
-//            $('#popupDialog').popup('open');
-//            $('#sms-verify input').prop('disabled', false);
-//            $('#sms-verify').removeClass('hide');
-//            $('#sms-code').data('verify', 'yes');
-//
-//            $('#form_mobile').prop('readonly', true);
-//        });
-//
-//        request.fail(function( jqXHR, textStatus ) {
-//            alert( "Request failed: " + textStatus );
-//        });
-//    }
-
-//    function sendOrder() {
-//
-//        var old_mobile = $('#old-mobile').val();
-//        var mobile = $('#form_mobile').val();
-//        var final =  $('#sms-code').data('final');
-//
-//        /** verify if change mobile for code verification */
-//        if(old_mobile != mobile && final == 'no'){
-//
-//            changeMobile();
-//        } else {
-//
-//
-//            $('#sms-verify input').prop('disabled', true);
-//            saveOrder();
-//        }
-//    }
-
-    /** save order */
-    function saveOrder(){
-
-        if($('#register_form').valid()){
-
-            var request = $.ajax({
-                url: '//' + location.host + '/security/save',
-                type: "POST",
-                data:  $('#register_form').serialize()
-
-            });
-
-            request.done(function( data ) {
-
-                var final = $('#sms-code').data('final');
-
-                if(final == 'yes' || final == null){
-
-                    var pg = $('#pg').data('pg');
-
-                    if(pg == 'credit-card' && $('#form-credit').valid()){
-
-                        var request = $.ajax({
-                            url: '//' + location.host + '/payment/Do_direct_payment',
-                            type: "POST",
-                            data: $('#form-credit').serialize(),
-                            dataType: "json"
-                        });
-
-                        request.done(function( data ) {
-
-                            if(data.error){
-                                $('#errors').html('');
-                                var new_errors = '';
-
-                                $.each(data.message, function( index, value ) {
-                                    new_errors += value + '  ';
-                                });
-
-                                alert(new_errors);
-
-
-                            } else {
-
-                                window.location.href = '//' + location.host + '/order/save_order/credit';
-                            }
-                        });
-
-                        request.fail(function( jqXHR, textStatus ) {
-                            alert( "Request failed: " + textStatus );
-                        });
-                    } else if(pg == 'cash'){
-
-                        window.location.href = '//' + location.host + '/order/save_order/cash';
-                    } else if(pg == 'paypal'){
-
-                        window.location.href = '//' + location.host + '/order/save_order/paypal';
-                    }
+    /*
+     * Check if number and limit by 4 digit
+     */
+    $(document).on('keydown', '.card-number', function( event ) {
+        var lengthStr = $(this).val().length;
+        if( lengthStr <= $(this).data('length') )
+        {
+            if( $.inArray( event.keyCode, 
+                            [48, 49, 50, 51, 52, 53, 54, 55, 56, 57] ) > -1 )
+            {
+                if( lengthStr == $(this).data('length') )
+                {
+                    var id = $(this).data('id');
+                    $('#' + id).focus();
                 }
-            });
-
-            request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
-            });
-        }
-
-    }
-
-    /** sms verify disabled default  */
-    $('#sms-verify input').prop('disabled', true);
-
-    $(document).on('click','#send-order',function(){
-
-
-        if($('#register_form').valid() ){
-            var sms = $('#sms').data('sms');
-            var final = $('#sms-code').data('final');
-            if(final == 'yes'){
-                saveOrder();
-            } else if(sms == 'enable' && logged == 0){
-                var verified =  $('#sms-code').data('sendcode');
-                if(verified == 'no'){
-                    var verified = smsVerify();
-                } else {
-                    var code = $('#sms-code').val();
-                    if(code !== ''){
-                        var request = $.ajax({
-                            url: '//' + location.host + '/checkout/verifyCode',
-                            type: "POST",
-                            data: { code : code },
-                            dataType: "json"
-                        });
-
-                        request.done(function( data ) {
-                           if(data.valid){
-                               $('#sms-code').data('final', 'yes');
-                               $('#sms-code-error').addClass('hide');
-                               $('#sms-verify input').prop('disabled', true);
-                               $('#verify').prop('disabled', true);
-                                saveOrder();
-                           } else {
-                                $('#sms-code-error').removeClass('hide');
-                           }
-                        });
-
-                        request.fail(function( jqXHR, textStatus ) {
-                            alert( "Request failed: " + textStatus );
-                        });
-
-                    } else {
-                        $('#sms-code-error').removeClass('hide');
-                    }
-                }
-
-            } else {
-                saveOrder();
+                return true;
             }
-
-
         }
+        event.preventDefault();
+        return false;
     });
-});
+    
+    /** Bind action click for Order now  */
+    $(document).on('click','#send-order', function(){
+        if($('#register_form').valid())
+        {
+            /*
+            * TODO: Check again on server side
+            */
+            saveForm();
+        }
+    }); // send-order
+    
+}); // /payment
+
 
 /***********************************************************************************************************************
  * Recovery Password
@@ -1685,11 +1668,20 @@ $( document ).on('pageinit', "#security-login", function() {
 
     /* Unbind everything */
     $(document).off('click','#sign-in');
+    
+    prepareLoginFormValidation();
+    
+    /*
+     * Bind click action for standart login form
+     */
     $(document).on('click', '#sign-in', function(){
-        signInRequest( this );
+        if($('#form-singin').valid())
+        {
+            signInRequest( this );
+        }
     });
 
-});
+}); // /security/login_page
 
 
 /***********************************************************************************************************************
@@ -1700,102 +1692,16 @@ $( document ).on('pageinit', "#page-edit", function() {
 
     /* Unbind everything */
     $(document).off('click','#save-edit');
-    $(document).off('click','#verify-btn2');
+    $(document).off('click','#verify-btn');
     
     verifyClean();
-
-    var verified = 'no';
+    prepareProfileFormValidation();
     
-    $.validator.addMethod('smsVerification', function (value, element) {
-        var sms = $('#sms').data('sms');
-        if( sms == 'enable')
-        {
-            if( $('#form_mobile').data('current') != $('#form_mobile').val() )
-            {
-                $('#verify-div').show();
-                return false;
-            } else {
-                verifyClean();
-            }
-        }
-        return true;
-    }, 'You need to verify this mobile number');
-
-    $('#register_form').validate({
-        rules: {
-            first_name: "required",
-            last_name: "required",
-            address: "required",
-            email: {
-                required: true,
-                email: true,
-                remote: '//' + location.host + '/security/checkUniqueEmail'
-            },
-            password: {
-                required: true,
-                minlength: 5
-            },
-            conf_password: {
-                required: true,
-                equalTo: "#form_password",
-                minlength: 5
-            },
-            suburb: "required",
-            state: "required",
-            mobile: {
-                required: true,
-                maxlength: 10,
-                minlength: 10,
-                digits: true,
-                remote: '//' + location.host + '/security/checkUniqueMobile',
-                smsVerification: true,
-            }
-        },
-        messages: {
-            mobile: {
-                remote: "The mobile number already used",
-            }
-        }
-    });
-
     /*
      * Bind click action for Verify button on profile page
      */
     $(document).on('click', '#verify-btn', function(){
-        var final = $('#sms-code').data('final');
-        if( final == 'no' )
-        {
-            if( $('#form_mobile').val() != '' )
-            {
-                changeMobile();
-            }
-        } else {
-            var code = $('#sms-code').val();
-            if( code !== '' )
-            {
-                var request = $.ajax({
-                    url: '//' + location.host + '/checkout/verifyCode',
-                    type: "POST",
-                    data: { code : code },
-                    dataType: "json"
-                });
-                request.done(function( data ) {
-                    if( data.valid )
-                    {
-                        verifyClean();
-                        $('#form_mobile').data('current', $('#form_mobile').val());                        
-                        $('#register_form').valid();
-                    } else {
-                        $('#sms-error-label').show();
-                    }
-                });
-                request.fail(function( jqXHR, textStatus ) {
-                    alert( "Request failed: " + textStatus );
-                });
-            } else {
-                $('#sms-error-label').show();
-            }
-        }
+        verifyMobileBySMS();
     });
 
     /*
@@ -1811,114 +1717,4 @@ $( document ).on('pageinit', "#page-edit", function() {
         }
     });
 
-
-    /*
-     * Ajax submit profile form and route
-     */
-    function saveForm(){
-        var request = $.ajax({
-            url: '//' + location.host + '/security/save',
-            type: "POST",
-            data: $('#register_form').serialize()
-        });
-        request.done(function( data ) {
-            if( data == 'login' )
-            {
-                window.location.href = '//' + location.host + '/menu';
-            } else {
-            if( data == 'order' )
-            {
-                window.location.href = '//' + location.host + '/payment/socialLoker';
-            } else {
-                window.location.href = '//' + location.host + '/security/edit'
-            }}
-        });
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
-        });
-    }
-
-    /*
-     * Function for sent verify code
-     */
-    function changeMobile()
-    {
-        var mobile  = $('#form_mobile').val();
-        var email   = $('#email').val();
-        var fname   = $('#form_firstname').val();
-        var lname   = $('#form_lastname').val();
-        var request = $.ajax({
-            url: '//' + location.host + '/checkout/verifyMobile',
-            type: "POST",
-            data: { 
-                mobile : mobile, 
-                email : email, 
-                fname : fname, 
-                lname : lname
-            }
-        });
-        request.done(function( data ) {
-            $('#form_mobile').attr('readonly', 'readonly');
-            $('#popupDialog').popup('open');
-            $('#sms-code').data('final', 'yes');
-            $('#sms-code').show();
-            $('#verify-btn')
-                 .find('.ui-btn-text').html($('#verify-btn').data('titlefinal'));
-        });
-        request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
-        });
-    }
-    
-    /*
-     * Clear profile template to default point
-     */
-    function verifyClean()
-    {
-        $('#verify-div').hide();
-        $('#form_mobile').removeAttr('readonly');
-        $('#sms-error-label').hide();
-        $('#sms-code').hide();
-        $('#sms-code').data('final', 'no');
-        $('#sms-code').val('');
-        $('#verify-btn')
-             .find('.ui-btn-text').html($('#verify-btn').data('titlestart'));
-        return true;
-    }
-/*
-    function smsVerify1()
-    {
-        var old_m = $('#old_mobile1').val();
-        var m = $('#form_mobile1').val();
-        var final =  $('#sms-code1').data('final');
-        if( old_m != m  && final == 'no' )
-        {
-            changeMobile1();
-        } else {
-            if($('#register_form1').valid())
-            {
-                saveForm();
-            }
-        }
-    }
-*/
-
-/*
-    function saveEdit()
-    {
-        var old_m = $('#old_mobile1').val();
-        var m = $('#form_mobile1').val();
-        var final =  $('#sms-code1').data('final');
-
-        if( old_m != m  && final == 'no' ){
-            changeMobile1();
-        } else {
-
-            if($('#register_form1').valid()){
-                saveForm();
-            }
-        }
-    }
-*/
-
-});
+}); // /security/edit

@@ -373,16 +373,15 @@ class checkout extends WMDS_Controller {
         }
         /** verify if is logged */
 
-        if(!empty($logged)){
-/*
+        if( !empty($logged) )
+        {
+            /** delivery fee */
             $this->twiggy->set('logged', $logged);
             $suburb = 0;
             if( isset($logged['suburb']) )
             {
                 $suburb = $logged['suburb'];
             }
-*/
-            /** delivery fee */
             $this->load->model('order_model');
             $delivery_fee = $this->order_model->getDeliveryFee($suburb);
             $this->twiggy->set('delivery_fee', $delivery_fee);
@@ -430,7 +429,7 @@ class checkout extends WMDS_Controller {
             'theme'  => 'a',
             'id'     => 'page-payment'
         ));
-
+        $this->twiggy->set('pageposition', 'order');
         $out = prepareProfilePage($this->twiggy);
         $out->template('checkout/order-login')->display();
 

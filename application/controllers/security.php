@@ -67,9 +67,9 @@ class Security extends WMDS_Controller {
                     $insert['last_name'] = $google['last_name'];
                 }
             }
+            $this->session->set_userdata('backToLogin', $backToLogin);
             $this->load->helper('profile');
             saveProfile( $insert );
-            $this->session->set_userdata('backToLogin', $backToLogin);
         }      
         echo json_encode(array(
             'fields' => $backToLogin
@@ -419,9 +419,9 @@ class Security extends WMDS_Controller {
                     $insert['last_name'] = $fb['last_name'];
                 }
             }
+            $this->session->set_userdata('backToLogin', $backToLogin);
             $this->load->helper('profile');
             saveProfile( $insert );
-            $this->session->set_userdata('backToLogin', $backToLogin);
         }      
         echo json_encode(array(
             'fields' => $backToLogin

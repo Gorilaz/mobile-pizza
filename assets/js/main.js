@@ -54,6 +54,12 @@ function saveOrder()
  * Ajax submit profile form and route
  */
 function saveForm(){
+    $.mobile.loading( 'show', {
+        textVisible: false,
+        theme: 'a',
+        textonly: false,
+        html: ""
+    });
     var request = $.ajax({
         url: '//' + location.host + '/security/save',
         type: "POST",
@@ -72,6 +78,7 @@ function saveForm(){
         }
     });
     request.fail(function( jqXHR, textStatus ) {
+        $.mobile.loading( 'hide' );
         alert( "Request failed: " + textStatus );
     });
 } // saveForm
@@ -84,6 +91,12 @@ function saveForm(){
  */
 function signInRequest( obj )
 {
+    $.mobile.loading( 'show', {
+        textVisible: false,
+        theme: 'a',
+        textonly: false,
+        html: ""
+    });
     var user = $('#user').val();
     var pass = $('#pass').val();
     var request = $.ajax({
@@ -113,8 +126,10 @@ function signInRequest( obj )
             $('#login-error').removeClass('hide');
             $('#login-required').addClass('hide');
         }
+        $.mobile.loading( 'hide' );
     });
     request.fail(function( jqXHR, textStatus ) {
+        $.mobile.loading( 'hide' );
         alert( "Request failed: " + textStatus );
     });
     return false;

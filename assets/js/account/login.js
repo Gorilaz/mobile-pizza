@@ -125,6 +125,7 @@ function googlePlusloginCallback(result)
                 url: '//' + location.host + '/security/googleplus_login',
                 data: formdata,
                 type: "POST",
+                dataType: 'json',
                 success: function(result) {
                     if( 
                         typeof result.fields != 'undefined' 

@@ -1708,7 +1708,8 @@ $( document ).on('pageinit', "#security-login", function() {
  * Your Account
  * @url /security/edit
  **********************************************************************************************************************/
-$( document ).on('pageshow', "#page-edit", function() {
+$( document ).bind('pageshow', "#page-edit", function() {
+    console.log('#page-edit');
     verifyClean();    
 });
 

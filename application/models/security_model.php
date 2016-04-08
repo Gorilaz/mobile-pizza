@@ -25,18 +25,17 @@ class Security_model extends CI_Model{
      * @param $user
      * @param null $loggedId
      */
-    public function save($user, $loggedId = null){
-
-        if($loggedId != 'no_id'){
-            $this->db->where('userid', $loggedId)->update('users', $user);
-
-            $new_user = $this->db->where('userid', $loggedId)->get('users')->row_array();
+    public function save($user, $loggedId = null)
+    {
+        if( !empty($loggedId) && $loggedId != 'no_id' )
+        {
+            $id = $loggedId;
+            $this->db->where('userid', $id)->update('users', $user);
         } else {
             $this->db->insert('users', $user);
             $id = $this->db->insert_id();
-            $new_user = $this->db->where('userid', $id)->get('users')->row_array();
         }
-
+        $new_user = $this->db->where('userid', $id)->get('users')->row_array();
         return $new_user;
     }
 

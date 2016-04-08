@@ -45,6 +45,7 @@ if ( !function_exists('saveProfile') )
     {
         $temp = time();
         unset($user['mobile_code']);
+
         $obj =& get_instance();
         if(
                 isset($user['conf_password']) 
@@ -59,9 +60,14 @@ if ( !function_exists('saveProfile') )
         {
             $user['password'] = md5($temp);
         }
-        if( !isset($user['base_password']) && isset($user['password']) )
+        if( isset($user['password']) && !isset($user['base_password']) )
         {
             $user['base_password'] = base64_encode($user['password']);
+        }
+        if( isset($user['password']) && empty($user['password']) )
+        {
+            unset($user['password']);
+            unset($user['base_password']);
         }
         if( !isset($user['usertypeid']) )
         {

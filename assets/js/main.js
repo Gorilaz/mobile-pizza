@@ -353,24 +353,6 @@ function manageDoneButtonForRightPanel()
     return true;
 } // manageDoneButtonForRightPanel
 
-/*
- * Placeholder
- * TODO: Overwrite Back button
- */
-$(document).on("pagecontainerbeforechange", function (e, data) {
-    if ( typeof data.toPage == "string" 
-            && data.options.direction == "back" ) {
-        console.log(data.prevPage[0].id);
-        // && data.prevPage[0].id == "PageX"
-        //data.toPage = "#pageY";
-    }
-    console.log(data);
-});
-
-$(window).on("navigate", function(event, data){
-    event.preventDefault();
-    return false;
-});
 
 
 /***********************************************************************************************************************
@@ -1009,7 +991,12 @@ $( document ).on('pageinit', '#page-checkout', function() {
        if(prev.length) {
            prev.show().addClass('animated bounce');
        } else {
-           $.mobile.back();
+            /*
+             * Placeholder
+             * Overwrite Back button
+             */
+           //$.mobile.back(); // old code
+           window.location.href = '//' + location.host+ '/menu';
        }
    });
 

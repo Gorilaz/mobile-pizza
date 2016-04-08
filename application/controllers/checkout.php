@@ -178,7 +178,11 @@ class checkout extends WMDS_Controller {
         $this->load->model('general');
         $this->load->model('order_model');
         
-        $this->session->set_userdata('firstPointLogin', 'order');
+        $firstPointLogin = $this->session->userdata('firstPointLogin');
+        if( !$firstPointLogin )
+        {
+            $this->session->set_userdata('firstPointLogin', 'order');
+        }
 
         $surcharge = $this->order_model->getMinOrder();
         $total = $this->cart->total();

@@ -81,17 +81,27 @@ class Security extends WMDS_Controller {
      * Generate Login page
      */
     public function login_page(){
-        $this->session->set_userdata('firstPointLogin', 'login');
-        $this->twiggy->set('page', array(
-            'title'  => 'Login',
-            'role'   => 'page',
-            'theme'  => 'a',
-            'id'     => 'security-login',
-            'backButton'=> true,
-        ));
-        $this->twiggy->set('pageposition', 'login');
-        $out = prepareProfilePage($this->twiggy);
-        $out->display('account/login');
+        $userLogged = $this->session->userdata('logged');
+        if( !isset($userLogged['userid']) )
+        {
+            $firstPointLogin = $this->session->userdata('firstPointLogin');
+            if( !$firstPointLogin )
+            {
+                $this->session->set_userdata('firstPointLogin', 'login');
+            }
+            $this->twiggy->set('page', array(
+                'title'  => 'Login',
+                'role'   => 'page',
+                'theme'  => 'a',
+                'id'     => 'security-login',
+                'backButton'=> true,
+            ));
+            $this->twiggy->set('pageposition', 'login');
+            $out = prepareProfilePage($this->twiggy);
+            $out->display('account/login');
+        } else {
+            redirect(base_url() . 'menu');
+        }
     } // login_page
 
     /**
@@ -228,9 +238,14 @@ class Security extends WMDS_Controller {
         {
             saveProfile( $user );
             $this->session->unset_userdata('backToLogin');
-            $firstPointLogin = $this->session->userdata('firstPointLogin', '');
-            $this->session->unset_userdata('firstPointLogin');
-            echo $firstPointLogin;            
+            $firstPointLogin = $this->session->userdata('firstPointLogin');
+            if( $firstPointLogin )
+            {
+                $this->session->unset_userdata('firstPointLogin');
+                echo $firstPointLogin;
+            } else {
+                echo 'error';
+            }
         } else {
             echo 'error';
         }
@@ -297,7 +312,6 @@ class Security extends WMDS_Controller {
         if($payment){
             redirect(base_url().'payment');
         } else {
-
             redirect(base_url());
         }
 

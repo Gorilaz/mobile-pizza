@@ -332,21 +332,6 @@ function verifyMobileBySMS()
     }
 } // verifyMobileBySMS
 
-
-
-
-/***********************************************************************************************************************
- * Events used on product page
- * @url /home
- **********************************************************************************************************************/
-$( document ).on("pageinit", "#page-home", function() {
-
-//    if(referal){
-//        $('#popup-refer2').popup('open');
-//    }
-
-});
-
 /**
  * Show/Hide footer panel for Done button
  * @returns true
@@ -366,7 +351,21 @@ function manageDoneButtonForRightPanel()
         }
     }
     return true;
-}
+} // manageDoneButtonForRightPanel
+
+
+
+/***********************************************************************************************************************
+ * Events used on product page
+ * @url /home
+ **********************************************************************************************************************/
+$( document ).on("pageinit", "#page-home", function() {
+
+//    if(referal){
+//        $('#popup-refer2').popup('open');
+//    }
+
+});
 
 /***********************************************************************************************************************
  * Events used on product page
@@ -374,16 +373,17 @@ function manageDoneButtonForRightPanel()
  **********************************************************************************************************************/
 $( document ).on("pageinit", "#page-product", function() {
     
-    $( "#ingredients" ).on( "panelclose", function( event, ui ){
+    
+    $( document ).on("panelclose", "#ingredients", function(){
         manageDoneButtonForRightPanel();
     });
-    $( "#ingredients" ).on( "panelopen", function( event, ui ){
+    $( document ).on("panelopen", "#ingredients", function(){
         manageDoneButtonForRightPanel();
     });
-    $( "#ingredients2" ).on( "panelclose", function( event, ui ){
+    $( document ).on("panelclose", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
     });
-    $( "#ingredients2" ).on( "panelopen", function( event, ui ){
+    $( document ).on("panelopen", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
     });
 
@@ -407,7 +407,6 @@ $( document ).on("pageinit", "#page-product", function() {
     /* Trigger actions on page init */
     calculateOrderPrice();
 
-
     if($('#hasHalf').val() == 1) {
         initHalfOrder();
     }
@@ -425,7 +424,7 @@ $( document ).on("pageinit", "#page-product", function() {
     $(document).on('change','select[data-type=Size]', function(e) {
         initHalfOrder();
     });
-    $('document').on('change','select[name=variation]',function() {
+    $(document).on('change','select[name=variation]',function() {
         populateIngredients();
     })
 
@@ -444,9 +443,7 @@ $( document ).on("pageinit", "#page-product", function() {
             alert("You have to be logged in and have enough points to buy this item!");
             return false;
         } else {
-
             var target = '/menu';
-
             $.mobile.changePage( target, {
                 type: "post",
                 data: {
@@ -458,7 +455,6 @@ $( document ).on("pageinit", "#page-product", function() {
                 transition: 'none'
             });
         }
-
     });
 
 
@@ -1410,6 +1406,9 @@ $( document ).on('pageinit', '#page-checkout', function() {
  * Payment/Send Order
  * @url /payment
  **********************************************************************************************************************/
+$( document ).on('pageshow', "#page-payment", function() {
+    verifyClean();    
+});
 $( document ).on('pageinit', "#page-payment", function() {
 
     /* Unbind everything */
@@ -1423,7 +1422,6 @@ $( document ).on('pageinit', "#page-payment", function() {
     $(document).off('keyup','#form_firstname');
     $(document).off('keyup','#form_lastname');
     
-    verifyClean();
     prepareProfileFormValidation();
     prepareLoginFormValidation();
 
@@ -1710,13 +1708,16 @@ $( document ).on('pageinit', "#security-login", function() {
  * Your Account
  * @url /security/edit
  **********************************************************************************************************************/
+$( document ).on('pageshow', "#page-edit", function() {
+    verifyClean();    
+});
+
 $( document ).on('pageinit', "#page-edit", function() {
 
     /* Unbind everything */
     $(document).off('click','#save-edit');
     $(document).off('click','#verify-btn');
     
-    verifyClean();
     prepareProfileFormValidation();
     
     /*

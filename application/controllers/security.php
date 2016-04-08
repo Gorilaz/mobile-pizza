@@ -180,16 +180,14 @@ class Security extends WMDS_Controller {
         $this->twiggy->display('account/change_pass');
     }
 
-    public function savePassword(){
-
+    public function savePassword()
+    {
         $code = $this->input->post('code');
         $password = $this->input->post('pass');
-
         $this->security_model->updatePassword($code, $password);
-
     }
-    /************************  Edit / Register  *******************/
 
+    /************************  Edit / Register  *******************/
 
     /**
      * Generate edit profile page
@@ -209,32 +207,7 @@ class Security extends WMDS_Controller {
             $this->twiggy->set('backToLogin', $backToLogin);
         }
         $this->twiggy->set('page', $parameters);
-/*
-        $logged = $this->session->userdata('logged');
-        $this->twiggy->set('logged', $logged);
-
-        $this->load->model('general');
-        $suburbs = $this->general->getSub();
-        $this->twiggy->set('static',array(
-            'suburb' => $suburbs,
-        ));
-        $sms = $this->security_model->smsSettings();
-        $this->twiggy->set('sms', $sms['sms_verification']);
-        
-        $this->twiggy->set('page', array(
-            'title'  => 'Edit Profile',
-            'role'   => 'page',
-            'theme'  => 'a',
-            'backButton'=> true,
-        ));
-*/
         $this->twiggy->set('saveBtn', true);
-
-        // TODO: Clear dublicate code in JS for 
-        // save and order and edit with profile fields
-        // This is placeholder for template for current state
-        $this->twiggy->set('editprofile','1');
-
         $out = prepareProfilePage($this->twiggy);
         $out->display('account/edit');
     } // edit
@@ -247,38 +220,21 @@ class Security extends WMDS_Controller {
         $user = $this->input->post();
         $this->load->helper('profile');
         unset($user['paypal']);
-        saveProfile( $user );
-        $this->session->unset_userdata('backToLogin');
-        $firstPointLogin = $this->session->userdata('firstPointLogin', '');
-        $this->session->unset_userdata('firstPointLogin');
-        echo $firstPointLogin;
-/*
-        if(isset($user['conf_password']) && isset($user['password']))
+        if( 
+            isset($user['address']) && !empty($user['address'])
+            && isset($user['suburb']) && !empty($user['suburb']) 
+            && isset($user['mobile']) && !empty($user['mobile'])
+          )
         {
-            unset($user['conf_password']);
-            $user['password'] = md5($user['password']);
-        }
-
-        $userLogged = $this->session->userdata('logged');
-        $this->load->model('security_model');
-
-        if($userLogged['userid']){
-
-            $newUser = $this->security_model->save($user, $userLogged['userid']);
-
+            saveProfile( $user );
+            $this->session->unset_userdata('backToLogin');
+            $firstPointLogin = $this->session->userdata('firstPointLogin', '');
+            $this->session->unset_userdata('firstPointLogin');
+            echo $firstPointLogin;            
         } else {
-            $this->load->helper('cookie');
-            $points = get_cookie('referal');
-            delete_cookie('referal');
-            if($points){
-                $user['order_points'] = $points;
-            }
-            $newUser = $this->security_model->save($user, 'no_id');
+            echo 'error';
         }
-        $this->session->set_userdata('logged', $newUser);
- * 
- */
-    }
+    } // save
 
     public function checkUniqueEmail(){
 

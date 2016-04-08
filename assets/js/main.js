@@ -52,8 +52,11 @@ function saveOrder()
 
 /*
  * Ajax submit profile form and route
+ * 
  */
-function saveForm(){
+function saveForm( action )
+{
+    action = action || '';
     $.mobile.loading( 'show', {
         textVisible: false,
         theme: 'a',
@@ -71,8 +74,12 @@ function saveForm(){
             window.location.href = '//' + location.host + '/menu';
         } else if( data == 'order' )
         {
-            saveOrder();
-            // window.location.href = '//' + location.host + '/payment/socialLoker';
+            if( action == 'saveOrder' )
+            {
+                saveOrder();
+            } else {
+                window.location.href = '//' + location.host + '/payment/socialLoker';
+            }
         } else {
             window.location.href = '//' + location.host + '/security/edit'
         }
@@ -693,26 +700,29 @@ function populateIngredients( variationId, pizzaNo )
     .complete(function() {
 
         // for symbol keys
-        $( '.searchIngredientsId' ).keyup( function( env ){
+        $(document).on('keyup', '.searchIngredientsId', function( env ){
             searchItemsForRightPanel(this.value);
         });
+        
         // disable enter press
-        $( '.searchIngredientsId' ).keypress( function( env ){
+        $(document).on('keypress', '.searchIngredientsId', function( env ){
             if( env.keyCode == 13 )
             {
                 env.preventDefault();
                 return false;
             }
         });
+        
         // clear button in search field
-        $('.ui-input-clear').on('click', function( env ){
+        $(document).on('click', '.ui-input-clear', function( env ){
             searchItemsForRightPanel(this.value);
         });
+
         // move to top search fields
-        $('.searchIngredientsId').bind('focus', function(e) {
+        $(document).on('focus', '.searchIngredientsId', function( env ){
             $('html,body').animate({scrollTop: $(this).offset().top}, 800);
         });
-        
+
     })
     .done(function(data) {
 
@@ -1511,10 +1521,7 @@ $( document ).on('pageinit', "#page-payment", function() {
     $(document).on('click','#send-order', function(){
         if($('#register_form').valid())
         {
-            /*
-            * TODO: Check again on server side
-            */
-            saveForm();
+            saveForm( 'saveOrder' );
         }
     }); // send-order
     
@@ -1725,9 +1732,6 @@ $( document ).on('pageinit', "#page-edit", function() {
     $(document).on('click', '#save-edit', function(){
         if($('#register_form').valid())
         {
-            /*
-            * TODO: Check again on server side
-            */
             saveForm();
         }
     });

@@ -353,7 +353,14 @@ function manageDoneButtonForRightPanel()
     return true;
 } // manageDoneButtonForRightPanel
 
-
+/*
+ * Placeholder
+ * TODO: Overwrite Back button
+ */
+$(window).on("navigate", function(event, data){
+  var direction = data.state.direction;
+  console.log(direction);
+});
 
 /***********************************************************************************************************************
  * Events used on product page
@@ -1708,13 +1715,13 @@ $( document ).on('pageinit', "#security-login", function() {
  * Your Account
  * @url /security/edit
  **********************************************************************************************************************/
-$( document ).bind('pageshow', "#page-edit", function() {
-    console.log('#page-edit');
+$( document ).on('pageshow', "#page-edit", function() {
+    console.log('pageshow#page-edit');
     verifyClean();    
 });
 
 $( document ).on('pageinit', "#page-edit", function() {
-
+    console.log('pageinit#page-edit');
     /* Unbind everything */
     $(document).off('click','#save-edit');
     $(document).off('click','#verify-btn');

@@ -90,8 +90,7 @@ class Order extends WMDS_Controller{
         $check['loyalityPointsUsed'] = $points_used;
 
         /** total + suburb delivery fee */
-        if($check['delivery'] == 'D') {
-
+        if( isset($check['delivery']) && $check['delivery'] == 'D' && isset($user['suburb'])) {
             $delivery_fee = $this->order_model->getDeliveryFee($user['suburb']);
             if($delivery_fee){
                 $newTotal += $delivery_fee;
@@ -99,7 +98,6 @@ class Order extends WMDS_Controller{
         } else {
             $delivery_fee = 0;
         }
-
 
         /** verify if holliday fee */
         $holidayFee = $this->session->userdata('holiday_fee');

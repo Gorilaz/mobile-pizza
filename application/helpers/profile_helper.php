@@ -81,7 +81,7 @@ if ( !function_exists('saveProfile') )
         }
         $userLogged = $obj->session->userdata('logged');
         $obj->load->model('security_model');
-        if( $userLogged['userid'])
+        if( isset($userLogged['userid']) && intval($userLogged['userid']) > 0 )
         {
             $newUser = $obj->security_model->save( $user, $userLogged['userid'] );
         } else {

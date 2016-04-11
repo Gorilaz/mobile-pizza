@@ -275,13 +275,15 @@
 
 
     {% if itemsNo != 0 %}
+    <div class="footer-help-line" id="id-footer-help-line" data-position="fixed" style="display:none;">&nbsp;</div>
     <div data-role="footer" data-position="fixed" id="checkout-footer">
+        
         {#<a class="btn btn-blue" id="checkout" href="#" data-transition="slide">#}
             {#Checkout#}
             {#<span class="right-arrow-icon"></span>#}
         {#</a>#}
 
-        <div class="checkout-footer control-1">
+        <div class="checkout-footer control-1" data-title="Please select your payment choice">
                 <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
                     <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
                     {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2aa" value="Cash On Delivery">#}
@@ -299,7 +301,7 @@
                 </fieldset>
         </div>
 
-        <div class="checkout-footer control-2">
+        <div class="checkout-footer control-2" data-title="Select delivery or pickup">
                 <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
                     <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
                     <input type="radio" class="footer-change" name="delivery" id="radio-choice-v-2a" value="D">
@@ -310,7 +312,7 @@
         </div>
 
         {% if isopen.isOpen %}
-            <div class="checkout-footer control-3">
+            <div class="checkout-footer control-3" data-title="Is your order for now or later?">
                 <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
                     <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
                     <input type="radio" name="when" class="footer-change" id="radio-choice-v-2b1" value="ASAP">
@@ -321,7 +323,7 @@
             </div>
         {% endif %}
 
-        <div class="checkout-footer control-4">
+        <div class="checkout-footer control-4" data-title="">
 
             <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
                 <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>

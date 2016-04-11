@@ -353,7 +353,23 @@ function manageDoneButtonForRightPanel()
     return true;
 } // manageDoneButtonForRightPanel
 
-
+/*
+ * Show / Hide help box for footer buttons
+ * @param jquery obj lineObj
+ * @returns true - show or false - hide
+ */
+function manageHelpFooterLine( lineObj )
+{
+    if( lineObj ) {
+        if( lineObj.data('title') )
+        {
+            $('#id-footer-help-line').html(lineObj.data('title')).fadeOut(200).fadeIn(500);
+            return true;
+        }
+    }
+    $('#id-footer-help-line').fadeOut(500);
+    return false;
+} // manageHelpFooterLine
 
 /***********************************************************************************************************************
  * Events used on product page
@@ -854,7 +870,18 @@ $( document ).on('pageinit', '#page-checkout', function() {
     $(document).off('change','.footer-change');
     $(document).off('click','.checkout-footer a');
     $(document).off('change','#date');
-    $('.control-1').show().addClass('animated bounce');
+    
+    
+    $(document).on('click','#id-footer-help-line', function() {
+        manageHelpFooterLine(null);
+    });
+    
+
+    //$('.control-1').show().addClass('animated bounce');
+    var firstPanel = $('.control-1');
+    firstPanel.show().fadeOut(250).fadeIn(250);
+    manageHelpFooterLine(firstPanel);
+   
 
     var count = 1;
 
@@ -865,6 +892,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
        var elem         = $(this).closest('.checkout-footer');
        var next         = elem.next();
        var totalAmount  = $('.order-total-price').data('value');
+       
+       manageHelpFooterLine(next);
 
        /**
         * Payment Tab
@@ -880,7 +909,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
 //                    elem.addClass('hide');
 //                    elem.next().removeClass('hide');
                     elem.hide();//.addClass('animated flip');
-                    elem.next().show().addClass('animated bounce');
+                    //elem.next().show().addClass('animated bounce');
+                    elem.next().show().fadeOut(250).fadeIn(250);
                 }
             }
             //paypal
@@ -889,11 +919,13 @@ $( document ).on('pageinit', '#page-checkout', function() {
                     alert('Minimum amount for Paypal payments is $'+rules.paypal);
                 } else {
                     elem.hide();//.addClass('animated flip');
-                    elem.next().show().addClass('animated bounce');
+                    //elem.next().show().addClass('animated bounce');
+                    elem.next().show().fadeOut(250).fadeIn(250);
                 }
             } else {
                 elem.hide();//.addClass('animated flip');
-                elem.next().show().addClass('animated bounce');
+                //elem.next().show().addClass('animated bounce');
+                elem.next().show().fadeOut(250).fadeIn(250);
             }
        }
 
@@ -917,7 +949,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
                            }
                            r = null;
                            elem.hide();//.addClass('animated flip');
-                           elem.next().show().addClass('animated bounce');
+                           //elem.next().show().addClass('animated bounce');
+                           elem.next().show().fadeOut(250).fadeIn(250);
                        }
                        else
                        {
@@ -930,11 +963,13 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
                } else {
                    elem.hide();//.addClass('animated flip');
-                   elem.next().show().addClass('animated bounce');
+                   //elem.next().show().addClass('animated bounce');
+                   elem.next().show().fadeOut(250).fadeIn(250);
                }
            } else {
                elem.hide();//.addClass('animated flip');
-               elem.next().show().addClass('animated bounce');
+               //elem.next().show().addClass('animated bounce');
+               elem.next().show().fadeOut(250).fadeIn(250);
            }
        }
        else if($(this).attr('name') == 'when') {
@@ -943,7 +978,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
            } else {
                if(elem.next().length) {
                    elem.hide();//.addClass('animated flip');
-                   elem.next().show().addClass('animated bounce');
+                   //elem.next().show().addClass('animated bounce');
+                   elem.next().show().fadeOut(250).fadeIn(250);
                } else {
                    submitOrder();
                }
@@ -951,7 +987,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
        } else {
            if(elem.next().length) {
                elem.hide();//.addClass('animated flip');
-               elem.next().show().addClass('animated bounce');
+               //elem.next().show().addClass('animated bounce');
+               elem.next().show().fadeOut(250).fadeIn(250);
            } else {
                submitOrder();
            }
@@ -979,17 +1016,21 @@ $( document ).on('pageinit', '#page-checkout', function() {
         }
         var elem = $('#dialog').data('elem');
         elem.hide();//.addClass('animated flip');
-        elem.next().show().addClass('animated bounce');
+        //elem.next().show().addClass('animated bounce');
+        elem.next().show().fadeOut(250).fadeIn(250);
         $('#dialog').dialog('close');
     });
 
 
 
     $(document).on('click tap', '.checkout-footer a', function() {
-
        var prev = $(this).closest('.checkout-footer').hide().prev();
-       if(prev.length) {
-           prev.show().addClass('animated bounce');
+       
+       manageHelpFooterLine(prev);
+
+       if( prev.length ) {
+           //prev.show().addClass('animated bounce');
+           prev.show().fadeOut(250).fadeIn(250);
        } else {
             /*
              * Placeholder
@@ -998,6 +1039,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
            //$.mobile.back(); // old code
            window.location.href = '//' + location.host+ '/menu';
        }
+       return false; // fix double event
    });
 
     populateOrderAvailableHours();

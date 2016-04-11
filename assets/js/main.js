@@ -415,18 +415,18 @@ $( document ).on("pageinit", "#page-product", function() {
         populateIngredients();
     }
 
-    $(document).on('change','.calculate, #p-quantity, #half-order', function(e) {
-        calculateOrderPrice();
-    })
-    $(document).on('change','.p-ingredient', function(e) {
-        calculateOrderPrice();
-    })
     $(document).on('change','select[data-type=Size]', function(e) {
         initHalfOrder();
     });
-    $(document).on('change','select[name=variation]',function() {
+    $(document).on('change','select[name=variation]',function(e) {
         populateIngredients();
-    })
+    });
+    $(document).on('change','.calculate, #p-quantity, #half-order', function(e) {
+        calculateOrderPrice();
+    });
+    $(document).on('change','.p-ingredient', function(e) {
+        calculateOrderPrice();
+    });
 
     /**
      * Send order
@@ -511,6 +511,7 @@ function initHalfOrder() {
         var halfPrice = sizeOption.data( "half-fee" );
 
         if(halfGroup === undefined) {
+            $('select[name=halfPizza]').val('').trigger('change');
             $('input[name=half-group-id]').val('');
             $('input[name=half-fee]').val('');
             $('input[name=isHalf]').val(0);
@@ -719,6 +720,7 @@ function populateIngredients( variationId, pizzaNo )
             $('html,body').animate({scrollTop: $(this).offset().top}, 800);
         });
 
+        calculateOrderPrice();
     })
     .done(function(data) {
 

@@ -69,13 +69,13 @@ $(function(){
                 if(!$('#account-edit #div-city').hasClass('hide')){
                     $('#account-edit #div-city').addClass('hide');
                 }
-                alert('This Country has not entered states.')
+                showAlert( "", "This Country has not entered states." );
 
             }
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
         /** When choose country get states*/
     }
@@ -113,13 +113,13 @@ $(function(){
                 if(!$('#account-edit #div-city').hasClass('hide')){
                     $('#account-edit #div-city').addClass('hide');
                 }
-                alert('This Country has not entered states.')
+                showAlert( "", "This Country has not entered states." )
 
             }
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
     });
 
@@ -154,13 +154,13 @@ $(function(){
                 if(!$('#account-edit #div-city').hasClass('hide')){
                     $('#account-edit #div-city').addClass('hide');
                 }
-                alert('This State has not entered cities.')
+                showAlert( "", "This State has not entered cities." );
 
             }
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
 
     });
@@ -217,7 +217,7 @@ $(function(){
             });
 
             request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
+                showAlert( "", "Request failed: " + textStatus );
             });
         }
     });

@@ -40,14 +40,14 @@ $(function(){
                 });
 
                 request.fail(function( jqXHR, textStatus ) {
-                    alert( "Request failed: " + textStatus );
+                    showAlert( "", "Request failed: " + textStatus );
                 });
             }
 
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
 
     }
@@ -62,13 +62,13 @@ $(function(){
     $(document).on('click','#checkout',function(){
 
         if(($('#checkout-page .choose-later').is(':checked') && (!$('#checkout-page #order_placement').val()))){
-            alert('Enter order placement date.');
+            showAlert( "", "Enter order placement date." );
         } else if (($('#checkout-page .choose-later').is(':checked') && ($('#checkout-page #order_placement').val()))) {
             var date_default = $('#checkout-page #order_placement').val();
             var d = new Date();
             var date = new Date(date);
             if(date-d > 0){
-                alert('Delivery date must be greater than the date now');
+                showAlert( "", "Delivery date must be greater than the date now" );
             } else {
                 if($('#checkout-page .choose-delivery').is(':checked')){
                     var delivery = 'D';
@@ -108,29 +108,29 @@ $(function(){
                                         if($('.choose-credit').is(':checked')){
                                             window.location.href = '//' + location.host + '/payment';
                                         } else {
-                                            alert('is not checked');
+                                            showAlert( "", "is not checked" );
                                         }
                                     }
                                 });
 
                                 request.fail(function( jqXHR, textStatus ) {
-                                    alert( "Request failed: " + textStatus );
+                                    showAlert( "", "Request failed: " + textStatus );
                                 });
                             }
 
                         });
 
                         request.fail(function( jqXHR, textStatus ) {
-                            alert( "Request failed: " + textStatus );
+                            showAlert( "", "Request failed: " + textStatus );
                         });
 
                     } else {
-                        alert('The time you are selected is out our schedule');
+                        showAlert( "", "The time you are selected is out our schedule" );
                     }
                 });
 
                 request.fail(function( jqXHR, textStatus ) {
-                    alert( "Request failed: " + textStatus );
+                    showAlert( "", "Request failed: " + textStatus );
                 });
             }
 
@@ -164,14 +164,14 @@ $(function(){
                     });
 
                     request.fail(function( jqXHR, textStatus ) {
-                        alert( "Request failed: " + textStatus );
+                        showAlert( "", "Request failed: " + textStatus );
                     });
                 }
 
             });
 
             request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
+                showAlert( "", "Request failed: " + textStatus );
             });
 
         }

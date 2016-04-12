@@ -1128,12 +1128,12 @@ h1 {
     font-weight:bold
 }
 
-#popup-sms-text {
+#popup-sms-text, #popup-alert-text, #popup-confirm-text {
     width: 80%;
     margin: auto;
 }
 
-#popup-sms-btn {
+#popup-sms-btn, #popup-alert-btn {
     margin: auto;
     width: 100px;
 }

@@ -62,6 +62,10 @@
     {% if page.theme is defined %} data-theme="{{ page.theme }}" {% endif %}
 >
 
+    {% include 'page/popups/alertDialog.html.twig' %}
+
+    {% include 'page/popups/confirmDialog.html.twig' %}
+
     {#{% if internalPage and page.role == 'page' %}#}
         {#{% include ('base/assetNavigation.html.twig') %}#}
     {#{% endif %}#}

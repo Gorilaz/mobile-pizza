@@ -133,7 +133,6 @@
 
             $('#send-card').click(function(){
                 if($('#form-credit').valid()){
-                    alert('asda');
                     var request = $.ajax({
                         url: '//' + location.host + '/payment/Do_direct_payment',
                         type: "POST",
@@ -154,7 +153,7 @@
                     });
 
                     request.fail(function( jqXHR, textStatus ) {
-                        alert( "Request failed: " + textStatus );
+                        showAlert( "", "Request failed: " + textStatus );
                     });
 
 //                    $('#form-credit').submit();

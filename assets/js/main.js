@@ -3,6 +3,63 @@
  * @url none
  **********************************************************************************************************************/
 
+/*
+ * Show fancy alert
+ * @param {string} title Title of popup.
+ * @param {string} description Description of popup.
+ * @returns none
+ */
+function showAlert( title, description )
+{
+    if( !!title )
+    {
+        $('#alertDialog').find('h1').empty().append(document.createTextNode(title));
+    }
+    else
+    {
+        $('#alertDialog').find('h1').empty().append(document.createTextNode(document.title));
+    }
+
+    $('#alertDialog').find('#popup-alert-text .content').empty().append(document.createTextNode(description));
+
+    $('#alertDialog').popup('open');
+}
+
+/*
+ * Show fancy confirm
+ * @param {string} title Title of popup.
+ * @param {string} description Description of popup.
+ * @param {function} ok Ok callback.
+ * @param {function} cancel Cancel callback.
+ * @returns none
+ */
+function showConfirm( title, description, ok, cancel )
+{
+    if( !!title )
+    {
+        $('#confirmDialog').find('h1').empty().append(document.createTextNode(title));
+    }
+    else
+    {
+        $('#confirmDialog').find('h1').empty().append(document.createTextNode(document.title));
+    }
+
+    $('#confirmDialog').find('#popup-confirm-text .content').empty().append(document.createTextNode(description));
+
+    $('#popup-confirm-btn .ok, #popup-confirm-btn .cancel').off('click');
+
+    if( typeof(ok) === 'function' )
+    {
+        $('#popup-confirm-btn .ok').on('click', function() { ok(); });
+    }
+
+    if( typeof(cancel) === 'function' )
+    {
+        $('#popup-confirm-btn .cancel').on('click', function() { cancel(); });
+    }
+
+    $('#confirmDialog').popup('open');
+}
 
 /*
  * Select payment method and pay
@@ -30,7 +87,7 @@ function saveOrder()
                 $.each(data.message, function( index, value ) {
                     new_errors += value + '  ';
                 });
-                alert(new_errors);
+                showAlert( "", new_errors );
                 /* -- */
             } else {
                 window.location.href = '//' + location.host 
@@ -38,7 +95,7 @@ function saveOrder()
             }
         });
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
 
     } else if(pg == 'cash') {
@@ -86,7 +143,7 @@ function saveForm( action )
     });
     request.fail(function( jqXHR, textStatus ) {
         $.mobile.loading( 'hide' );
-        alert( "Request failed: " + textStatus );
+        showAlert( "", "Request failed: " + textStatus );
     });
 } // saveForm
 
@@ -137,7 +194,7 @@ function signInRequest( obj )
     });
     request.fail(function( jqXHR, textStatus ) {
         $.mobile.loading( 'hide' );
-        alert( "Request failed: " + textStatus );
+        showAlert( "", "Request failed: " + textStatus );
     });
     return false;
 } // signInRequest
@@ -267,7 +324,7 @@ function changeMobile()
              .find('.ui-btn-text').html($('#verify-btn').data('titlefinal'));
     });
     request.fail(function( jqXHR, textStatus ) {
-        alert( "Request failed: " + textStatus );
+        showAlert( "", "Request failed: " + textStatus );
     });
 } // changeMobile
 
@@ -324,7 +381,7 @@ function verifyMobileBySMS()
                 }
             });
             request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
+                showAlert( "", "Request failed: " + textStatus );
             });
         } else {
             $('#sms-error-label').show();
@@ -456,7 +513,7 @@ $( document ).on("pageinit", "#page-product", function() {
             has enough points
          */
         if($('#buyWithPoints').val() == 1 && ($('#buyWithPoints').data('user') != 1 || $('#buyWithPoints').data('points') < $('#p-total').html())) {
-            alert("You have to be logged in and have enough points to buy this item!");
+            showAlert( "", "You have to be logged in and have enough points to buy this item!" );
             return false;
         } else {
             var target = '/menu';
@@ -906,7 +963,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
            // in case its online payment
             if($(this).val() == 3 || $(this).val() == 2) {
                 if(totalAmount < rules.cc) {
-                    alert('Minimum amount for Credit Card payments is $'+rules.cc);
+                    showAlert( "", "Minimum amount for Credit Card payments is $"+rules.cc );
                 } else {
 //                    elem.addClass('hide');
 //                    elem.next().removeClass('hide');
@@ -918,7 +975,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
             //paypal
             else if($(this).val() == 4) {
                 if(totalAmount < rules.paypal) {
-                    alert('Minimum amount for Paypal payments is $'+rules.paypal);
+                    showAlert( "", "Minimum amount for Paypal payments is $"+rules.paypal );
                 } else {
                     elem.hide();//.addClass('animated flip');
                     //elem.next().show().addClass('animated bounce');
@@ -940,9 +997,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
                if(totalAmount < rules.min_order_amt) {
                    if(rules.order_less > 0){
 
-                       var r=confirm("There is a $"+rules.order_less+" fee for order less than $"+rules.min_order_amt+". Click Ok for proceed or Cancel for keep shoping  .");
-                       if (r==true)
-                       {
+                       showConfirm( "", "There is a $"+rules.order_less+" fee for order less than $"+rules.min_order_amt+". Click Ok for proceed or Cancel for keep shoping  .", function() {
                            if($('#has_discount').data('discountper') == 'no'){
                                defaultPrice('low_amount');
                            } else {
@@ -953,11 +1008,9 @@ $( document ).on('pageinit', '#page-checkout', function() {
                            elem.hide();//.addClass('animated flip');
                            //elem.next().show().addClass('animated bounce');
                            elem.next().show().fadeOut(250).fadeIn(250);
-                       }
-                       else
-                       {
+                       }, function() {
                            window.location.href = '//' + location.host + '/menu';
-                       }
+                       } );
                    } else {
 //                          alert('Minimum amount for Delivery is $'+rules.min_order_amt);
                           $( "#popupMinOrderValueNotMet" ).popup("open");
@@ -1310,15 +1363,13 @@ $( document ).on('pageinit', '#page-checkout', function() {
         });
         request.fail(function( jqXHR, textStatus )
         {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
     });
 
     /** remove coupon  */
     $(document).on('click', '#icon-remove-coupon', function(){
-        var didConfirm = confirm("Remove voucher ?");
-        if( didConfirm == true )
-        {
+        showConfirm( "", "Remove voucher ?", function() {
             $('#tr-coupon').removeClass('hide');
           //  $('.choose-coupon').prop('checked', false).checkboxradio('refresh');
           //  $('#other').prop('checked', true).checkboxradio('refresh');
@@ -1333,19 +1384,19 @@ $( document ).on('pageinit', '#page-checkout', function() {
             $('#coupon-des').html('');
             $('#coupon-dis').html('');
             $('#coupon').val('');
-        }
+        } );
     });
     /**  END Coupon  */
 
     $(document).on('click','.remove-order-item', function(e) {
         e.preventDefault();
 
+        var _this = this;
 
-        var didConfirm = confirm("Remove "+ $(this).data('title') +" from your order?");
-        if (didConfirm == true) {
+        showConfirm( "", "Remove "+ $(_this).data('title') +" from your order?", function() {
 
-            var valueToSubstract = $(this).data('value');
-            var hideItems        = $(this).data('id');
+            var valueToSubstract = $(_this).data('value');
+            var hideItems        = $(_this).data('id');
 
             $('.item-'+hideItems).hide();
             var totalItem = $('.order-total-price');
@@ -1389,7 +1440,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
                 $('.order-holder').hide();
                 $('.checkout-footer').hide();
             }
-        }
+        } );
     });
 
 
@@ -1603,7 +1654,7 @@ $( document ).on('pageinit', "#page-recover", function() {
             });
 
             request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
+                showAlert( "", "Request failed: " + textStatus );
             });
         } else {
             $('#error-valid').html('Please input valid email address!');
@@ -1639,7 +1690,7 @@ $( document ).on('pageinit', "#page-change", function() {
             });
 
             request.fail(function( jqXHR, textStatus ) {
-                alert( "Request failed: " + textStatus );
+                showAlert( "", "Request failed: " + textStatus );
             });
         } else {
             $('#error-required').html('Verification must be the same with the Password!');
@@ -1720,7 +1771,7 @@ $( document ).on('pageinit', "#your-orders", function() {
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            alert( "Request failed: " + textStatus );
+            showAlert( "", "Request failed: " + textStatus );
         });
     });
 

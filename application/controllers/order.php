@@ -44,6 +44,10 @@ class Order extends WMDS_Controller{
         }
 
         $check = $this->session->userdata('checkout');
+        if( !isset( $check['delivery'] ) ) {
+            // Back to menu when Hardware back button press
+            redirect(base_url().'menu');
+        }
 
         /** Counpon */
         if(isset( $check['couponDiscount'])){
@@ -158,7 +162,7 @@ class Order extends WMDS_Controller{
 
             if($back_url == 'yes'){
                 $session_id = $this->session->userdata('session_id');
-                redirect($this->config->item('mobile_website').'page/order-success/'.$session_id);
+                redirect(base_url().'page/order-success/'.$session_id);
             } else {
                 redirect(base_url().'page/order-success');
             }

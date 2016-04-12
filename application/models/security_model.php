@@ -58,9 +58,7 @@ class Security_model extends CI_Model{
      * @param $mobile
      */
     public function checkUniqueMobile($mobile){
-
         $is_unique = $this->db->where('mobile', $mobile)->count_all_results('users');
-
         if ($is_unique > 0){
             return false;
         } else {
@@ -79,6 +77,22 @@ class Security_model extends CI_Model{
         if ($count == 1){
             $this->db->where('email', $email)->update('users', array('verify_code' => $code));
             return true;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Check if mobile number have verifycation
+     * @param string $mobile
+     * @param string $verifyCode
+     */
+    public function checkVerifycationMobile($mobile, $verifyCode = '') {
+        $user = $this->db->where('mobile', $mobile)
+                ->where('verify_code', $verifyCode)
+                ->get('users')->row_array();
+        if( isset($user['email']) ) {
+            return $user['email'];
         } else {
             return false;
         }
@@ -128,10 +142,20 @@ class Security_model extends CI_Model{
      * @param $mobile
      * @param $email
      */
-    public function changeMobile($mobile, $email){
-        $this->db->where('email', $email)->update('users', array('mobile' => $mobile));
-
+    public function changeMobile($mobile, $email, $verifyCode = ''){
+        $this->db->where('email', $email)->update('users', array('mobile' => $mobile, 'verify_code' => $verifyCode));
         return $this->db->where('email', $email)->get('users')->row_array();
+    }
+
+    /**
+     * Set verify code for user
+     * @param string $email
+     * @param string $verifyCode
+     * @return true
+     */
+    public function setVerifyCode($email, $verifyCode){
+        $this->db->where('email', $email)->update('users', array('verify_code' => $verifyCode));
+        return true;
     }
 
     /**

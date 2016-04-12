@@ -92,7 +92,7 @@
                     </div>
                     <div class="ui-block-b" >
                         <div id="mobile-div">
-                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}" />
+                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{% if verify_code is defined and verify_code == '' %} {{ logged.mobile }} {% endif %}" value="{{ logged.mobile }}" />
                         </div>
                         <div id="verify-div" style="display: none;">
                             <div class="left">

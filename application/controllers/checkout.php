@@ -186,6 +186,10 @@ class checkout extends WMDS_Controller {
 
         $surcharge = $this->order_model->getMinOrder();
         $total = $this->cart->total();
+        if( empty($total) ) {
+            // Back to menu when Hardware back button press
+            redirect(base_url().'menu');
+        }
 
         if($this->input->post()) {
 
@@ -332,7 +336,7 @@ class checkout extends WMDS_Controller {
         }
 
         /** total */
-        $total = $this->cart->total();
+        //$total = $this->cart->total();
         $this->twiggy->set('total', $total);
         /** coupon */
         $check = $this->session->userdata('checkout');
@@ -532,8 +536,6 @@ class checkout extends WMDS_Controller {
         $this->load->model('security_model');
         $sms = $this->security_model->smsSettings();
         $post = $this->input->post();
-        $user = $this->security_model->changeMobile($post['mobile'], $post['email']);
-        $this->session->set_userdata('logged', $user);
         $mail_content = $this->security_model->getEmailById(3); // 3 - id for verify email template
         $code = rand(1000, 9999);
 
@@ -541,9 +543,12 @@ class checkout extends WMDS_Controller {
         $code = 1111;
         /* -- */
 
+        $user = $this->session->userdata('logged');
+        $user['new_mobile'] = $post['mobile'];
+        $this->session->set_userdata('logged', $user);
+
         $this->load->library('email');
         $from = $sms['sending_address'];
-
         $from_name = 'admin_tastypizza';
         
         $to = $post['mobile'] . '@' . $sms['domain_name'];
@@ -566,10 +571,14 @@ class checkout extends WMDS_Controller {
      * Ajax method verify sms code
      */
     public function verifyCode(){
+        $this->load->model('security_model');
         $code      = $this->input->post('code');
         $sess_code = $this->session->userdata('sms_code');
-        if($code == $sess_code)
+        $user = $this->session->userdata('logged');
+        if($code == $sess_code && isset($user['new_mobile']))
         {
+            $user = $this->security_model->changeMobile($user['new_mobile'], $user['email']);
+            $this->session->set_userdata('logged', $user);
             $this->session->unset_userdata('sms_code');
             echo json_encode(array(
                 'valid' => true

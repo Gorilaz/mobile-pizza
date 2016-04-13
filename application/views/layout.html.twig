@@ -5,6 +5,13 @@
     <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
     <title>{{ page.title }} | {{ settings.SITETITLE }}</title>
 
+{% if page.keywords is defined %}
+    <meta name="keywords" content="{{ page.keywords }}" />
+{% endif %}
+{% if page.description is defined %}
+    <meta name="description" content="{{ page.description }}" />
+{% endif %}
+
     <link href='http://fonts.googleapis.com/css?family=Abel|News+Cycle:400,700' rel='stylesheet' type='text/css'>
 
     <link rel="stylesheet" type="text/css" href="{{ base_url }}assets/css/font-awesome/css/font-awesome.min.css">

@@ -388,9 +388,7 @@ class Order extends WMDS_Controller{
 
         $data['order_comment'] = (!empty($order['order_comment']) ? strip_tags($order['order_comment'], '<b>,<i>,<strong>,<em>') : '&nbsp;');
 
-        $site_details = $this->SS_Model->getSiteSettingsDetails();
-
-        $data['restaurant_name'] = $site_details[21];
+        $data['restaurant_name'] = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
 
 //        print_r($order);
 //        print_r($checkout);die;

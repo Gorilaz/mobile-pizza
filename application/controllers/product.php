@@ -16,6 +16,7 @@ class product extends WMDS_Controller {
     public function view($id, $points = false) {
         $this->load->model('products_model');
         $this->load->model('order_model');
+        $this->load->model('Sitesettings_model', 'SS_Model');
 
         /**
          * Get product from database
@@ -80,9 +81,13 @@ class product extends WMDS_Controller {
             ->set('withPoints', $withPoints)
             ->set($productType);
 
+        $restaurant_name = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
+        $restaurant_suburb = $this->db->select('value')->where('type', 'restaurant_suburb')->get('sitesetting')->row()->value;
 
         $this->twiggy->set('page', array(
             'title'  => $product->product_name,
+            'keywords' => $product->product_name . ', ' . $restaurant_name . ', ' . $restaurant_suburb, 
+            'description' => $product->product_name . ' by ' . $restaurant_name . ' - ' . strip_tags($product->description), 
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-product'

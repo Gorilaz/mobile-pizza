@@ -242,8 +242,12 @@ class Page extends WMDS_Controller {
             $products['loyalty']['items']         = $loyaltyProducts;
         }
 
+        $metas = $this->db->select('title, keywords, description')->where('pagename', 'menu')->get('tbl_meta_tags')->row();
+
         $this->twiggy->set('page', array(
-            'title'  => 'Menu',
+            'title'  => $metas->title,
+            'keywords' => $metas->keywords,
+            'description' => $metas->description,
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-menu'

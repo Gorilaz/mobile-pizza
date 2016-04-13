@@ -9,6 +9,10 @@ class Order extends WMDS_Controller{
 
         $this->load->library('cart');
         $this->load->model('order_model');
+        $this->load->model('Sitesettings_model', 'SS_Model');
+        $this->load->model('Register_Model', 'R_Model');
+        $this->load->model('Category_Model', 'C_Model');
+        $this->load->model('Coupon_model', 'voucher_code');
     }
 
     /**
@@ -236,18 +240,157 @@ class Order extends WMDS_Controller{
         $order = $this->order_model->getOrder($orderId);
         $checkout = $this->session->userdata('checkout');
 
-        if($checkout['payment'] == 1){
+        if( $checkout['payment'] == 1 )
+        {
             $paid = 'NOT PAID';
-        } else {
+        }
+        else
+        {
             $paid = 'PAID';
         }
-        if($checkout['delivery'] == 'D'){
 
+        if( $checkout['delivery'] == 'D' )
+        {
             $delivery = 'Home Delivery / '.$paid;
-        } else {
+        }
+        else
+        {
             $delivery = 'In-store Pickup / '.$paid;
         }
 
+        $data = array();
+
+        $data['order_option'] = $order['order_option'];
+
+        if( $data['order_option'] == 'D' )
+        {
+            $data['order_option'] = 'Home Delivery';
+        }
+        else if( $data['order_option'] == 'P' )
+        {
+            $data['order_option'] = 'Pickup';
+        }
+
+        $data['order_number'] = $this->order_model->getOrderNumber();
+
+        $data['p_txt_file_item_desc'] = $this->p_getTextFileItemsDescription(); //for gprs printer
+
+        $data['discount'] = $order['discount'];
+        $data['p_discount'] = ''; //VV for gprs printer
+
+        $vdisc = $this->order_model->getCouponDiscDescription($order['voucher_code']);
+        $vdata = $this->voucher_code->getCouponById($order['voucher_code']);
+
+        if( is_object($vdata) )
+        {
+            $data['coupon_type'] = $vdata['coupontype'];
+            $data['voucher_code'] = $vdata['couponcode'];
+        }
+
+        if( !empty($data['coupon_type']) && $data['coupon_type'] == 'firstorder' )
+        {
+            $data['p_discount'] = 'First Order Discount:  -$' . $data['discount']; //VV for gprs printer
+        }
+
+        if( !empty($data['coupon_type']) && $data['coupon_type'] == 'allorders' )
+        {
+            $data['p_discount'] = 'Online Order Discount:  -$' . $data['discount']; //VV for gprs printer
+        }
+
+        $VoucherDiscount = $this->order_model->checkValidVoucher2($order['voucher_code']);  //VV
+
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+            $data['coupon_type'] == 'discount' && $VoucherDiscount != 'old' )
+        {
+            $vdiscrptn = str_replace(array('\n', '\r'), '', htmlspecialchars_decode($vdisc, ENT_NOQUOTES));
+            $data['p_discount'] = strtoupper($data['voucher_code']) . '-' . $vdiscrptn . '  -$' . $data['discount']; //VV for gprs printer
+        }
+
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+            $data['coupon_type'] == 'freeproduct' && $VoucherDiscount != 'old' )
+        {
+            $free_product = $this->order_model->getFreeProductDescription($data['voucher_code']);
+
+            if( $free_product )
+            {
+                $vdiscrptn = str_replace(array('\r', '\n'), '', htmlspecialchars_decode($free_product, ENT_NOQUOTES));
+
+                $data['p_discount'] = strtoupper($data['voucher_code']) . '-' . $vdiscrptn; //VV for gprs printer
+            }
+        }
+
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+            $data['coupon_type'] == 'invalid' && (bool) $data['voucher_code'] !== false )
+        {
+            $data['p_discount'] = strtoupper($data['voucher_code']); //VV for gprs printer
+        }
+
+        $data['total_amount']  = $order['payment_amount']; // $cart_total + $credit_card_fee + $data['delivery_fee'] - $discount + $data['min_order_delivery_fee'] + $data['min_order_paypal_fee'] + $data['min_order_credit_card_fee'] + $data['public_holiday_fee'];
+
+        // user detail
+        $usersInfo = $this->session->userdata('logged');
+
+        $data['cust_name'] = $usersInfo['first_name'] . ' ' . $usersInfo['last_name']; //VV
+        $data['p_cust_address'] = $usersInfo['address'] . '\n' . $subUrb; //VV for gprs printer
+
+        $data['p_order_get_date'] = date('D d/m H:i', strtotime($order['order_date'])); //VV GPRS Printer
+
+        if( strtotime($order['order_placement_date']) == strtotime($order['order_date']) )
+        {
+            $data['p_order_get_date'] = 'ASAP'; //VV GPRS Printer
+        }
+
+        $data['delivery_fee'] = $order['delivery_fee'];
+        $data['min_order_delivery_fee'] = $order['min_order_delivery_fee'];
+
+        $data['min_order_paypal_fee'] = $order['min_order_paypal_fee'];
+        $data['min_order_credit_card_fee'] = $order['min_order_credit_card_fee'];
+        $data['public_holiday_fee'] = $order['public_holiday_fee'];
+
+        $data['all_extra_fees'] = $data['delivery_fee'] + $data['min_order_delivery_fee'] + $data['min_order_paypal_fee'] + $data['min_order_credit_card_fee'] + $data['public_holiday_fee']; //VV for GPRS PRINTER
+
+        $payment_method = $order['payment_method'];
+        $data['payment_method'] = $payment_method;
+
+        if( $payment_method == 'Credit Card Over Phone' )
+        {
+            $data['payment_method'] = 'Credit Card on Delivery';
+        }
+
+        $credit_card_fee = 0;
+
+        if( $payment_method == 'Paypal' OR $payment_method == 'Credit Card Online' OR $payment_method == 'Credit Card Over Phone' )
+        {
+            $data['paid_or_not'] = 'PAID';
+
+            if( $payment_method == 'Credit Card Over Phone' )
+            {
+                $data['paid_or_not'] = 'NOT PAID'; // VV setting CC over phone as NOT PAID
+            }
+
+            if( $payment_method == 'Credit Card Online' OR $payment_method == 'Credit Card Over Phone' )
+            {
+                $credit_card_fee = number_format($this->_getPayMethodFee('Credit Card Online'), 2);
+                $data['all_extra_fees'] = $data['all_extra_fees'] + $credit_card_fee; //VV for gprs printer
+            }
+            else if( $payment_method == 'Paypal' )
+            {
+                $credit_card_fee = $this->_getPayMethodFee('Paypal');
+                $data['all_extra_fees'] = $data['all_extra_fees'] + $credit_card_fee; //VV for gprs printer
+            }
+        }
+        else
+        {
+            $data['paid_or_not'] = 'NOT PAID';
+        }
+
+        $data['cust_mobile'] = $usersInfo['mobile'];
+
+        $data['order_comment'] = (!empty($order['order_comment']) ? strip_tags($order['order_comment'], '<b>,<i>,<strong>,<em>') : '&nbsp;');
+
+        $site_details = $this->SS_Model->getSiteSettingsDetails();
+
+        $data['restaurant_name'] = $site_details[21];
 
 //        print_r($order);
 //        print_r($checkout);die;
@@ -504,11 +647,52 @@ class Order extends WMDS_Controller{
 //        print_pre($filename);die;
         file_put_contents($filename, $output);
 
+        $this->gprs_printer($data);
+
         return $name;
 
 
     }
 
+    //VV GPRS PRINTER
+    function gprs_printer($data)
+    {
+        $p_rest_id='#RestID*';
+        $p_delivery_or_pickup=strtoupper($data['order_option']).'*';
+        $p_order_number=$data['order_number'].'*';
+        //$p_items='|1|Sliced beef sliced very very long title |7.10|>SIZE:Large(+10.00)>NO:Capsicum>EXTRA:Basil(+1.50)>Comments:Extra crispy please and easy on cheese;|2|Pork|5.50|*';
+        $p_items=substr($data['p_txt_file_item_desc'], 0, -1); //remove last ";"
+        $p_items=$p_items.'*';
+        $p_discount=$data['p_discount'].';';
+        $p_total_amount='$'.$data['total_amount'].';;';
+        if($p_delivery_or_pickup=='HOME DELIVERY*') {$p_cust_name=$data['cust_name'].'\n'.$data['p_cust_address'].';';} else {$p_cust_name=$data['cust_name'].';';$p_delivery_or_pickup='IN-STORE PICKUP*';}
+        $p_asap_or_later=$data['p_order_get_date'].';';
+        $p_deliver_and_other_fees='$'.number_format($data['all_extra_fees'], 2) .';';
+        $p_paid_or_not=$data['paid_or_not'];
+        $p_payment_method=$data['payment_method'].';';
+        $p_cust_mobile=$data['cust_mobile'].'*';
+        $p_order_comment=strip_tags($data['order_comment']);
+        $p_order_comment=trim(str_replace('ORDER COMMENTS: :','',$p_order_comment));
+        $p_order_comment=str_replace('&nbsp;','',$p_order_comment).'*';
+        if ($p_order_comment=='*') $p_order_comment=='';
+        $p_order_received_at='ORDER RECEIVED: '. date("H:i m-d").'*';
+        $p_part_order='#'; //add "PART1/2 if neccessary - TO DO LATER"
+        $p_printer_data=$p_rest_id.$p_delivery_or_pickup.$p_order_number.$p_items.$p_discount.$p_total_amount.$p_cust_name.$p_asap_or_later.$p_deliver_and_other_fees.$p_paid_or_not.' - '.$p_payment_method.$p_cust_mobile.$p_order_comment.$p_order_received_at.$p_part_order;
+        $p_printer_data=strip_tags($p_printer_data);
+        $p_printer_data=trim(preg_replace('/\s+/', ' ', $p_printer_data)); //remove line breaks
+
+        $sitesettings  = $this->SS_Model->getSiteSettingsDetails();
+        $sent_by_gsm_printer= $sitesettings[49];
+        if($sent_by_gsm_printer=='Y') {$p_status='to_be_printed';} else {$p_status='no_gprs_print';}
+        $this->order_model->recordPrinterData($data['order_number'],$p_printer_data, $p_status);
+
+        $text_file_path = FCPATH.'templates/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
+
+        if ( file_put_contents($text_file_path, $p_printer_data) === false )
+        {
+            //echo 'Unable to write the file'; die;
+        }
+    } //VV end function gprs printer
 
     /**
      * Short url
@@ -614,5 +798,208 @@ class Order extends WMDS_Controller{
             'count'      => $count
         ));
 
+    }
+
+ //VV for GPRS printer - almost identical to getTextFileItemsDescription()
+    private function p_getTextFileItemsDescription()
+    {
+
+        $order = '';
+        if ($this->cart->contents()) {
+            foreach ($this->cart->contents() as $items) {
+                if ( !empty($items['options']['product_type']) && $items['options']['product_type'] == 'single' ) {
+
+                    $remove          = '';
+                    $extra           = '';
+                    $comment         = '';
+                    $variation_group = '';
+
+                    if (!empty($items['options']['variation_group'])) {
+                        $var_group = unserialize($items['options']['variation_group']);
+                        foreach ($var_group as $key => $val) {
+
+
+                            if (ucwords(strtoupper($val['variation_group']))=="SIZE" || number_format($val['variation_price'], 2)=='0.00'){
+                              $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
+                            }
+                            else
+                            {
+                              $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'], 2) . ')';
+                            }
+
+
+
+                           // $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ':' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'], 2) . ')';
+
+                        }
+                    }
+                    if (!empty($items['options']['comment'])) {
+                        $comment = '>COMMENTS: ' . $items['options']['comment'];
+                    }
+                    if (!empty($items['options']['extra'])) {
+                        $extra_ing = unserialize($items['options']['extra']);
+                        foreach ($extra_ing as $val) {
+
+                            $extra .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price, 2).')';
+                        }
+                    }
+
+                    if (!empty($items['options']['current'])) {
+                        $current_ing = unserialize($items['options']['current']);
+                        foreach ($current_ing as $val) {
+                            $remove .= '>NO: ' . ucwords($val->ingredient_name) . ',';
+                        }
+                    }
+
+                    $item_price=number_format($items['qty']*$items['price'],2);
+                    $order .= '|'.$items['qty'] . '|' . strtoupper($items['name']) .'|'.$item_price.'|'.$variation_group . $remove . $extra . $comment.';';
+
+                    //VV OK $order .= '|'.$items['qty'] . '|' . ucwords($items['name']) .'|'.number_format($items['price'],2).'|'.$variation_group . $remove . $extra . $comment.';';
+                    //orig$order .= '|'.$items['qty'] . '|' . ucwords($items['name']) . '(' . $variation_group . $remove . $extra . $comment . '),';
+
+                }
+                elseif ( !empty($items['options']['product_type']) && $items['options']['product_type'] == 'half_half' ) {
+                    $comment = '';
+                    if (!empty($items['options']['comment'])) {
+                        $comment       = '\nCOMMENTS: ' . $items['options']['comment'];
+                    }
+                    $first_product = unserialize($items['options']['first_product']);
+                    //error_log('ITEMS DATA IS '. var_dump($items));
+                    //   error_log('ITEMS DATA IS: ' . print_r($items));
+
+                    //number_format($first_product['default_price'] / 2, 2)
+
+                    $first_product_variation_group = '';
+                    if (!empty($first_product['variation_group'])) {
+                        $var_group = unserialize($first_product['variation_group']);
+                        foreach ($var_group as $key => $val) {
+
+                            if(ucwords(strtoupper($val['variation_group']))=='SIZE' || number_format($val['variation_price'] / 2, 2) =='0.00') {
+                             $first_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
+
+                            }
+                            else {
+                              $first_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'] / 2, 2) . ')';
+
+                            }
+                        }
+                    }
+                    $first_product_current_options = '';
+                    if (!empty($first_product['current'])) {
+                        $current_ing = unserialize($first_product['current']);
+                        foreach ($current_ing as $val) {
+                            $first_product_current_options .= '>NO: ' . ucwords($val->ingredient_name);
+                        }
+                    }
+                    $first_product_extra_options = '';
+                    if (!empty($first_product['extra'])) {
+                        $extra_ing = unserialize($first_product['extra']);
+                        foreach ($extra_ing as $val) {
+                            $first_product_extra_options .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price / 2, 2).')';
+
+                        }
+                    }
+
+                    $second_product                 = unserialize($items['options']['second_product']);
+                    $second_product_variation_group = '';
+                    if (!empty($second_product['variation_group'])) {
+                        $var_group = unserialize($second_product['variation_group']);
+                        foreach ($var_group as $key => $val) {
+
+                            if(ucwords(strtoupper($val['variation_group']))=='SIZE') {
+                             $second_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
+                            }
+                            else {
+                              $second_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'] / 2, 2) . ')';
+                            }
+                        }
+                    }
+                    $second_product_current_options = '';
+                    if (!empty($second_product['current'])) {
+                        $current_ing = unserialize($second_product['current']);
+                        foreach ($current_ing as $val) {
+                            $second_product_current_options .= '>NO: ' . ucwords($val->ingredient_name);
+                        }
+                    }
+                    $second_product_extra_options = '';
+                    if (!empty($second_product['extra'])) {
+                        $extra_ing = unserialize($second_product['extra']);
+                        foreach ($extra_ing as $val) {
+                            $second_product_extra_options .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price / 2, 2).')';
+                        }
+                    }
+
+                    $order .= '|'.$items['qty'] . '|HALF & HALF PIZZA' . '||'. '\n1st Half: ' . strtoupper($first_product['product_name']) . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . strtoupper($second_product['product_name']) .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options .$comment.';';
+
+                   // $order .= '|'.$items['qty'] . '|'. ucwords($items['name']) . '(First Half ' . ucwords($first_product['product_name']) . '
+                   //          (' . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '),
+                   //          Second Half ' . ucwords($second_product['product_name']) . '(' . $second_product_variation_group . $second_product_current_options . $second_product_extra_options . ')'
+                   //     . $comment . '),';
+                }//end elseif
+            }
+        }
+
+        return $order;
+    }
+
+//VV for printer end _getTextFileItemsDescription
+
+    //if order price is less than define total for credit card online then min order fee is added
+    function _getMinOrderCreditCardFee()
+    {
+        $cart_total = 0;
+        foreach ($this->cart->contents() as $items) {
+            if ($items['options']['loyalty'] != 'lp') {
+                $cart_total += $items['subtotal'];
+            }
+        }
+
+        $fee = $this->C_Model->getMinimumOrderFee();
+
+        $order_less_credit_card_fee = 0;
+        if (!empty($fee) && !empty($fee->cc) && !empty($fee->order_less)) {
+            if ($cart_total < $fee->cc) {
+                $order_less_credit_card_fee = $fee->order_less;
+            }
+        }
+        return $order_less_credit_card_fee;
+    }
+
+//_getMinOrderCreditCardFee
+
+    function _getPayMethodFee($data)
+    {
+        $res = $this->C_Model->getMinimumOrderFee();
+        if (!empty($res)) {
+
+            $cart_total = 0;
+            if ($this->cart->contents()) {
+                foreach ($this->cart->contents() as $items) {
+                    if ($items['options']['loyalty'] != 'lp') {
+                        $cart_total += $items['subtotal'];
+                    }
+                }
+            }
+
+            if ($data == 'Credit Card Online') {
+                if ($res->ccamt_flag == 'A') {
+                    return ($res->ccamt == 0) ? 0 : $res->ccamt;
+                }
+                elseif ($res->ccamt_flag == 'P') {
+                    return ($res->ccamt == 0) ? 0 : $cart_total / 100 * $res->ccamt;
+                }
+            }
+            elseif ($data == 'Paypal') {
+                if ($res->palamt_flag == 'A') {
+                    return ($res->palamt == 0) ? 0 : $res->palamt;
+                }
+                elseif ($res->palamt_flag == 'P') {
+                    return ($res->palamt == 0) ? 0 : $cart_total / 100 * $res->palamt;
+                }
+            }
+        }
+        else {
+            return 0;
+        }
     }
 }

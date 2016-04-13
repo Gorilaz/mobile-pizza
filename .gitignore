@@ -9,4 +9,5 @@ nbproject
 *.log
 application/logs/*
 application/cache/*
+templates/printer_files/*
 !.gitkeep

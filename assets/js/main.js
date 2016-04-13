@@ -129,15 +129,20 @@ function saveForm( action )
         if( data == 'login' )
         {
             window.location.href = '//' + location.host + '/menu';
-        } else if( data == 'order' )
+        }
+        else if( data == 'order' )
         {
             if( action == 'saveOrder' )
             {
                 saveOrder();
-            } else {
+            }
+            else
+            {
                 window.location.href = '//' + location.host + '/payment/socialLoker';
             }
-        } else {
+        }
+        else
+        {
             window.location.href = '//' + location.host + '/security/edit'
         }
     });

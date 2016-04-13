@@ -467,6 +467,104 @@ class Order_model extends CI_Model{
         return $halfFee->half_pizza_group_fee;
     }
 
+    /**
+     * 
+     */
+    public function getOrderNumber()
+    {
+        $row = $this->db->select('(order_number) AS order_number')->get('tbl_order_number')->row();
 
+        if( !empty($row) )
+        {
+            return $row->order_number;
+        }
 
+        return 1;
+    }
+
+//checkValidVoucher
+    
+    //VV almost the same like checkValidVoucher() above except the last condition $row>1 (instead fo $row>0), This functin is called form order.php after the data has been recarded to the mast_ord so need to increase
+    // the row number to filter out just recorded order
+    public function checkValidVoucher2($code) {
+        $now = date('Y-m-d');
+        $this->db->select('*');   // $this->db->select('discountper');
+        //   $this->db->where('expirydate >=', $now);
+        $this->db->where('status', 'active');
+        if (is_integer((int) $code))
+            $this->db->where('id', $code);
+        else
+            $this->db->where('couponcode', $code);
+        $res = $this->db->get('tbl_coupon');
+        if ($res->num_rows() > 0) {
+             $user=$this->phpsession->get('tmUserId');
+             $user=intval($user);
+             $code=trim($code);  
+             $row = $this->db->query("SELECT real_id FROM `mast_order` WHERE voucher_code = '$code' and userid = '$user'  and (coupon_type='discount' or coupon_type='freeproduct' or coupon_type='old')"); //
+             $row=$row->num_rows();
+            $d = $res->row();
+            if ($d->expirydate < $now)
+                return 'expired';
+            if ($row>1) { 
+              //  error_log('OLD (EXPIRED) ' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
+                return 'old';  //existing
+            } else { 
+                //error_log('OK' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
+                return $res->row();
+            }
+        } else {
+            $item = new stdClass();
+            $item->id = 0;
+            $item->couponcode = $code;
+            $item->coupondescription = '';
+            $item->coupontype = $code;
+            $item->discountper = 0;
+            $item->status = 'active';
+          //  error_log('item is ' . var_export($item, true));// die;
+            return $item;  //// non existing
+        }
+    }
+
+//getFreeProductDescription
+
+    public function getFreeProductDescription($code) {
+        $this->db->reconnect();
+        $now = date('Y-m-d');
+        $this->db->select('coupondescription');
+        $res = $this->db->get_where('tbl_coupon', array('coupontype' => 'freeproduct', 'expirydate >=' => $now, 'status' => 'active', 'couponcode' => trim($code)))->row();
+        if ($res) {
+            return $res->coupondescription;
+        } else {
+            return false;
+        }
+    }
+
+//getCouponDiscDescription
+
+    public function getCouponDiscDescription($code) {
+        $this->db->reconnect();
+        $now = date('Y-m-d');
+        $this->db->select('coupondescription');
+        $res = $this->db->get_where('tbl_coupon', array('expirydate >=' => $now, 'status' => 'active', 'id' => trim($code)))->row();
+        if ($res) {
+            return $res->coupondescription;
+        } else {
+            return false;
+        }
+    }
+
+//VV GPRS PRINTER models start
+
+    public function recordPrinterData($real_id,$printer_data,$p_status) {
+        $data=array('real_id' =>$real_id,
+                    'printer_data' =>$printer_data,
+                    'status' => $p_status,
+                    'customer_informed'=> false,
+                    'restaurant_answer'=>'',
+                    'deliver_in'=>'',
+                    'why_rejected'=>'',
+                    'restaurant_answered_at'=>'',
+                    );
+        $this->db->query($this->db->insert_string("gprs_printer", $data));
+    }
 }

@@ -400,6 +400,19 @@ class checkout extends WMDS_Controller {
             $this->twiggy->set('regText', $text);
         }
 */
+
+        $cart_items = $this->cart->contents();
+        $items = $this->getProductIdsWithCoupon();
+
+        foreach( $cart_items as $key => $cart_item )
+        {
+            $cart_items[$key]['coupon'] = $items[$cart_item['id']];
+        }
+
+        $this->twiggy->set('cart_items', $cart_items);
+
+        // echo '<pre>'; var_dump($cart_items); echo '</pre>'; die;
+
         /** verify if low order */
         if($surcharge->order_less > 0){
             if(isset($check['couponDiscount']) && $check['couponDiscount'] ){

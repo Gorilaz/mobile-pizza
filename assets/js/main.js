@@ -1256,51 +1256,73 @@ $( document ).on('pageinit', '#page-checkout', function() {
      */
     function discountPrice( discountpercet, type )
     {
-        type = type || '';
-        $('#has_discount').data('discountper', discountpercet);
-        var total = $('.order-total-price').data('default');
+        type = !!type ? type : '';
 
-        var couponPriceTotal = 0;
-        $('.order-subtotal').find('.order-price').each(function(){
-            if( $(this).css('display') != 'none' )
+        $('#has_discount').attr('data-discountper', discountpercet);
+
+        var defaultTotal = parseFloat($('.order-total-price').data('default')), 
+            total = 0, totalDiscount = 0;
+
+        var orderPrice, orderPriceIndex, 
+            orderPrices = $('.order-subtotal').find('.order-price').get();
+
+        for( orderPriceIndex in orderPrices )
+        {
+            if( orderPrices.hasOwnProperty(orderPriceIndex) )
             {
-                var subTotal = $(this).data('value');
-                if( $(this).data('coupon') == 0 )
+                orderPrice = orderPrices[orderPriceIndex];
+
+                if( $(orderPrice).is(':visible') )
                 {
-                    total = total - subTotal;
-                    couponPriceTotal = couponPriceTotal + subTotal;
+                    var subTotal = parseFloat($(orderPrice).data('value'));
+
+                    if( $(orderPrice).data('coupon') == 1 )
+                    {
+                        var discount = parseFloat(applyPercentForPrice(discountpercet, subTotal));
+
+                        totalDiscount += discount;
+
+                        total += (subTotal - discount);
+                    }
+                    else
+                    {
+                        total += subTotal;
+                    }
                 }
             }
-        });
-        var discount = applyPercentForPrice(discountpercet, total);
-        var newTotal = prepareMathFloatValues(total, discount, '-');
-        newTotal = prepareMathFloatValues(newTotal, couponPriceTotal);
-       
-        console.log(newTotal);
-       
-        // add holiday fee
-        if( $('#holiday-fee').data('fee') != 'no' )
-        {
-            var feePrice = applyPercentForPrice( $('#holiday-fee').data('fee'), total );
-            $('#fee-prince').html( '+' + feePrice );
-            newTotal = prepareMathFloatValues(newTotal, feePrice);
         }
 
-        if( type == 'low_amount' || type == 'online_low_amount' )
+        // add holiday fee
+        if( $('#holiday-fee').data('fee') !== 'no' )
         {
-            newTotal = prepareMathFloatValues(newTotal, rules.order_less);
-            $('#low_order_fee').html( '+$' + rules.order_less );
+            var feePrice = parseFloat(applyPercentForPrice(parseFloat($('#holiday-fee').data('fee')), total));
+
+            $('#fee-prince').html('+$' + feePrice.toFixed(2));
+
+            total = parseFloat(prepareMathFloatValues(total, feePrice));
+        }
+
+        if( type == 'low_amount' || 
+            type == 'online_low_amount' )
+        {
+            total = parseFloat(prepareMathFloatValues(total, rules.order_less));
+
+            $('#low_order_fee').html('+$' + rules.order_less);
+
             $('#low_order').removeClass('hide');
         }
-        if( type == 'online' || type == 'online_low_amount' )
+
+        if( type == 'online' || 
+            type == 'online_low_amount' )
         {
             $('#icon-remove-coupon').removeClass('hide');
+
             $('#coupon-des').html('Online Order Discount');
         }
 
-        $('.order-total-price').html( '$ ' + newTotal );
-        $('.order-total-price').data( 'value', newTotal );
-        $('#coupon-dis').html( '-$' + discount );
+        $('.order-total-price').html( '$ ' + total.toFixed(2) );
+        $('.order-total-price').attr( 'data-value', total.toFixed(2) );
+        $('#coupon-dis').html( '-$' + discount.toFixed(2) );
     }
 
     /**  Coupon  */
@@ -1320,7 +1342,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
         } else {
             if( $('#coupon-des').html() != '' )
             {
-                $('#icon-remove-coupon').click();
+                $('#icon-remove-coupon')[0].click();
             }
             
             $('#tr-coupon').addClass('hide');

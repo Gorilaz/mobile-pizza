@@ -25,16 +25,26 @@
                         <td id="subtotal">${{ total }}</td>
                     </tr>
                     {% set oldTotal = total %}
+
                     {% if coupon is defined %}
-                        {% set discount = (oldTotal/100)*coupon.discount %}
-                        {% set discount = discount %}
-                        {% set total = total - discount %}
+                        {% set total = 0 %}
+                        {% set totalDiscount = 0 %}
+
+                        {% for cart_item in cart_items %}
+                            {% if cart_item.coupon == 1 %}
+                                {% set discount = ( cart_item.subtotal / 100 ) * coupon.discount %}
+                                {% set totalDiscount = totalDiscount + discount %}
+                                {% set total = total + ( cart_item.subtotal - discount ) %}
+                            {% else %}
+                                {% set total = total + cart_item.subtotal %}
+                            {% endif %}
+                        {% endfor %}
                         <tr>
                             <td>
                                 <b>{{ coupon.name }}</b>
-                                <input type="hidden" id="discount" value="{{ discount }}">
+                                <input type="hidden" id="discount" value="{{ totalDiscount }}">
                             </td>
-                            <td id="subtotal">-${{ discount|number_format(2, '.', '') }}</td>
+                            <td id="subtotal">-${{ totalDiscount|number_format(2, '.', '') }}</td>
                         </tr>
                     {% endif %}
                     {% if hasDeliveryFee == 1 %}
@@ -64,7 +74,7 @@
 
                     {% if holidayFee is defined %}
                         <tr>
-                            {% set holidatyPrice = (oldTotal/100)*holidayFee %}
+                            {% set holidatyPrice = ( total / 100 ) * holidayFee %}
                             {% set total = total + holidatyPrice %}
                             <td><b>Public Holiday Fee ({{ holidayFee }}%)</b></td>
                             <td>+${{ holidatyPrice|number_format(2, '.', '') }}</td>

@@ -28,7 +28,9 @@
                         {%  for item in cart %}
 
                             <tr class="item-{{ item.rowid }}">
-                                <td class="order-item"><h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2></td>
+                                <td class="order-item">
+                                    <h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2>
+                                </td>
                                 {% if item.points is defined %}
                                     <td class="order-price"></td>
                                 {% else %}

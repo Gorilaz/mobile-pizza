@@ -138,7 +138,7 @@ function saveForm( action )
             }
             else
             {
-                window.location.href = '//' + location.host + '/payment/socialLoker';
+                // window.location.href = '//' + location.host + '/payment/socialLoker';
             }
         }
         else
@@ -1148,7 +1148,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
     $(document).off('click','#voucher');
     $(document).off('click','.remove-order-item');
     $(document).off('change','.choose-coupon');
-    $(document).off('click','#td-social a');
+    // $(document).off('click','#td-social a');
 
     function submitOrder() {
         if($('.later').is(':checked')){
@@ -1454,23 +1454,23 @@ $( document ).on('pageinit', '#page-checkout', function() {
      */
 
 
-    $(document).on('click', '#td-social a', function(){
+    /* $(document).on('click', '#td-social a', function(){
 
         $('#show-social-loker').removeClass('hide');
-    });
+    }); */
 
     /**
      * Need to check is present global vars
      * @type String|FACEBOOKAPPID
      */
-    var FBAppID = '';
+    /* var FBAppID = '';
     if( typeof FACEBOOKAPPID == 'string' )
     {
         FBAppID = FACEBOOKAPPID;
-    }
+    } */
     /* use after for Facebook App ID - FBAppID */
 
-    $("#social-loker").sociallocker({
+    /* $("#social-loker").sociallocker({
 
         buttons: {
             order: [
@@ -1502,7 +1502,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
             }
         }
     });
-    $('.onp-sociallocker-text').remove();
+    $('.onp-sociallocker-text').remove(); */
 
 });
 

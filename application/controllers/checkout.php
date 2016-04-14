@@ -80,7 +80,7 @@ class checkout extends WMDS_Controller {
             }
             $hasSocialLocker = $this->products_model->getSocialLocker();
             if($hasSocialLocker){
-                $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
+                // $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
             }
             $this->twiggy->set('coupons', $coupons);
             /** end Coupons */

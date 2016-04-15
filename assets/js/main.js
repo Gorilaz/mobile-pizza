@@ -810,7 +810,7 @@ function populateIngredients( variationId, pizzaNo )
 
         // move to top search fields
         $(document).on('focus', '.searchIngredientsId', function( env ){
-            $('html,body').animate({scrollTop: $(this).offset().top}, 800);
+            $('#ingredients').animate({scrollTop: $(this).offset().top}, 800);
         });
 
         calculateOrderPrice();

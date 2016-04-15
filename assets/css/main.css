@@ -1309,15 +1309,19 @@ h4.center{
 
 .footer-help-line {
     z-index: 1010;
-    bottom: 65px;
+    bottom: -60px;
     width: 50%;
     left: 25%;
     padding: 10px;
-    background-color: white;
-    border: 1px solid #4693f0;
+    background-color:rgba(0,0,0,.4);
+    border-radius: 5px;
+    border: none;
     text-align: center;
+    text-shadow: none;
+    color: white;
+    box-shadow: 5px 5px 5px #cccccc;
 }
-
+/*
 .footer-help-line::before, .footer-help-line::after {
     content: ''; 
     position: absolute;
@@ -1330,4 +1334,4 @@ h4.center{
 .footer-help-line::after {
     border-top: 12px solid white; 
     bottom: -20px; 
-}
+}*/

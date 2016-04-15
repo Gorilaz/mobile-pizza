@@ -325,7 +325,11 @@
             </div>
         {% endif %}
 
-        <div class="checkout-footer control-4" data-title="">
+        {% if isopen.isOpen %}
+            <div class="checkout-footer control-4" data-title="Please choose future delivery/pick up time bellow">
+        {% else %}
+            <div class="checkout-footer control-4" data-title="Sorry, shop is closed now. Please choose future delivery/pick up time bellow">
+        {% endif %}
 
             <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
                 <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>

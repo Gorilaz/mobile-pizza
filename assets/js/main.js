@@ -424,16 +424,27 @@ function manageDoneButtonForRightPanel()
  * @param jquery obj lineObj
  * @returns true - show or false - hide
  */
+helpIntervalForFooterLine = null;
 function manageHelpFooterLine( lineObj )
 {
     if( lineObj ) {
         if( lineObj.data('title') )
         {
-            $('#id-footer-help-line').html(lineObj.data('title')).fadeOut(200).fadeIn(500);
+            if( helpIntervalForFooterLine != null ) {
+                clearInterval(helpIntervalForFooterLine);
+            }
+            $('#id-footer-help-line').html(lineObj.data('title'))
+                    .show().stop().animate({ bottom: "60px" }, 500);
+            helpIntervalForFooterLine = setInterval(function(){
+                $('#id-footer-help-line').stop().animate({ bottom: "-60px" }, 500);
+            }, 2500);
             return true;
         }
     }
-    $('#id-footer-help-line').fadeOut(500);
+    if( helpIntervalForFooterLine != null ) {
+        clearInterval(helpIntervalForFooterLine);
+    }
+    $('#id-footer-help-line').stop().animate({ bottom: "-60px" }, 500);
     return false;
 } // manageHelpFooterLine
 

@@ -338,8 +338,12 @@ function changeMobile()
  */
 function verifyClean()
 {
-    $('#verify-div').hide();
     $('#form_mobile').removeAttr('readonly');
+    if( $('#form_mobile').data('current') != '' ) {
+        $('#verify-div').hide();
+    } else {
+        $('#verify-div').show();
+    }
     $('#sms-error-label').hide();
     $('#sms-code').hide();
     $('#sms-code').data('final', 'no');

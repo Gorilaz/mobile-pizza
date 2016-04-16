@@ -817,103 +817,253 @@ function populateIngredients( variationId, pizzaNo )
     })
     .done(function(data) {
 
-        var content = '<form class="order-ingredients" data-pizza="'+ pizzaNo +'">';
-        content += '<ul data-role="listview" data-inset="true" data-divider-theme="c" class="ingredients-list">';
+        var content = $('<form>')
+            .addClass('order-ingredients')
+            .append(
+                $('<ul>')
+                    .addClass('ingredients-list fixed')
+                    .attr({
+                        'data-divider-theme': 'c', 
+                        'data-inset': 'true', 
+                        'data-role': 'listview'
+                    }), 
+                $('<ul>')
+                    .addClass('ingredients-list')
+                    .attr({
+                        'data-divider-theme': 'c', 
+                        'data-inset': 'true', 
+                        'data-role': 'listview'
+                    })
+            )
+            .attr({
+                'data-pizza': pizzaNo
+            });
 
-        var contentIncluded = '';
-        var contentExtra    = '';
+        var contentFixed = new Array;
+        var contentIncluded = new Array;
+        var contentExtra = new Array;
 
         if(data) {
 
             $.each(data, function( type, items ) {
+
                 /**
                  * Included items comes as a single array
                  */
-                if(type == 'included') {
-                    contentIncluded += '<li data-role="list-divider">Included</li>';
-                    contentIncluded += '<li>';
-                    contentIncluded += '<fieldset data-role="controlgroup">';
-                    $.each(items, function( key, item ) {
-                        contentIncluded += '<input type="checkbox" name="ingredient[]" ';
-                        contentIncluded += 'id="ingredient-'+item.ingredient_id+'" value="'+item.ingredient_id+'" ';
-                            //if(item.status == 'DF') {
-                        contentIncluded += 'checked data-default="1" ';
-                            //} else {
-                            //    content += 'data-default="1" ';
-                            //}
-                        contentIncluded += 'data-price="'+ item.price +'" data-theme="a" class="p-ingredient">';
-                        contentIncluded += '<label for="ingredient-'+item.ingredient_id+'">'+item.ingredient_name+' ';
-                        contentIncluded += '</label>';
-//                        if(pizzaNo == 2) {
-//                            content += ' <span class="price">$'+parseFloat(item.price)/2+'</span> </label>';
-//                        } else {
-//                            content += ' <span class="price">$'+item.price+'</span> </label>';
-//                        }
-                    });
+                if( type === 'included' )
+                {
+                    contentFixed.unshift(
+                        $('<li>')
+                            .append(
+                                $('<fieldset>')
+                                    .attr({
+                                        'data-role': 'controlgroup'
+                                    })
+                                    .append(
+                                        (function() {
+                                            var item, key, 
+                                                returnedBy = new Array;
 
-                    contentIncluded += '</fieldset>';
-                    contentIncluded += '</li>';
+                                            for( key in items )
+                                            {
+                                                if( items.hasOwnProperty(key) )
+                                                {
+                                                    item = items[key];
+
+                                                    returnedBy.push(
+                                                        $('<input>')
+                                                            .addClass('p-ingredient')
+                                                            .attr({
+                                                                'checked': 'checked', 
+                                                                'data-default': '1', 
+                                                                'data-price': item.price, 
+                                                                'data-theme': 'a', 
+                                                                'id': 'ingredient-' + item.ingredient_id, 
+                                                                'name': 'ingredient[]', 
+                                                                'type': 'checkbox', 
+                                                                'value': item.ingredient_id
+                                                            }), 
+                                                        $('<label>')
+                                                            .append(
+                                                                document.createTextNode(item.ingredient_name)
+                                                            )
+                                                            .attr({
+                                                                'for': 'ingredient-' + item.ingredient_id
+                                                            })
+                                                    );
+                                                }
+                                            }
+
+                                            return returnedBy;
+                                        })()
+                                    )
+                            )
+                    );
+
+                    contentFixed.unshift(
+                        $('<li>')
+                            .append(
+                                document.createTextNode('Included')
+                            )
+                            .attr({
+                                'data-role': 'list-divider'
+                            })
+                    );
                 }
+
                 /**
                  * Extra ingredients comes grouped by subcategory
                  */
-                else {
-                    contentExtra += '<li data-role="list-divider">Extra</li>';
-                    contentExtra += '<li data-role="list-divider" class="item-search-divider"><input type="search" name="searchIngredients" class="searchIngredientsId" value="" data-mini="true" data-theme="a" /></li>';
+                else
+                {
+                    contentFixed.push(
+                        $('<li>')
+                            .append(
+                                document.createTextNode('Extra')
+                            )
+                            .attr({
+                                'data-role': 'list-divider'
+                            })
+                    );
 
-                    $.each(items, function( ecategory, ingredients ) {
-                        contentExtra += '<li>';
-                        //contentExtra += '<div data-role="collapsible" data-inset="false" data-theme="a" data-inset="false" data-content-theme="a">';
-                        //contentExtra += '<h4 class="no-margin">'+ecategory+'</h4>';
-                        contentExtra += '<fieldset data-role="controlgroup">';
+                    contentFixed.push(
+                        $('<li>')
+                            .append(
+                                $('<input>')
+                                    .addClass('searchIngredientsId')
+                                    .attr({
+                                        'data-mini': 'true', 
+                                        'data-theme': 'a', 
+                                        'name': 'searchIngredients', 
+                                        'type': 'search', 
+                                        'value': ''
+                                    })
+                            )
+                            .addClass('item-search-divider')
+                            .attr({
+                                'data-role': 'list-divider'
+                            })
+                    );
 
-//                        content += '<legend>'+ecategory+'</legend>';
+                    var ecategory, ingredients;
 
-                        $.each(ingredients, function( key, item ) {
-//                            content += '<input type="checkbox" name="ingredient['+item.ingredient_id+']" id="ingredient['+item.ingredient_id+']" value="'+item.ingredient_id+'" data-theme="a">';
-//                            content += '<label for="ingredient['+item.ingredient_id+']">'+item.ingredient_name+' <span class="price">$'+item.price+'</span> </label>';
+                    for( ecategory in items )
+                    {
+                        if( items.hasOwnProperty(ecategory) )
+                        {
+                            ingredients = items[ecategory];
 
-                            contentExtra += '<input type="checkbox" name="ingredient[]" ';
-                            contentExtra += 'id="ingredient-'+item.ingredient_id+'" value="'+item.ingredient_id+'" ';
-                                //if(item.status == 'DF') {
-                                //    content += 'checked data-default="1" ';
-                                //} else {
-                            contentExtra += 'data-default="0" ';
-                            var str = item.ingredient_name;
-                            contentExtra += 'data-value="' + str.replace(/"/gi, '\"') + '" ';
-                                //}
-                            contentExtra += 'data-price="'+ item.price +'" data-theme="a" class="p-ingredient">';
-                            contentExtra += '<label for="ingredient-'+item.ingredient_id+'">'+item.ingredient_name+' ';
-                            if(pizzaNo == 2) {
-                                contentExtra += ' <span class="price">$'+parseFloat(item.price)/2+'</span>';
-                            } else {
-                                contentExtra += ' <span class="price i-full-price">$'+item.price+'</span>';
-                                contentExtra += ' <span class="price i-half-price hide">$'+parseFloat(item.price)/2+'</span>';
-                            }
-                            contentExtra += '</label>';
-                        });
+                            contentExtra.push(
+                                $('<li>')
+                                    .append(
+                                        $('<fieldset>')
+                                            .append(
+                                                (function() {
+                                                    var item, key, 
+                                                        returnedBy = new Array;
 
+                                                    for( key in ingredients )
+                                                    {
+                                                        if( ingredients.hasOwnProperty(key) )
+                                                        {
+                                                            item = ingredients[key];
 
-                        contentExtra += '</fieldset>';
-                        //contentExtra += '</div>';
-                        contentExtra += '</li>';
-                    });
-                    
+                                                            returnedBy.push(
+                                                                $('<input>')
+                                                                    .addClass('p-ingredient')
+                                                                    .attr({
+                                                                        'data-default': '0', 
+                                                                        'data-price': item.price, 
+                                                                        'data-theme': 'a', 
+                                                                        'data-value': item.ingredient_name.replace(/"/gi, '\"'), 
+                                                                        'id': 'ingredient-' + item.ingredient_id, 
+                                                                        'name': 'ingredient[]', 
+                                                                        'type': 'checkbox', 
+                                                                        'value': item.ingredient_id
+                                                                    }), 
+                                                                $('<label>')
+                                                                    .append(
+                                                                        (function() {
+                                                                            var _returnedBy = new Array;
+
+                                                                            _returnedBy.push(
+                                                                                document.createTextNode(item.ingredient_name + ' ')
+                                                                            );
+
+                                                                            if( pizzaNo == 2 )
+                                                                            {
+                                                                                _returnedBy.push(
+                                                                                    $('<span>')
+                                                                                        .append(
+                                                                                            document.createTextNode('$' + (parseFloat(item.price) / 2))
+                                                                                        )
+                                                                                        .addClass('price')
+                                                                                );
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                _returnedBy.push(
+                                                                                    $('<span>')
+                                                                                        .append(
+                                                                                            document.createTextNode('$' + item.price)
+                                                                                        )
+                                                                                        .addClass('price i-full-price')
+                                                                                );
+
+                                                                                _returnedBy.push(
+                                                                                    $('<span>')
+                                                                                        .append(
+                                                                                            document.createTextNode('$' + (parseFloat(item.price) / 2))
+                                                                                        )
+                                                                                        .addClass('price i-half-price hide')
+                                                                                );
+                                                                            }
+
+                                                                            return _returnedBy;
+                                                                        })()
+                                                                    )
+                                                                    .attr({
+                                                                        'for': 'ingredient-' + item.ingredient_id
+                                                                    })
+                                                            );
+                                                        }
+                                                    }
+
+                                                    return returnedBy;
+                                                })()
+                                            )
+                                            .attr({
+                                                'data-role': 'controlgroup'
+                                            })
+                                    )
+                            );
+                        }
+                    }                    
                 }
             });
-            content += contentIncluded;
-            content += contentExtra;
 
+            content
+                .find('.ingredients-list.fixed')
+                .append(contentFixed);
+
+            content
+                .find('.ingredients-list:not(.fixed)')
+                .append(contentExtra);
         } else {
-            content += '<li>This product doesn\'t have ingredients that you can modify</li>';
+            content.append(
+                $('<li>')
+                    .append(
+                        document.createTextNode('This product doesn\'t have ingredients that you can modify')
+                    )
+            );
         }
 
-        content += '</ul>';
-        //content += '<p class="side-close-button"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></p>';
-        content += '</form>';
-       // content += '<div class="right-panel-footer"><a href="' + targetBlock +'" data-rel="close" data-role="button" class="panel-list btn btn-grey ui-link" data-inline="true" data-mini="true">Done</a></div>';
-
         $(targetBlock).html(content);
+
+            content
+                .find('.ingredients-list:not(.fixed)')
+                .outerHeight($(window).outerHeight() - content.find('.ingredients-list.fixed').outerHeight());
+
         $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
                 '" data-rel="close" data-role="button" class="panel-list btn btn-blue ui-link done-btn-right-panel"\n\
                      data-inline="true" data-mini="true">Done</a></p></div>');
@@ -1289,19 +1439,32 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
                 if( $(orderPrice).is(':visible') )
                 {
-                    var subTotal = parseFloat($(orderPrice).data('value'));
+                    var subTotal = parseFloat($(orderPrice).data('value')), 
+                        qty = parseInt($(orderPrice).data('qty'), 10);
 
-                    if( $(orderPrice).data('coupon') == 1 )
+                    if( !isNaN(qty) )
                     {
-                        var discount = parseFloat(applyPercentForPrice(discountpercet, subTotal));
+                        subTotal *= qty;
+                    }
 
-                        totalDiscount += discount;
-
-                        total += (subTotal - discount);
+                    if( isNaN(subTotal) )
+                    {
+                        continue;
                     }
                     else
                     {
-                        total += subTotal;
+                        if( $(orderPrice).data('coupon') == 1 )
+                        {
+                            var discount = parseFloat(applyPercentForPrice(discountpercet, subTotal));
+
+                            totalDiscount += discount;
+
+                            total += (subTotal - discount);
+                        }
+                        else
+                        {
+                            total += subTotal;
+                        }
                     }
                 }
             }
@@ -1337,12 +1500,13 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
         $('.order-total-price').html( '$ ' + total.toFixed(2) );
         $('.order-total-price').attr( 'data-value', total.toFixed(2) );
-        $('#coupon-dis').html( '-$' + discount.toFixed(2) );
+        $('#coupon-dis').html( '-$' + totalDiscount.toFixed(2) );
     }
 
     /**  Coupon  */
     $(document).on( 'change', '.choose-coupon', function(){
         var discountpercet = $(this).data('discount');
+
         if( discountpercet == 'other' )
         {
             $('#tr-coupon').removeClass('hide');
@@ -1357,6 +1521,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
         } else {
             if( $('#coupon-des').html() != '' )
             {
+                $(this).attr('to-applying', '1');
+
                 $('#icon-remove-coupon')[0].click();
             }
             
@@ -1426,6 +1592,10 @@ $( document ).on('pageinit', '#page-checkout', function() {
             $('#coupon-des').html('');
             $('#coupon-dis').html('');
             $('#coupon').val('');
+
+            $('[to-applying="1"]')[0].click();
+
+            $('[to-applying="1"]').removeAttr('to-applying');
         } );
     });
     /**  END Coupon  */

@@ -88,7 +88,26 @@ class checkout extends WMDS_Controller {
         }
         
         $datesForOrder = $this->general->shopSchedule();
+
         $cartContents = $this->cart->contents();
+
+        foreach( $cartContents as $key => $cart_item )
+        {
+            if( $cart_item['product_type'] === 'half' )
+            {
+                $ids_parts = explode('_', $cart_item['id']);
+
+                if( is_array($ids_parts) && isset($ids_parts[0]) && isset($ids_parts[1]) )
+                {
+                    $first_half_id = $ids_parts[0];
+                    $second_half_id = $ids_parts[1];
+
+                    $cartContents[$key]['first_half'] = $this->products_model->getProductById($first_half_id);
+                    $cartContents[$key]['second_half'] = $this->products_model->getProductById($second_half_id);
+                }
+            }
+        }
+// echo '<pre>'; print_r($cartContents); echo '</pre>'; die;
         $this->twiggy->set(array(
                 'productsWithCoupon'          => $items,
                 'cart'      => $cartContents,
@@ -99,12 +118,14 @@ class checkout extends WMDS_Controller {
                 'schedule'  => array('forTwig' => $datesForOrder['forTwig'], 'forJquery' => json_encode($datesForOrder['forJquery']))
             )
         );
+
         $this->twiggy->set('page', array(
             'title'  => 'Checkout',
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-checkout'
         ));
+
         $this->twiggy->template('checkout/order-review')->display();
     }
 

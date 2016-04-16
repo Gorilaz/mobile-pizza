@@ -828,6 +828,10 @@ h1 {
     font-weight: bold;
     border-bottom: 1px solid #666;
 }
+.order-subtotal.without-border-bottom td{
+    border-bottom: none !important;
+    font-weight: normal !important;
+}
 .order-item-padded {
     padding-left: 20px;
 }
@@ -1011,6 +1015,13 @@ h1 {
 
 
 /** Ingredients ------------------------------------------------------------------------------------------------------*/
+#ingredients, #ingredients2 {
+    position: fixed !important;
+    overflow: hidden !important;
+}
+.ingredients-list:not(.fixed) {
+    overflow-y: auto;
+}
 .ingredients-list li, .ingredients-list fieldset {
     padding: 0;
     margin: 0 !important;

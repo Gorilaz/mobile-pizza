@@ -436,7 +436,7 @@ function manageHelpFooterLine( lineObj )
             $('#id-footer-help-line').html(lineObj.data('title'))
                     .show().stop().animate({ bottom: "60px" }, 500);
             helpIntervalForFooterLine = setInterval(function(){
-                $('#id-footer-help-line').stop().animate({ bottom: "-60px" }, 500);
+                $('#id-footer-help-line').stop().animate({ bottom: "-200px" }, 500);
             }, 2500);
             return true;
         }
@@ -444,7 +444,7 @@ function manageHelpFooterLine( lineObj )
     if( helpIntervalForFooterLine != null ) {
         clearInterval(helpIntervalForFooterLine);
     }
-    $('#id-footer-help-line').stop().animate({ bottom: "-60px" }, 500);
+    $('#id-footer-help-line').stop().animate({ bottom: "-200px" }, 500);
     return false;
 } // manageHelpFooterLine
 
@@ -810,7 +810,9 @@ function populateIngredients( variationId, pizzaNo )
 
         // move to top search fields
         $(document).on('focus', '.searchIngredientsId', function( env ){
-            $('#ingredients').animate({scrollTop: $(this).offset().top}, 800);
+console.log($(this).offset().top);
+
+            //$('#ingredients').animate({scrollTop: $(this).offset().top}, 800);
         });
 
         calculateOrderPrice();
@@ -936,7 +938,8 @@ function populateIngredients( variationId, pizzaNo )
                                         'data-theme': 'a', 
                                         'name': 'searchIngredients', 
                                         'type': 'search', 
-                                        'value': ''
+                                        'value': '',
+                                        'autocomplete': 'off'
                                     })
                             )
                             .addClass('item-search-divider')

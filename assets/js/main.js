@@ -138,7 +138,7 @@ function saveForm( action )
             }
             else
             {
-                // window.location.href = '//' + location.host + '/payment/socialLoker';
+                window.location.href = '//' + location.host + '/checkout';
             }
         }
         else
@@ -460,6 +460,15 @@ $( document ).on("pageinit", "#page-home", function() {
 
 });
 
+function resizeIngredients(selector) {
+    var selector = !!selector ? selector : 'ingredients';
+
+    $('#' + selector + ' .ingredients-list:not(.fixed)')
+        .outerHeight($(window).outerHeight() - 
+            $('#' + selector + ' .ingredients-list.fixed').outerHeight() - 
+            $('#' + selector).next('[id*="doneBtnForRightPanelingredients"]').find('.side-close-button').height());
+}
+
 /***********************************************************************************************************************
  * Events used on product page
  * @url /product/id
@@ -469,15 +478,23 @@ $( document ).on("pageinit", "#page-product", function() {
     
     $( document ).on("panelclose", "#ingredients", function(){
         manageDoneButtonForRightPanel();
+
+        resizeIngredients();
     });
     $( document ).on("panelopen", "#ingredients", function(){
         manageDoneButtonForRightPanel();
+
+        resizeIngredients();
     });
     $( document ).on("panelclose", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
+
+        resizeIngredients('ingredients2');
     });
     $( document ).on("panelopen", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
+
+        resizeIngredients('ingredients2');
     });
 
     /* Unbind everything */
@@ -809,10 +826,39 @@ function populateIngredients( variationId, pizzaNo )
         });
 
         // move to top search fields
-        $(document).on('focus', '.searchIngredientsId', function( env ){
-//console.log($(this).offset().top);
-            //$('#ingredients').animate({scrollTop: $(this).offset().top}, 800);
-        });
+        $(document)
+            .on('focus', '#ingredients .searchIngredientsId', function( event ) {
+                $('#ingredients')
+                    .find('.ingredients-list.fixed')
+                    .find('.included-header, .included-content')
+                    .slideUp(800, function() {
+                        resizeIngredients();
+                    });
+            })
+            .on('blur', '#ingredients .searchIngredientsId', function( event ) {
+                $('#ingredients')
+                    .find('.ingredients-list.fixed')
+                    .find('.included-header, .included-content')
+                    .slideDown(800, function() {
+                        resizeIngredients();
+                    });
+            })
+            .on('focus', '#ingredients2 .searchIngredientsId', function( event ) {
+                $('#ingredients2')
+                    .find('.ingredients-list.fixed')
+                    .find('.included-header, .included-content')
+                    .slideUp(800, function() {
+                        resizeIngredients('ingredients2');
+                    });
+            })
+            .on('blur', '#ingredients2 .searchIngredientsId', function( event ) {
+                $('#ingredients2')
+                    .find('.ingredients-list.fixed')
+                    .find('.included-header, .included-content')
+                    .slideDown(800, function() {
+                        resizeIngredients('ingredients2');
+                    });
+            });
 
         calculateOrderPrice();
     })
@@ -855,6 +901,7 @@ function populateIngredients( variationId, pizzaNo )
                 {
                     contentFixed.unshift(
                         $('<li>')
+                            .addClass('included-content')
                             .append(
                                 $('<fieldset>')
                                     .attr({
@@ -903,6 +950,7 @@ function populateIngredients( variationId, pizzaNo )
 
                     contentFixed.unshift(
                         $('<li>')
+                            .addClass('included-header')
                             .append(
                                 document.createTextNode('Included')
                             )
@@ -1062,13 +1110,41 @@ function populateIngredients( variationId, pizzaNo )
 
         $(targetBlock).html(content);
 
+        $(targetBlock)
+            .after(
+                $('<div>')
+                    .addClass('right-panel-footer ui-panel-closed')
+                    .append(
+                        $('<p>')
+                            .addClass('side-close-button')
+                            .append(
+                                $('<a>')
+                                    .addClass('panel-list btn btn-blue ui-link done-btn-right-panel')
+                                    .append(
+                                        document.createTextNode('Done')
+                                    )
+                                    .attr({
+                                        'data-inline': 'true', 
+                                        'data-mini': 'true', 
+                                        'data-rel': 'close', 
+                                        'data-role': 'button', 
+                                        'href': targetBlock
+                                    })
+                            )
+                    )
+                    .attr({
+                        'id': 'doneBtnForRightPanelingredients' + pizzaNo
+                    })
+            );
+/* console.log($(window).outerHeight(), content.find('.ingredients-list.fixed').outerHeight(), $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height());
+console.log($(window).outerHeight() - 
+                    content.find('.ingredients-list.fixed').outerHeight() - 
+                    $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height()); */
             content
                 .find('.ingredients-list:not(.fixed)')
-                .outerHeight($(window).outerHeight() - content.find('.ingredients-list.fixed').outerHeight());
-
-        $(targetBlock).after('<div id="doneBtnForRightPanelingredients'+pizzaNo+'" class="right-panel-footer ui-panel-closed"><p class="side-close-button"><a href="' + targetBlock +
-                '" data-rel="close" data-role="button" class="panel-list btn btn-blue ui-link done-btn-right-panel"\n\
-                     data-inline="true" data-mini="true">Done</a></p></div>');
+                .outerHeight($(window).outerHeight() - 
+                    content.find('.ingredients-list.fixed').outerHeight() - 
+                    $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height());
         
         if(data) {
             $('.ingredientsHolder').removeClass('hide');

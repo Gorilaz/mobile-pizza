@@ -54,7 +54,7 @@
                             {% for prod in cat.items %}
                                 <li data-filtertext="{{ prod.product_name }} {{ prod.description|striptags }}">
 
-                                    <a href="{{ base_url }}product/{{ prod.product_id }}{% if cat.category_name == 'FREE' %}/points{% endif %}"
+                                    <a href="{{ base_url }}{% if prod.friendly_url is empty %}product/{{ prod.product_id }}{% else %}{{ prod.friendly_url }}{% endif %}{% if cat.category_name == 'FREE' %}/points{% endif %}"
                                        data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
                                         {% if cat.withImage %}
                                             {% if prod.product_image is not empty  %}
@@ -93,7 +93,7 @@
                             <ul data-role="listview" data-split-theme="d" data-inset="true">
                                 {% for prod in products.loyalty.items %}
                                         <li>
-                                            <a href="{{ base_url }}product/{{ prod.product_id }}/points" data-transition="none"
+                                            <a href="{{ base_url }}{% if prod.friendly_url is empty %}product/{{ prod.product_id }}{% else %}{{ prod.friendly_url }}{% endif %}/points" data-transition="none"
                                                data-transition="none" {% if settings.loyalty_page == 'disable' %} class="no-image-product" {% endif %}>
 
                                                 {% if settings.loyalty_page == 'enable' %}
@@ -133,7 +133,7 @@
                                     {% for prod in cat.items %}
                                         {% if cat.category_name == 'FREE' and loyalityProgram == 'disable' %}
                                         {% else %}
-                                            <li><a href="{{ base_url }}product/{{ prod.product_id }}{%- if cat.category_name == 'FREE' -%}/points{%- endif -%}"
+                                            <li><a href="{{ base_url }}{% if prod.friendly_url is empty %}product/{{ prod.product_id }}{% else %}{{ prod.friendly_url }}{% endif %}{%- if cat.category_name == 'FREE' -%}/points{%- endif -%}"
                                                    data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
                                                     {% if cat.withImage %}
                                                         {% if prod.product_image is not empty  %}

@@ -105,9 +105,6 @@ class Page extends WMDS_Controller {
             parse_str($this->input->post('ingredients'), $ingredients);
             parse_str($this->input->post('ingredients2'), $ingredients2);
 
-//            print_r($post);
-//            print_r($ingredients);
-//            print_r($ingredients2);die;
             /**
              * Case: Half Pizza Order
              */
@@ -202,12 +199,6 @@ class Page extends WMDS_Controller {
                     'single'
                 ));
             }
-
-
-//            print_r($product);
-//            print_r($ingredients);
-//            print_r($productIngredients);
-
         }
 
 
@@ -223,7 +214,6 @@ class Page extends WMDS_Controller {
         $products_db = $this->products_model->getProductsAndCategories();
         $products = array();
 
-        //print_r($products_db);
         if($products_db) {
             foreach ($products_db as $prod) {
                 if (!isset($products[$prod->category_id])) {

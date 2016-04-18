@@ -7,8 +7,9 @@ class Products_model extends CI_Model{
      * @return mixed
      */
     public function getProductsAndCategories(){
-        $products = $this->db->select('c.category_id, c.category_name, c.page_with_image, p.*')->
+        $products = $this->db->select('c.category_id, c.category_name, c.page_with_image, p.*, r.type as friendly_url')->
             join('tbl_product as p', 'p.category_id = c.category_id')->
+            join('tbl_ref_friend as r', 'r.value = p.product_id', 'left')->
             order_by('c.category_id')->
             get('tbl_product_categories as c')->result();
 
@@ -20,7 +21,15 @@ class Products_model extends CI_Model{
      * @return mixed
      */
     public function getLoyaltyProducts() {
-        return $this->db->get_where('tbl_product', 'product_points > 0')->result();
+        $products = $this->
+            db->
+            select('p.*, r.type as friendly_url')->
+            where('p.product_points > 0')->
+            join('tbl_ref_friend as r', 'r.value = p.product_id', 'left')->
+            get('tbl_product as p')->
+            result();
+
+        return $products;
     }
 
     /**

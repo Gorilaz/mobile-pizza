@@ -1,4 +1,5 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
+
 /*
 | -------------------------------------------------------------------------
 | URI ROUTING
@@ -46,9 +47,6 @@ $route['404_override']          = 'page/staticpage/404';
 $route['menu']                  = "page/menu";
 $route['my-account']            = "page/myaccount";
 
-$route['product/(:num)']        = "product/view/$1";
-$route['product/(:num)/(:any)'] = "product/view/$1/$2";
-
 $route['get/ingredients/(:num)']= "product/ingredients/$1";
 
 $route['checkout']              = "checkout/index";
@@ -69,9 +67,11 @@ $route['change-password']       = "security/changePassword";
 $route['order-again/(:num)']    = "page/orderAgain/$1";
 $route['(:num)']                = "page/index/$1";
 
+$route['product/(:num)']        = "product/view/$1";
+$route['product/(:num)/(:any)'] = "product/view/$1/$2";
 
-
-
+$route['(:any)']                = "product/view/$1";
+$route['(:any)/(:any)']         = "product/view/$1/$2";
 
 /* End of file routes.php */
 /* Location: ./application/config/routes.php */

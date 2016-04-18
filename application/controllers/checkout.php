@@ -107,7 +107,7 @@ class checkout extends WMDS_Controller {
                 }
             }
         }
-// echo '<pre>'; print_r($cartContents); echo '</pre>'; die;
+
         $this->twiggy->set(array(
                 'productsWithCoupon'          => $items,
                 'cart'      => $cartContents,

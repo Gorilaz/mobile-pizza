@@ -18,6 +18,13 @@ class product extends WMDS_Controller {
         $this->load->model('order_model');
         $this->load->model('Sitesettings_model', 'SS_Model');
 
+        if( !is_numeric($id) )
+        {
+            $ref = $this->db->select('value')->where('type', $id)->get('tbl_ref_friend')->row();
+
+            $id = empty($ref) ? $id : $ref->value;
+        }
+
         /**
          * Get product from database
          * redirect to 404 if not found

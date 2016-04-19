@@ -553,17 +553,33 @@ $( document ).on("pageinit", "#page-product", function() {
             showAlert( "", "You have to be logged in and have enough points to buy this item!" );
             return false;
         } else {
-            var target = '/menu';
-            $.mobile.changePage( target, {
-                type: "post",
-                data: {
-                    general:        $( "form#order-form" ).serialize(),
-                    ingredients:    $( "#ingredients form.order-ingredients" ).serialize(),
-                    ingredients2:   $( "#ingredients2 form.order-ingredients" ).serialize()
-                },
-                changeHash: true,
-                transition: 'none'
-            });
+            var form = $('<form>')
+                .append(
+                    $('<input>')
+                        .attr({
+                            'name': 'general', 
+                            'type': 'hidden', 
+                            'value': $( "form#order-form" ).serialize()
+                        }), 
+                    $('<input>')
+                        .attr({
+                            'name': 'ingredients', 
+                            'type': 'hidden', 
+                            'value': $( "#ingredients form.order-ingredients" ).serialize()
+                        }), 
+                    $('<input>')
+                        .attr({
+                            'name': 'ingredients2', 
+                            'type': 'hidden', 
+                            'value': $( "#ingredients2 form.order-ingredients" ).serialize()
+                        })
+                )
+                .attr({
+                    'action': '/menu', 
+                    'method': 'post'
+                });
+
+            $(form).trigger('submit');
         }
     });
 
@@ -1136,10 +1152,7 @@ function populateIngredients( variationId, pizzaNo )
                         'id': 'doneBtnForRightPanelingredients' + pizzaNo
                     })
             );
-/* console.log($(window).outerHeight(), content.find('.ingredients-list.fixed').outerHeight(), $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height());
-console.log($(window).outerHeight() - 
-                    content.find('.ingredients-list.fixed').outerHeight() - 
-                    $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height()); */
+
             content
                 .find('.ingredients-list:not(.fixed)')
                 .outerHeight($(window).outerHeight() - 

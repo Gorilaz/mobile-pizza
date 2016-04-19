@@ -84,6 +84,8 @@ $route['security/logout/(:any)']        = "security/logout/$1";
 $route['security/checkValidEmail']      = "security/checkValidEmail";
 $route['security/savePassword']         = "security/savePassword";
 $route['security/reset']                = "security/reset";
+$route['security/googleplus_login']     = "security/googleplus_login";
+$route['security/facebook_login']       = "security/facebook_login";
 
 $route['social']                        = "social/index";
 

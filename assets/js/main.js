@@ -436,7 +436,9 @@ function manageHelpFooterLine( lineObj )
             $('#id-footer-help-line').html(lineObj.data('title'))
                     .show().stop().animate({ bottom: "60px" }, 500);
             helpIntervalForFooterLine = setInterval(function(){
-                $('#id-footer-help-line').stop().animate({ bottom: "-200px" }, 500);
+                $('#id-footer-help-line').stop().animate({ bottom: "0px" }, 200, function() {
+                    $('#id-footer-help-line').hide();
+                });
             }, 2500);
             return true;
         }
@@ -444,7 +446,9 @@ function manageHelpFooterLine( lineObj )
     if( helpIntervalForFooterLine != null ) {
         clearInterval(helpIntervalForFooterLine);
     }
-    $('#id-footer-help-line').stop().animate({ bottom: "-200px" }, 500);
+    $('#id-footer-help-line').stop().animate({ bottom: "0px" }, 200, function() {
+        $('#id-footer-help-line').hide();
+    });
     return false;
 } // manageHelpFooterLine
 

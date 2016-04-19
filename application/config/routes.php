@@ -60,6 +60,8 @@ $route['remove/(:any)']         = "product/removeItemFromCart/$1";
 
 $route['orders']                = "order/yourOrders";
 
+$route['security/login_page']   = "security/login_page";
+
 $route['change-password']       = "security/changePassword";
 $route['change-password']       = "security/changePassword";
 

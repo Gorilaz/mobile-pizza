@@ -651,6 +651,7 @@ function initHalfOrder() {
 
             var options = '<select name="halfPizza" id="halfPizzaSelector" data-mini="true" data-type="halfoption" class="halfSelector" data-variation="'+ halfGroup +'">';
             options += '<option value="">No Half Pizza</option>';
+
             if(halfs[halfGroup]) {
                 $.each(halfs[halfGroup], function( key, item ) {
 
@@ -659,9 +660,14 @@ function initHalfOrder() {
                 });
 
             }
+
             options += '</select>';
 
             $('.halfHolder .ui-block-b').html(options);
+
+            $('#halfPizzaSelector').val('');
+            $('#halfPizzaSelector').trigger('change');
+
             $('#halfPizzaSelector').selectmenu();
 
         }
@@ -1373,7 +1379,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
         }
 
 
-        if(selected !== undefined) {console.log(schedule);
+        if(selected !== undefined) {
             var availableHours = schedule[selected]["P"];
             var $timeEl = $('#time');
             $timeEl.empty();

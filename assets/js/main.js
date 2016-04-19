@@ -1373,7 +1373,7 @@ $( document ).on('pageinit', '#page-checkout', function() {
         }
 
 
-        if(selected !== undefined) {
+        if(selected !== undefined) {console.log(schedule);
             var availableHours = schedule[selected]["P"];
             var $timeEl = $('#time');
             $timeEl.empty();
@@ -1407,15 +1407,30 @@ $( document ).on('pageinit', '#page-checkout', function() {
     // $(document).off('click','#td-social a');
 
     function submitOrder() {
-        if($('.later').is(':checked')){
+        if( $('.later').is(':checked') )
+        {
             var date = $('#date').val();
-            if(date){
+
+            if( !!date )
+            {
                 $('#form-checkout').submit();
-            } else {
+            }
+            else
+            {
                 $('#date-error').removeClass('hide');
             }
-        } else {
-            $('#form-checkout').submit();
+        }
+        else
+        {
+            if( !$('#date').val() || 
+                !$('#time').val() )
+            {
+                return false;
+            }
+            else
+            {
+                $('#form-checkout').submit();
+            }
         }
     }
 

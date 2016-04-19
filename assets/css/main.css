@@ -1144,9 +1144,8 @@ h1 {
     margin: auto;
 }
 
-#popup-sms-btn, #popup-alert-btn {
-    margin: auto;
-    width: 100px;
+#popup-sms-btn, #popup-alert-btn, #popup-confirm-btn {
+    text-align: center;
 }
 
 .new-order{

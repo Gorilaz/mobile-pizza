@@ -85,6 +85,8 @@ $route['security/checkValidEmail']      = "security/checkValidEmail";
 $route['security/savePassword']         = "security/savePassword";
 $route['security/reset']                = "security/reset";
 
+$route['social']                        = "social/index";
+
 $route['order-again/(:num)']            = "page/orderAgain/$1";
 $route['(:num)']                        = "page/index/$1";
 

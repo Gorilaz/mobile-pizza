@@ -464,6 +464,18 @@ $( document ).on("pageinit", "#page-home", function() {
 
 });
 
+$(window).on('resize', function() {
+    if( !!$('#ingredients').length )
+    {
+        resizeIngredients();
+    }
+
+    if( !!$('#ingredients2').length )
+    {
+        resizeIngredients('ingredients2');
+    }
+});
+
 function resizeIngredients(selector) {
     var selector = !!selector ? selector : 'ingredients';
 
@@ -1620,37 +1632,50 @@ $( document ).on('pageinit', '#page-checkout', function() {
     }
 
     /**  Coupon  */
-    $(document).on( 'change', '.choose-coupon', function(){
-        var discountpercet = $(this).data('discount');
+    $(document).on( 'change', '.choose-coupon', function() {
+        var _this = this, 
+            discountpercet = $(_this).data('discount');
 
         if( discountpercet == 'other' )
         {
-            $('#tr-coupon').removeClass('hide');
-            $('#coupon-row').removeClass('hide');
             $('#coupon').prop('disabled', false);
+            $('#tr-coupon').removeClass('hide');
+
+            $('#coupon-row').removeClass('hide');
+
             if( $('#radio-choice-v-2a').is(':checked') )
             {
                 defaultPrice('low_amount');
-            } else {
+            }
+            else
+            {
                 defaultPrice();
             }
-        } else {
-            if( $('#coupon-des').html() != '' )
+        }
+        else
+        {
+            if( !!$.trim($('#coupon-des').text()) )
             {
-                $(this).attr('to-applying', '1');
+                $(_this).attr('to-applying', 'to-applying');
 
                 $('#icon-remove-coupon')[0].click();
             }
-            
-            $('#tr-coupon').addClass('hide');
-            $('#coupon').prop('disabled', true);
-            $('#coupon-row').removeClass('hide');
-            if( $('#radio-choice-v-2a').is(':checked') )
+            else
             {
-                discountPrice(discountpercet, 'online_low_amount');
-            } else {
-                discountPrice(discountpercet, '');
-            }            
+                $('#coupon').prop('disabled', true);
+                $('#tr-coupon').addClass('hide');
+
+                $('#coupon-row').removeClass('hide');
+
+                if( $('#radio-choice-v-2a').is(':checked') )
+                {
+                    discountPrice(discountpercet, 'online_low_amount');
+                }
+                else
+                {
+                    discountPrice(discountpercet, '');
+                }
+            }
         }
     });
 
@@ -1692,26 +1717,58 @@ $( document ).on('pageinit', '#page-checkout', function() {
     });
 
     /** remove coupon  */
-    $(document).on('click', '#icon-remove-coupon', function(){
+    $(document).on('click', '#icon-remove-coupon', function() {
         showConfirm( "", "Remove voucher ?", function() {
-            $('#tr-coupon').removeClass('hide');
-          //  $('.choose-coupon').prop('checked', false).checkboxradio('refresh');
-          //  $('#other').prop('checked', true).checkboxradio('refresh');
-            $('#coupon').prop('disabled', false);
-            if($('#radio-choice-v-2a').is(':checked'))
+            if( !!$('[to-applying="to-applying"]').length )
             {
-                defaultPrice('low_amount');
-            } else {
-                defaultPrice();
+                var _this = $('[to-applying="to-applying"]'), 
+                    discountpercet = $(_this).data('discount');
+
+                $('#coupon').prop('disabled', true);
+                $('#tr-coupon').addClass('hide');
+
+                $('#coupon-row').removeClass('hide');
+
+                if( $('#radio-choice-v-2a').is(':checked') )
+                {
+                    discountPrice(discountpercet, 'online_low_amount');
+                }
+                else
+                {
+                    discountPrice(discountpercet, '');
+                }
+
+                $('#icon-remove-coupon').addClass('hide');
+
+                $('#coupon-des').html('');
+
+                $('#coupon').val('');
             }
-            $('#icon-remove-coupon').addClass('hide');
-            $('#coupon-des').html('');
-            $('#coupon-dis').html('');
-            $('#coupon').val('');
+            else
+            {
+                $('#coupon').prop('disabled', false);
+                $('#tr-coupon').removeClass('hide');
 
-            $('[to-applying="1"]')[0].click();
+                if( $('#radio-choice-v-2a').is(':checked') )
+                {
+                    defaultPrice('low_amount');
+                }
+                else
+                {
+                    defaultPrice();
+                }
 
-            $('[to-applying="1"]').removeAttr('to-applying');
+                $('#icon-remove-coupon').addClass('hide');
+
+                $('#coupon-des').html('');
+                $('#coupon-dis').html('');
+
+                $('#coupon').val('');
+            }
+        }, function() {
+            var _this = $('[to-applying="to-applying"]');
+
+            $(_this).removeAttr('to-applying');
         } );
     });
     /**  END Coupon  */

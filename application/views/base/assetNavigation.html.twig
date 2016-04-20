@@ -8,9 +8,9 @@
     </a>
     <div class="menu-separator"></div>
     {% if logged is defined and logged == 1 %}
-        <a href="{{ base_url }}security/edit" data-transition="none">
+        <a href="{{ base_url }}security-edit" data-transition="none">
     {% else %}
-        <a href="{{ base_url }}security/login_page" data-transition="none">
+        <a href="{{ base_url }}login_page" data-transition="none">
     {% endif %}
 
         <div class="menu-item">
@@ -26,7 +26,7 @@
         </div>
     </a>
     <div class="menu-separator"></div>
-    <a href="{{ base_url }}security/logout" data-transition="none"  data-ajax="false">
+    <a href="{{ base_url }}logout" data-transition="none"  data-ajax="false">
         <div class="menu-item">
             <div class="left-menu-icon">&#xf08b;</div>
             <div class="menu-text">logout</div>

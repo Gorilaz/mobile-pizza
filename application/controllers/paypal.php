@@ -39,14 +39,14 @@ class paypal extends WMDS_Controller {
 
         $this->session->unset_userdata('paypal');
         $this->cart->destroy();
-        redirect(base_url().'page/order-failed');
+        redirect(base_url().'order-failed');
     }
 
     public function succes(){
 
         $this->session->unset_userdata('paypal');
         $this->cart->destroy();
-        redirect(base_url().'page/order-success');
+        redirect(base_url().'order-success');
 
     }
 

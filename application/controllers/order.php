@@ -164,15 +164,17 @@ class Order extends WMDS_Controller{
             /** conmmand is from outher site*/
             $back_url = $this->session->userdata('backUrl');
 
-            if($back_url == 'yes'){
+            if( $back_url === 'yes' )
+            {
                 $session_id = $this->session->userdata('session_id');
-                redirect(base_url().'page/order-success/'.$session_id);
-            } else {
-                redirect(base_url().'page/order-success');
+
+                redirect(base_url() . 'order-success/' . $session_id);
             }
-
+            else
+            {
+                redirect(base_url() . 'order-success');
+            }
         }
-
     }
 
     /**

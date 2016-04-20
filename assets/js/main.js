@@ -143,7 +143,7 @@ function saveForm( action )
         }
         else
         {
-            window.location.href = '//' + location.host + '/security/edit'
+            window.location.href = '//' + location.host + '/security-edit'
         }
     });
     request.fail(function( jqXHR, textStatus ) {
@@ -1199,6 +1199,10 @@ function populateIngredients( variationId, pizzaNo )
 
 }
 
+window.addEventListener('native.hidekeyboard', function() {
+    alert('123123');
+});
+
 /***********************************************************************************************************************
  * Events used on menu page
  * @url /menu
@@ -1929,7 +1933,7 @@ $( document ).on('pageinit', "#page-payment", function() {
      * Bind click action for log out 
      */
     $(document).on('click', '#log-out', function(){
-        window.location.href = '//' + location.host + '/security/logout/payment';
+        window.location.href = '//' + location.host + '/logout/payment';
     });
 
     /*
@@ -2018,7 +2022,7 @@ $( document ).on('pageinit', "#page-payment", function() {
 
 /***********************************************************************************************************************
  * Recovery Password
- * @url /security/reset
+ * @url /reset
  **********************************************************************************************************************/
 $( document ).on('pageinit', "#page-recover", function() {
     /* Unbind everything */
@@ -2076,7 +2080,7 @@ $( document ).on('pageinit', "#page-change", function() {
             });
 
             request.done(function( data ) {
-               window.location.href = '//' + location.host + '/security/login_page';
+               window.location.href = '//' + location.host + '/login_page';
             });
 
             request.fail(function( jqXHR, textStatus ) {
@@ -2171,7 +2175,7 @@ $( document ).on('pageinit', "#your-orders", function() {
 
 /***********************************************************************************************************************
  * Your Account
- * @url /security/login_page
+ * @url /login_page
  **********************************************************************************************************************/
 
 $( document ).on('pageinit', "#security-login", function() {
@@ -2191,12 +2195,12 @@ $( document ).on('pageinit', "#security-login", function() {
         }
     });
 
-}); // /security/login_page
+}); // /login_page
 
 
 /***********************************************************************************************************************
  * Your Account
- * @url /security/edit
+ * @url /security-edit
  **********************************************************************************************************************/
 $( document ).on('pageshow', "#page-edit", function() {
     console.log('pageshow#page-edit');
@@ -2228,4 +2232,4 @@ $( document ).on('pageinit', "#page-edit", function() {
         }
     });
 
-}); // /security/edit
+}); // /security-edit

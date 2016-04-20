@@ -1,6 +1,6 @@
 <div data-role="header" data-theme="pizza" data-position="fixed">
     <div class="top-bar">
-        <a class="top-button {% if isopen.isOpen %}store-open{% else %}store-close{% endif %}" href="{{ base_url }}page/about-us" title="{% if isopen.isOpen %}Our shop is OPEN!{% else %}Our shop is CLOSED!{% endif %}" data-transition="none"><i class="icon-time"></i></a>
+        <a class="top-button {% if isopen.isOpen %}store-open{% else %}store-close{% endif %}" href="{{ base_url }}about-us" title="{% if isopen.isOpen %}Our shop is OPEN!{% else %}Our shop is CLOSED!{% endif %}" data-transition="none"><i class="icon-time"></i></a>
         <div class="top-bar-title"><a href="{{ base_url }}menu" data-transition="none">{{ settings.SITETITLE }}</a></div>
 
         {% if logged is defined and (logged == 1 or logged.first_name is defined)  %}
@@ -18,7 +18,7 @@
 
             </a>
         {% else %}
-            <a class="top-button right-button" href="{{ base_url }}security/login_page" data-transition="none"><i class="icon-user"></i></a>
+            <a class="top-button right-button" href="{{ base_url }}login_page" data-transition="none"><i class="icon-user"></i></a>
         {% endif %}
     </div>
 </div><!-- /header -->

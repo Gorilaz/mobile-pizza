@@ -310,20 +310,21 @@ class Security extends WMDS_Controller {
         echo $flag;
     }
 
-    public function logout($payment = null){
-
+    public function logout($payment = null) {
         $this->session->unset_userdata('logged');
         $this->session->unset_userdata('checkout');
         $this->session->unset_userdata('low_order');
         $this->session->unset_userdata('backToLogin');
         $this->session->unset_userdata('firstPointLogin');
 
-        if($payment){
-            redirect(base_url().'payment');
-        } else {
+        if( $payment )
+        {
+            redirect(base_url() . 'payment');
+        }
+        else
+        {
             redirect(base_url());
         }
-
     }
 
     /********  Facebook  *******/

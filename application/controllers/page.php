@@ -41,31 +41,39 @@ class Page extends WMDS_Controller {
      * if shop is open or close
      */
     public function index($referal = null)
-
     {
-
-        if($referal){
+        if( $referal )
+        {
             $logged = $this->session->userdata('logged');
-            if(!$logged){
+
+            if( !$logged )
+            {
                 $this->load->model('security_model');
+
                 $user = $this->security_model->checkMobileNumber($referal);
 
-                if($user){
+                if( $user )
+                {
                     $this->twiggy->set('user', $user);
+
                     $this->load->helper('cookie');
+
                     $cookie = array(
-                        'name'   => 'referal',
-                        'value'  => '3',
+                        'name'   => 'referal', 
+                        'value'  => '3', 
                         'expire' => '99500'
                     );
 
                     $this->input->set_cookie($cookie);
 
                     $this->twiggy->display('page/referal');
-                } else {
+                }
+                else
+                {
                     redirect(base_url().'404_override');
                 }
             }
+
             $this->twiggy->set('referal', $referal);
         } else {
             $this->twiggy->set('page', array(
@@ -259,91 +267,108 @@ class Page extends WMDS_Controller {
     /**
      * Static pages
      */
-    public function staticpage($name, $session_id =null) {
-
-
+    public function staticpage($name, $session_id = null) {
         $page = $this->general->getPageByType($name);
 
-//        print_r($page);
-        if($name == 'order-success'){
-
+        if( $name === 'order-success' )
+        {
             $this->load->model('security_model');
 
-            if($this->session->userdata('session_id') != $session_id && !empty($session_id)){
+            if( !empty($session_id) && $this->session->userdata('session_id') !== $session_id )
+            {
                 $ip = $this->get_client_ip();
+
                 $browser = $_SERVER['HTTP_USER_AGENT'];
 
                 $session = unserialize($this->general->getSession($session_id, $ip, $browser));
-                /** if user was logged */
-                if(isset($session['logged']) && !empty($session['logged'])){
-                    $this->session->unset_userdata('logged');
-                    $this->session->set_userdata('logged', $session['logged']);
 
-                }else {
+                /** if user was logged */
+                if( empty($session['logged']) )
+                {
                     $this->session->unset_userdata('logged');
+                }
+                else
+                {
+                    $this->session->unset_userdata('logged');
+
+                    $this->session->set_userdata('logged', $session['logged']);
                 }
 
                 /** if session storeOpen */
-                if(isset($session['storeOpen']) && !empty($session['storeOpen'])){
+                if( !empty($session['storeOpen']) )
+                {
                     $this->session->unset_userdata('storeOpen');
+
                     $this->session->userdata('storeOpen', $session['storeOpen']);
                 }
 
                 /** if session siteSetting */
-                if(isset($session['siteSetting']) && !empty($session['siteSetting'])){
+                if( !empty($session['siteSetting']) )
+                {
                     $this->session->unset_userdata('storeOpen');
+
                     $this->session->userdata('siteSetting', $session['siteSetting']);
                 }
 
                 /** if session user_data */
-                if(isset($session['user_data']) && !empty($session['user_data'])){
+                if( !empty($session['user_data']) )
+                {
                     $this->session->unset_userdata('user_data');
+
                     $this->session->userdata('user_data', $session['user_data']);
                 }
             }
 
             $logged = $this->session->userdata('logged');
 
-            $user = $this->security_model->getUser($logged['userid']);
-            $this->session->set_userdata('logged', $user);
+            if( $logged )
+            {
+                $user = $this->security_model->getUser($logged['userid']);
 
-            /* reset another site command */
-            $this->session->unset_userdata('back_url');
-            /* reset checkout */
-            $this->session->unset_userdata('checkout');
-            /* reset low order */
-            $this->session->unset_userdata('low_order');
-            /* reset surchange */
-            $this->session->unset_userdata('surchange');
+                $this->session->set_userdata('logged', $user);
+
+                /* reset another site command */
+                $this->session->unset_userdata('back_url');
+
+                /* reset checkout */
+                $this->session->unset_userdata('checkout');
+
+                /* reset low order */
+                $this->session->unset_userdata('low_order');
+
+                /* reset surchange */
+                $this->session->unset_userdata('surchange');
+
+                /* set twiggy variables */
+                $this->twiggy->set('logged', $logged);
+                $this->twiggy->set('userPoints', $logged['order_points']);
+            }
 
             /** reset cart */
             $this->cart->destroy();
 
-            $this->twiggy->set('logged', $logged);
-            $this->twiggy->set('userPoints', $logged['order_points']);
-
             $this->twiggy->set('menuPage', 1);
 
             $this->twiggy->set('page', array(
-                'title'     => $page->title,
-                'data'      => $page,
-                'backButton'=> false,
-                'role'      => 'page',
-                'theme'     => 'a'
+                'title'         => $page->title, 
+                'data'          => $page, 
+                'backButton'    => false, 
+                'role'          => 'page', 
+                'theme'         => 'a'
             ));
-        } else {
+        }
+        else
+        {
             $this->twiggy->set('page', array(
-                'title'     => $page->title,
-                'data'      => $page,
-                'backButton'=> true,
-                'role'      => 'page',
-                'theme'     => 'a'
+                'title'         => $page->title, 
+                'data'          => $page, 
+                'backButton'    => true, 
+                'role'          => 'page', 
+                'theme'         => 'a'
             ));
         }
 
-
         $this->twiggy->template('page/staticPage')->display();
-
     }
 
     /**

@@ -167,21 +167,31 @@ class General extends CI_Model {
      * @return mixed
      */
     public function getPageByType($name) {
-        switch($name) {
+        switch( $name )
+        {
             case 'about-us':
                 $id = $this::PAGE_ABOUT;
+
                 break;
+
             case 'order-success':
                 $id = $this::PAGE_ORDER_SUCCESS;
+
                 break;
+
             case 'order-failed':
                 $id = $this::PAGE_ORDER_FAILED;
+
                 break;
+
             default:
                 $id = $this::PAGE_404;
+
                 break;
         }
+
         $page = $this->db->get_where('tbl_pages', array('pageid' => $id))->row();
+
         return $page;
     }
 

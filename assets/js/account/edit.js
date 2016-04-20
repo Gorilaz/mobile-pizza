@@ -49,7 +49,7 @@ $(function(){
             });
 
             request.done(function( data ) {
-                window.location.href = '//' + location.host + '/security/edit'
+                window.location.href = '//' + location.host + '/security-edit'
             });
 
             request.fail(function( jqXHR, textStatus ) {

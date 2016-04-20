@@ -31,8 +31,11 @@ class product extends WMDS_Controller {
          */
         $product = $this->products_model->getProductById($id);
 
-        if(!$product) {
-            redirect(base_url().'page/404');
+        if( !$product )
+        {
+            $this->load->library('../controllers/page');
+
+            $this->page->staticpage($id, $points);
         }
 
         /**

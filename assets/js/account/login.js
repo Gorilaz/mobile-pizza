@@ -69,7 +69,7 @@ function checkLoginStatus(response) {
                         && result.fields == 'requare' 
                        )
                     {
-                        window.location.href = '//' + location.host + '/security/edit';
+                        window.location.href = '//' + location.host + '/security-edit';
                     } else {
                         if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );
@@ -136,7 +136,7 @@ function googlePlusloginCallback(result)
                         && result.fields == 'requare' 
                        )
                     {
-                        window.location.href = '//' + location.host + '/security/edit';
+                        window.location.href = '//' + location.host + '/security-edit';
                     } else {
                         if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );

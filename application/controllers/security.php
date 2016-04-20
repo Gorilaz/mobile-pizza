@@ -31,6 +31,7 @@ class Security extends WMDS_Controller {
         }
         if( !empty($email) )
         {
+            $this->security_model->clearEmptyUsers();
             $user = $this->security_model->getUserByEmail($email);
             if( $user )
             {
@@ -360,6 +361,7 @@ class Security extends WMDS_Controller {
         }
         if( !empty($email) )
         {
+            $this->security_model->clearEmptyUsers();
             $user = $this->security_model->getUserByEmail($email);
             if( $user )
             {

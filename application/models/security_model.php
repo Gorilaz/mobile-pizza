@@ -167,6 +167,16 @@ class Security_model extends CI_Model{
         $user = $this->db->where('userid', $userId)->get('users')->row_array();
         return $user;
     }
+
+    /**
+     * Delete all empty records
+     *
+     * @return boolean
+     */
+    public function clearEmptyUsers() {
+        $this->db->query('DELETE FROM users WHERE mobile = "" OR mobile IS NULL');
+        return true;
+    }
     
     /**
      * Get User fields by Email

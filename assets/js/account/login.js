@@ -71,7 +71,11 @@ function checkLoginStatus(response) {
                     {
                         window.location.href = '//' + location.host + '/security/edit';
                     } else {
-                        window.location.href = SOCIALRETURNURL;
+                        if( typeof result.error != '' ) {
+                            showAlert( 'Authorization', result.error );
+                        } else {
+                            window.location.href = SOCIALRETURNURL;
+                        }
                     }
                 },
                 error: function(e){
@@ -134,7 +138,11 @@ function googlePlusloginCallback(result)
                     {
                         window.location.href = '//' + location.host + '/security/edit';
                     } else {
-                        window.location.href = SOCIALRETURNURL;
+                        if( typeof result.error != '' ) {
+                            showAlert( 'Authorization', result.error );
+                        } else {
+                            window.location.href = SOCIALRETURNURL;
+                        }
                     }
                 },
                 error: function(e){

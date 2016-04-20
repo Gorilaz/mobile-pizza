@@ -21,6 +21,7 @@ class Security extends WMDS_Controller {
         $flag = false;
         $google = $this->input->post();
         $email = '';
+        $error = '';
         if( isset($google['email']) )
         {
             if( !empty($google['email']) )
@@ -47,32 +48,39 @@ class Security extends WMDS_Controller {
         }
         if( !$flag )
         {
-            $backToLogin = 'requare';
-            $insert = array();
-            $insert['email'] = $email;
-            $insert['address'] = '';
-            $insert['first_name'] = '';
-            if( isset($google['first_name']) )
+            $firstPointLogin = $this->session->userdata('firstPointLogin');
+            if( 'login' != $firstPointLogin )
             {
-                if( !empty($google['first_name']) )
+                //$backToLogin = 'requare';
+                $insert = array();
+                $insert['email'] = $email;
+                $insert['address'] = '';
+                $insert['first_name'] = '';
+                if( isset($google['first_name']) )
                 {
-                    $insert['first_name'] = $google['first_name'];                   
+                    if( !empty($google['first_name']) )
+                    {
+                        $insert['first_name'] = $google['first_name'];
+                    }
                 }
-            }
-            $insert['last_name'] = '';
-            if( isset($google['last_name']) )
-            {
-                if( !empty($google['last_name']) )
+                $insert['last_name'] = '';
+                if( isset($google['last_name']) )
                 {
-                    $insert['last_name'] = $google['last_name'];
+                    if( !empty($google['last_name']) )
+                    {
+                        $insert['last_name'] = $google['last_name'];
+                    }
                 }
+                $this->session->set_userdata('backToLogin', $backToLogin);
+                $this->load->helper('profile');
+                saveProfile( $insert );
+            } else {
+                $error = 'Not found';
             }
-            $this->session->set_userdata('backToLogin', $backToLogin);
-            $this->load->helper('profile');
-            saveProfile( $insert );
         }      
         echo json_encode(array(
-            'fields' => $backToLogin
+            'fields' => $backToLogin,
+            'error' => $error
         ));
     }
 
@@ -334,6 +342,7 @@ class Security extends WMDS_Controller {
         $flag = false;
         $fb = $this->input->post();
         $email = '';
+        $error = '';
         $fbId = '';
         if( isset($fb['id']) )
         {
@@ -368,33 +377,40 @@ class Security extends WMDS_Controller {
         }
         if( !$flag )
         {
-            $backToLogin = 'requare';
-            $insert = array();
-            $insert['email'] = $email;
-            $insert['address'] = '';
-            $insert['facebook_id'] = $fbId;
-            $insert['first_name'] = '';
-            if( isset($fb['first_name']) )
+            $firstPointLogin = $this->session->userdata('firstPointLogin');
+            if( 'login' != $firstPointLogin )
             {
-                if( !empty($fb['first_name']) )
+                //$backToLogin = 'requare';
+                $insert = array();
+                $insert['email'] = $email;
+                $insert['address'] = '';
+                $insert['facebook_id'] = $fbId;
+                $insert['first_name'] = '';
+                if( isset($fb['first_name']) )
                 {
-                    $insert['first_name'] = $fb['first_name'];                   
+                    if( !empty($fb['first_name']) )
+                    {
+                        $insert['first_name'] = $fb['first_name'];
+                    }
                 }
-            }
-            $insert['last_name'] = '';
-            if( isset($fb['last_name']) )
-            {
-                if( !empty($fb['last_name']) )
+                $insert['last_name'] = '';
+                if( isset($fb['last_name']) )
                 {
-                    $insert['last_name'] = $fb['last_name'];
+                    if( !empty($fb['last_name']) )
+                    {
+                        $insert['last_name'] = $fb['last_name'];
+                    }
                 }
+                $this->session->set_userdata('backToLogin', $backToLogin);
+                $this->load->helper('profile');
+                saveProfile( $insert );
+            } else {
+                $error = 'Not found';
             }
-            $this->session->set_userdata('backToLogin', $backToLogin);
-            $this->load->helper('profile');
-            saveProfile( $insert );
         }      
         echo json_encode(array(
-            'fields' => $backToLogin
+            'fields' => $backToLogin,
+            'error' => $error
         ));
     }
 

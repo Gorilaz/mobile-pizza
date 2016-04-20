@@ -71,7 +71,7 @@ function checkLoginStatus(response) {
                     {
                         window.location.href = '//' + location.host + '/security/edit';
                     } else {
-                        if( typeof result.error != '' ) {
+                        if( result.fields != '' ) {
                             showAlert( 'Authorization', result.error );
                         } else {
                             window.location.href = SOCIALRETURNURL;
@@ -138,7 +138,7 @@ function googlePlusloginCallback(result)
                     {
                         window.location.href = '//' + location.host + '/security/edit';
                     } else {
-                        if( typeof result.error != '' ) {
+                        if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );
                         } else {
                             window.location.href = SOCIALRETURNURL;

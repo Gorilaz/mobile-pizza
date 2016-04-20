@@ -495,20 +495,24 @@ $( document ).on("pageinit", "#page-product", function() {
     $( document ).on("panelclose", "#ingredients", function(){
         manageDoneButtonForRightPanel();
 
-        resizeIngredients();
+        $('#doneBtnForRightPanelingredients1').hide();
     });
     $( document ).on("panelopen", "#ingredients", function(){
         manageDoneButtonForRightPanel();
+
+        $('#doneBtnForRightPanelingredients1').show();
 
         resizeIngredients();
     });
     $( document ).on("panelclose", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
 
-        resizeIngredients('ingredients2');
+        $('#doneBtnForRightPanelingredients2').hide();
     });
     $( document ).on("panelopen", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
+
+        $('#doneBtnForRightPanelingredients2').show();
 
         resizeIngredients('ingredients2');
     });
@@ -1173,6 +1177,7 @@ function populateIngredients( variationId, pizzaNo )
                     .attr({
                         'id': 'doneBtnForRightPanelingredients' + pizzaNo
                     })
+                    .hide()
             );
 
             content

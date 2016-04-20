@@ -71,7 +71,7 @@ function checkLoginStatus(response) {
                     {
                         window.location.href = '//' + location.host + '/security/edit';
                     } else {
-                        if( result.fields != '' ) {
+                        if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );
                         } else {
                             window.location.href = SOCIALRETURNURL;

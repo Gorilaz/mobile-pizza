@@ -75,7 +75,7 @@ class Security extends WMDS_Controller {
                 $this->load->helper('profile');
                 saveProfile( $insert );
             } else {
-                $error = 'Not found';
+                $error = 'User not found in the database. Make your first order to get registered.';
             }
         }      
         echo json_encode(array(
@@ -405,7 +405,7 @@ class Security extends WMDS_Controller {
                 $this->load->helper('profile');
                 saveProfile( $insert );
             } else {
-                $error = 'Not found';
+                $error = 'User not found in the database. Make your first order to get registered.';
             }
         }      
         echo json_encode(array(

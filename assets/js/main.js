@@ -1251,8 +1251,6 @@ $( document ).on('pageinit', '#page-checkout', function() {
        var elem         = $(this).closest('.checkout-footer');
        var next         = elem.next();
        var totalAmount  = $('.order-total-price').data('value');
-       
-       manageHelpFooterLine(next);
 
        /**
         * Payment Tab
@@ -1265,11 +1263,10 @@ $( document ).on('pageinit', '#page-checkout', function() {
                 if(totalAmount < rules.cc) {
                     showAlert( "", "Minimum amount for Credit Card payments is $"+rules.cc );
                 } else {
-//                    elem.addClass('hide');
-//                    elem.next().removeClass('hide');
-                    elem.hide();//.addClass('animated flip');
-                    //elem.next().show().addClass('animated bounce');
+                    elem.hide();
                     elem.next().show().fadeOut(250).fadeIn(250);
+
+                    manageHelpFooterLine(next);
                 }
             }
             //paypal
@@ -1277,14 +1274,16 @@ $( document ).on('pageinit', '#page-checkout', function() {
                 if(totalAmount < rules.paypal) {
                     showAlert( "", "Minimum amount for Paypal payments is $"+rules.paypal );
                 } else {
-                    elem.hide();//.addClass('animated flip');
-                    //elem.next().show().addClass('animated bounce');
+                    elem.hide();
                     elem.next().show().fadeOut(250).fadeIn(250);
+
+                    manageHelpFooterLine(next);
                 }
             } else {
-                elem.hide();//.addClass('animated flip');
-                //elem.next().show().addClass('animated bounce');
+                elem.hide();
                 elem.next().show().fadeOut(250).fadeIn(250);
+
+                manageHelpFooterLine(next);
             }
        }
 
@@ -1305,9 +1304,11 @@ $( document ).on('pageinit', '#page-checkout', function() {
                                discountPrice(discountpercet,'low_amount');
                            }
                            r = null;
-                           elem.hide();//.addClass('animated flip');
-                           //elem.next().show().addClass('animated bounce');
+
+                           elem.hide();
                            elem.next().show().fadeOut(250).fadeIn(250);
+
+                           manageHelpFooterLine(next);
                        }, function() {
                            window.location.href = '//' + location.host + '/menu';
                        } );
@@ -1317,14 +1318,16 @@ $( document ).on('pageinit', '#page-checkout', function() {
                    }
 
                } else {
-                   elem.hide();//.addClass('animated flip');
-                   //elem.next().show().addClass('animated bounce');
+                   elem.hide();
                    elem.next().show().fadeOut(250).fadeIn(250);
+
+                   manageHelpFooterLine(next);
                }
            } else {
-               elem.hide();//.addClass('animated flip');
-               //elem.next().show().addClass('animated bounce');
+               elem.hide();
                elem.next().show().fadeOut(250).fadeIn(250);
+
+               manageHelpFooterLine(next);
            }
        }
        else if($(this).attr('name') == 'when') {
@@ -1332,18 +1335,20 @@ $( document ).on('pageinit', '#page-checkout', function() {
                submitOrder();
            } else {
                if(elem.next().length) {
-                   elem.hide();//.addClass('animated flip');
-                   //elem.next().show().addClass('animated bounce');
+                   elem.hide();
                    elem.next().show().fadeOut(250).fadeIn(250);
+
+                   manageHelpFooterLine(next);
                } else {
                    submitOrder();
                }
            }
        } else {
            if(elem.next().length) {
-               elem.hide();//.addClass('animated flip');
-               //elem.next().show().addClass('animated bounce');
+               elem.hide();
                elem.next().show().fadeOut(250).fadeIn(250);
+
+               manageHelpFooterLine(next);
            } else {
                submitOrder();
            }
@@ -1445,30 +1450,49 @@ $( document ).on('pageinit', '#page-checkout', function() {
     $(document).off('change','.choose-coupon');
     // $(document).off('click','#td-social a');
 
-    function submitOrder() {
-        if( $('.later').is(':checked') )
-        {
+/*     function submitOrder() {
+        if($('.later').is(':checked')){
             var date = $('#date').val();
-
-            if( !!date )
-            {
+            if(date){
                 $('#form-checkout').submit();
-            }
-            else
-            {
+            } else {
                 $('#date-error').removeClass('hide');
             }
+        } else {
+            $('#form-checkout').submit();
         }
-        else
+    } */
+
+    function submitOrder() {
+        if( $('.later').is(':checked') )
         {
             if( !$('#date').val() || 
                 !$('#time').val() )
             {
-                return false;
+                $('#date-error').removeClass('hide');
             }
             else
             {
                 $('#form-checkout').submit();
+            }
+        }
+        else
+        {
+            if( $('[name="when"]:checked').val() === 'ASAP' )
+            {
+                $('#form-checkout').submit();
+            }
+            else
+            {
+                if( !$('#date').val() || 
+                    !$('#time').val() )
+                {
+                    return false;
+                }
+                else
+                {
+                    $('#form-checkout').submit();
+                }
             }
         }
     }
@@ -1782,6 +1806,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
                 $('#coupon').val('');
             }
+
+            $('#other').val('');
         }, function() {
             var _this = $('[to-applying="to-applying"]');
 

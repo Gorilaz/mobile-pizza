@@ -119,25 +119,35 @@ class General extends CI_Model {
         $start = strtotime($row->first_half_from);
         $end   = strtotime($row->first_half_to);
 
-        /* check if it's today, to get the hours from now on */
-        if(ucfirst($row->day) == date('l')) {
-
-            if($start < time()) {
-
-                if(date('i') > 0 && date('i') <= 30) {
-                    $start = strtotime(date('G').':30');
-                } else {
-                    $h = date('G');
-                    $h++;
-                    $start = strtotime($h.':00');
-                }
-            }
+        if( date('i') > 0 && date('i') <= 15 )
+        {
+            $start = strtotime(date('G') . ':15');
         }
+        else if( date('i') > 15 && date('i') <= 30 )
+        {
+            $start = strtotime(date('G') . ':30');
+        }
+        else if( date('i') > 30 && date('i') <= 45 )
+        {
+            $start = strtotime(date('G') . ':45');
+        }
+        else
+        {
+            $h = date('G');
+
+            $h++;
+
+            $start = strtotime($h . ':00');
+        }
+
+        $delivery_time = ((int) $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value * 60);
+
+        $start += $delivery_time;
 
         $time[date("H:i", $start)] = date("g:i a", $start);
 
         while($start <= $end) {
-            $start = $start + 1800;
+            $start = $start + 900;
             if($end >= $start) {
                 $time[date("H:i", $start)] = date("g:i a", $start);
             }
@@ -152,7 +162,7 @@ class General extends CI_Model {
             $time[date("H:i", $start)] = date("g:i a", $start);
 
             while($start <= $end) {
-                $start = $start + 1800;
+                $start = $start + 900;
                 if($end >= $start) {
                     $time[date("H:i", $start)] = date("g:i a", $start);
                 }

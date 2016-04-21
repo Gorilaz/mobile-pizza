@@ -496,6 +496,8 @@ $( document ).on("pageinit", "#page-product", function() {
         manageDoneButtonForRightPanel();
 
         $('#doneBtnForRightPanelingredients1').hide();
+
+        $('[data-role="footer"]').fixedtoolbar({ tapToggle: true });
     });
     $( document ).on("panelopen", "#ingredients", function(){
         manageDoneButtonForRightPanel();
@@ -503,11 +505,15 @@ $( document ).on("pageinit", "#page-product", function() {
         $('#doneBtnForRightPanelingredients1').show();
 
         resizeIngredients();
+
+        $('[data-role="footer"]').fixedtoolbar({ tapToggle: false });
     });
     $( document ).on("panelclose", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
 
         $('#doneBtnForRightPanelingredients2').hide();
+
+        $('[data-role="footer"]').fixedtoolbar({ tapToggle: true });
     });
     $( document ).on("panelopen", "#ingredients2", function(){
         manageDoneButtonForRightPanel();
@@ -515,6 +521,8 @@ $( document ).on("pageinit", "#page-product", function() {
         $('#doneBtnForRightPanelingredients2').show();
 
         resizeIngredients('ingredients2');
+
+        $('[data-role="footer"]').fixedtoolbar({ tapToggle: false });
     });
 
     /* Unbind everything */

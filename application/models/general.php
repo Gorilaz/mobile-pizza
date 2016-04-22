@@ -140,10 +140,6 @@ class General extends CI_Model {
             $start = strtotime($h . ':00');
         }
 
-        $delivery_time = ((int) $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value * 60);
-
-        $start += $delivery_time;
-
         $time[date("H:i", $start)] = date("g:i a", $start);
 
         while($start <= $end) {

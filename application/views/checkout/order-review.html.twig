@@ -344,22 +344,10 @@
 
             <fieldset data-role="controlgroup" data-type="horizontal"  data-mini="true">
                 <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
-                {% if isopen.isOpen %}
-                    <input class="footer-change" id="date" name="date" type="radio" value="{{ 'now'|date('Y-m-d') }}" />
-                    <label for="date" class="footer-btns">Order for today {{ 'now'|date('j/n') }} at:</label>
-                {% else %}
-                    <label class="footer-btns" for="date">Select Date</label>
-                    <select name="date" id="date">
-                        <option value="" selected="selected">Select Date</option>
-                        {% for key,value in schedule.forTwig %}
-                            <option value="{{ value.value }}" data-day="{{ key }}">{{ value.name }}</option>
-                        {% endfor %}
-                    </select>
-                {% endif %}
+                <input class="footer-change" id="date" name="date" type="radio" value="{{ 'now'|date('Y-m-d') }}" />
+                <label for="date" class="footer-btns">Order for today {{ 'now'|date('j/n') }} at:</label>
                 <label for="time">Select Time</label>
-                <select name="time" id="time" class="footer-change"  >
-
-                </select>
+                <select name="time" id="time" class="footer-change"></select>
             </fieldset>
         </div>
     </div>

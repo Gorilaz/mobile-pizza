@@ -442,8 +442,8 @@ class checkout extends WMDS_Controller {
         }
 
         $this->twiggy->set('cart_items', $cart_items);
-echo '<pre>'; var_dump($cart_items); echo '</pre>';
-echo '<pre>'; var_dump($check); echo '</pre>'; die;
+// echo '<pre>'; var_dump($cart_items); echo '</pre>';
+// echo '<pre>'; var_dump($check); echo '</pre>'; die;
         /** verify if low order */
         /* if($surcharge->order_less > 0){
             if(isset($check['couponDiscount']) && $check['couponDiscount'] ){

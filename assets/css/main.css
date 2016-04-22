@@ -1064,7 +1064,6 @@ h1 {
     background: #000!important;
     opacity: 0.8!important;
     z-index: 1001;
-    padding-bottom: 25px;
 }
 
 .ui-loader-default {

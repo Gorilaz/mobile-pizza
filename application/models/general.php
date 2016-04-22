@@ -19,18 +19,19 @@ class General extends CI_Model {
      */
     public function isOpenNow() {
 
-        $day = strtolower(date('l'));
-        $time = date('h:iA');
+        /* $time = date('h:iA');
 
         if (strstr($time, 'PM'))
             $time = date("H:i", strtotime($time));
         else if (strstr($time, 'AM'))
-            $time = date("h:i", strtotime($time));
+            $time = date("h:i", strtotime($time)); */
 
-        $dateRange = "(('$time' BETWEEN first_half_fr AND first_half_t) OR ('$time' BETWEEN second_half_fr AND second_half_t))";
-        $this->db->where($dateRange, NULL, FALSE);
+        $day = strtolower(date('l'));
+        $time = date('H:i');
 
-        $row = $this->db->where(array('day' => $day))->get('tbl_shop_timings')->num_rows();
+        $dateRange = '( ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_t` ) ) ) AND ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_t` ) ) ) )';
+
+        $row = $this->db->where(array('day' => $day))->where($dateRange . ' IS TRUE', '', FALSE)->get('tbl_shop_timings')->num_rows();
 
         if ($row > 0) {
             return true;

@@ -415,28 +415,39 @@ class checkout extends WMDS_Controller {
             $delivery_fee = $this->order_model->getDeliveryFee($suburb);
             $this->twiggy->set('delivery_fee', $delivery_fee);
 
-        }/* else {
-            $this->twiggy->set('logged', 0);
-            $text = $this->general->getRegisterText();
-            $this->twiggy->set('regText', $text);
         }
-*/
 
         $cart_items = $this->cart->contents();
         $items = $this->getProductIdsWithCoupon();
 
         foreach( $cart_items as $key => $cart_item )
         {
-            $cart_items[$key]['coupon'] = $items[$cart_item['id']];
+            if( $cart_item['product_type'] === 'half' )
+            {
+                $ids_parts = explode('_', $cart_item['id']);
+
+                if( is_array($ids_parts) && isset($ids_parts[0]) && isset($ids_parts[1]) )
+                {
+                    $first_half_id = $ids_parts[0];
+                    $second_half_id = $ids_parts[1];
+
+                    $cart_items[$key]['first_half'] = $this->products_model->getProductById($first_half_id);
+                    $cart_items[$key]['second_half'] = $this->products_model->getProductById($second_half_id);
+                }
+            }
+            else
+            {
+                $cart_items[$key]['coupon'] = $items[$cart_item['id']];
+            }
         }
 
         $this->twiggy->set('cart_items', $cart_items);
-
-        // echo '<pre>'; var_dump($cart_items); echo '</pre>'; die;
-
+echo '<pre>'; var_dump($cart_items); echo '</pre>';
+echo '<pre>'; var_dump($check); echo '</pre>'; die;
         /** verify if low order */
-        if($surcharge->order_less > 0){
+        /* if($surcharge->order_less > 0){
             if(isset($check['couponDiscount']) && $check['couponDiscount'] ){
+                
                 $discount = number_format(($total/100)*$check['couponDiscount'], 1, '.', '');
                 $totalWithDiscount = $total + $discount;
             } else {
@@ -449,7 +460,58 @@ class checkout extends WMDS_Controller {
             }
         } else {
             $low_order = 0;
+        } */
+
+        if( $surcharge->order_less > 0 )
+        {
+            if( empty($check['couponDiscount']) )
+            {
+                $totalWithDiscount = $total;
+            }
+            else
+            {
+                $totalDiscount = 0;
+
+                foreach( $cart_items as $key => $cart_item )
+                {
+                    if( $cart_item['product_type'] === 'half' )
+                    {
+                        if( $cart_item['first_half']->has_coupon == 1 )
+                        {
+                            $totalDiscount += ( ( (float) $cart_item['first_half']->product_price / 2 ) / 100 ) * $check['couponDiscount'];
+                        }
+
+                        if( $cart_item['second_half']->has_coupon == 1 )
+                        {
+                            $totalDiscount += ( ( (float) $cart_item['second_half']->product_price / 2 ) / 100 ) * $check['couponDiscount'];
+                        }
+                    }
+                    else
+                    {
+                        if( $cart_item['coupon'] == 1 )
+                        {
+                            $totalDiscount += ( (float) $cart_item['price'] / 100 ) * $check['couponDiscount'];
+                        }
+                    }
+                }
+
+                $totalWithDiscount = $total - $totalDiscount;
+            }
+
+            if( $totalWithDiscount < $surcharge->order_less )
+            {
+                $low_order = $surcharge->order_less;
+            }
+            else
+            {
+                $low_order = 0;
+            }
         }
+        else
+        {
+            $low_order = 0;
+        }
+
         $this->twiggy->set('low_order', $low_order);
         $this->session->set_userdata('low_order', $low_order);
         /** end */

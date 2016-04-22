@@ -490,8 +490,6 @@ function resizeIngredients(selector) {
  * @url /product/id
  **********************************************************************************************************************/
 $( document ).on("pageinit", "#page-product", function() {
-    
-    
     $( document ).on("panelclose", "#ingredients", function(){
         manageDoneButtonForRightPanel();
 
@@ -1204,12 +1202,7 @@ function populateIngredients( variationId, pizzaNo )
         $( ".ingredients-list" ).listview().listview('refresh');
         $( ".ingredients-list" ).trigger('create');
     });
-
 }
-
-window.addEventListener('native.hidekeyboard', function() {
-    alert('123123');
-});
 
 /***********************************************************************************************************************
  * Events used on menu page
@@ -1815,6 +1808,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
             {
                 var _this = $('[to-applying="to-applying"]'), 
                     discountpercet = $(_this).data('discount');
+
+                $(_this).removeAttr('to-applying');
 
                 $('#coupon').prop('disabled', true);
                 $('#tr-coupon').addClass('hide');

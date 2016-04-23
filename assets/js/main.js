@@ -474,6 +474,39 @@ $(window).on('resize', function() {
     {
         resizeIngredients('ingredients2');
     }
+
+    if( !!$('#page-product').length )
+    {
+        if( $(window).height() > window.before_resize && 
+            $(document.activeElement).is('.searchIngredientsId') )
+        {
+            var event; // The custom event that will be created
+
+            if( document.createEvent )
+            {
+                event = document.createEvent('HTMLEvents');
+                event.initEvent('hidekeyboard', true, true);
+            }
+            else
+            {
+                event = document.createEventObject();
+                event.eventType = 'hidekeyboard';
+            }
+
+            event.eventName = 'HTMLEvents';
+
+            if (document.createEvent)
+            {
+                document.dispatchEvent(event);
+            }
+            else
+            {
+                document.fireEvent('on' + event.eventType, event);
+            }
+        }
+
+        window.before_resize = $(window).height();
+    }
 });
 
 function resizeIngredients(selector) {
@@ -490,6 +523,8 @@ function resizeIngredients(selector) {
  * @url /product/id
  **********************************************************************************************************************/
 $( document ).on("pageinit", "#page-product", function() {
+    window.before_resize = $(window).height();
+
     $( document ).on("panelclose", "#ingredients", function(){
         manageDoneButtonForRightPanel();
 
@@ -854,11 +889,15 @@ function populateIngredients( variationId, pizzaNo )
     })
     .complete(function() {
 
+        $(document).off('keyup', '.searchIngredientsId');
+
         // for symbol keys
         $(document).on('keyup', '.searchIngredientsId', function( env ){
             searchItemsForRightPanel(this.value);
         });
-        
+
+        $(document).off('keypress', '.searchIngredientsId');
+
         // disable enter press
         $(document).on('keypress', '.searchIngredientsId', function( env ){
             if( env.keyCode == 13 )
@@ -867,11 +906,19 @@ function populateIngredients( variationId, pizzaNo )
                 return false;
             }
         });
-        
+
+        $(document).off('click', '.ui-input-clear');
+
         // clear button in search field
         $(document).on('click', '.ui-input-clear', function( env ){
             searchItemsForRightPanel(this.value);
         });
+
+        $(document)
+            .off('focus', '#ingredients .searchIngredientsId')
+            .off('blur', '#ingredients .searchIngredientsId')
+            .off('focus', '#ingredients2 .searchIngredientsId')
+            .off('blur', '#ingredients2 .searchIngredientsId');
 
         // move to top search fields
         $(document)
@@ -907,6 +954,15 @@ function populateIngredients( variationId, pizzaNo )
                         resizeIngredients('ingredients2');
                     });
             });
+
+        $(document).off('hidekeyboard');
+
+        $(document).on('hidekeyboard', function() {
+            if( $(document.activeElement).is('.searchIngredientsId') )
+            {
+                $(document.activeElement).trigger('blur');
+            }
+        });
 
         calculateOrderPrice();
     })

@@ -22,21 +22,50 @@
                 <tbody>
                     <tr>
                         <td><b>Order Total</b></td>
-                        <td id="subtotal">${{ total }}</td>
+                        <td id="subtotal">${{ total|number_format(2, '.', '') }}</td>
                     </tr>
-                    {% set oldTotal = total %}
-
                     {% if coupon is defined %}
                         {% set total = 0 %}
                         {% set totalDiscount = 0 %}
 
                         {% for cart_item in cart_items %}
-                            {% if cart_item.coupon == 1 %}
-                                {% set discount = ( cart_item.subtotal / 100 ) * coupon.discount %}
-                                {% set totalDiscount = totalDiscount + discount %}
-                                {% set total = total + ( cart_item.subtotal - discount ) %}
+                            {% if half is defined and half != false %}
+                                {% set half = false %}
+                            {% endif %}
+                            {% if cart_item.product_type == 'half' %}
+                                {% set half = 'first' %}
+                                {% set total = ( total + cart_item.prod_price ) %}
+                                {% for option in cart_item.options %}
+                                    {% if half != 'second' and 'second half' in option.name|lower %}
+                                        {% set half = 'second' %}
+                                    {% endif %}
+                                    {% if half == 'first' and cart_item.first_half.has_coupon == 1 %}
+                                        {% set discount = ( ( option.price / 100 ) * coupon.discount ) %}
+                                        {% set totalDiscount = ( totalDiscount + discount ) %}
+                                        {% set total = ( total + ( option.price - discount ) ) %}
+                                    {% else %}
+                                        {% if half == 'first' %}
+                                            {% set total = ( total + option.price ) %}
+                                        {% endif %}
+                                    {% endif %}
+                                    {% if half == 'second' and cart_item.second_half.has_coupon == 1 %}
+                                        {% set discount = ( ( option.price / 100 ) * coupon.discount ) %}
+                                        {% set totalDiscount = ( totalDiscount + discount ) %}
+                                        {% set total = ( total + ( option.price - discount ) ) %}
+                                    {% else %}
+                                        {% if half == 'second' %}
+                                            {% set total = ( total + option.price ) %}
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor%}
                             {% else %}
-                                {% set total = total + cart_item.subtotal %}
+                                {% if cart_item.coupon == 1 %}
+                                    {% set discount = ( ( cart_item.subtotal / 100 ) * coupon.discount ) %}
+                                    {% set totalDiscount = ( totalDiscount + discount ) %}
+                                    {% set total = ( total + ( cart_item.subtotal - discount ) ) %}
+                                {% else %}
+                                    {% set total = ( total + cart_item.subtotal ) %}
+                                {% endif %}
                             {% endif %}
                         {% endfor %}
                         <tr>

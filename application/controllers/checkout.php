@@ -442,27 +442,14 @@ class checkout extends WMDS_Controller {
         }
 
         $this->twiggy->set('cart_items', $cart_items);
+
 // echo '<pre>'; var_dump($cart_items); echo '</pre>';
 // echo '<pre>'; var_dump($check); echo '</pre>'; die;
-        /** verify if low order */
-        /* if($surcharge->order_less > 0){
-            if(isset($check['couponDiscount']) && $check['couponDiscount'] ){
-                
-                $discount = number_format(($total/100)*$check['couponDiscount'], 1, '.', '');
-                $totalWithDiscount = $total + $discount;
-            } else {
-                $totalWithDiscount = $total;
-            }
-            if($totalWithDiscount < $surcharge->min_order_amt){
-                $low_order = $surcharge->order_less;
-            } else {
-                $low_order = 0;
-            }
-        } else {
-            $low_order = 0;
-        } */
 
-        if( $surcharge->order_less > 0 )
+        $order_less = (double) $surcharge->order_less;
+        $min_order_amt = (double) $surcharge->min_order_amt;
+
+        if( $order_less > 0 )
         {
             if( empty($check['couponDiscount']) )
             {
@@ -474,23 +461,39 @@ class checkout extends WMDS_Controller {
 
                 foreach( $cart_items as $key => $cart_item )
                 {
-                    if( $cart_item['product_type'] === 'half' )
+                    if( isset($half) && $half != false )
                     {
-                        if( $cart_item['first_half']->has_coupon == 1 )
-                        {
-                            $totalDiscount += ( ( (float) $cart_item['first_half']->product_price / 2 ) / 100 ) * $check['couponDiscount'];
-                        }
+                        $half = false;
+                    }
 
-                        if( $cart_item['second_half']->has_coupon == 1 )
+                    if( $cart_item['product_type'] == 'half' )
+                    {
+                        $half = 'first';
+
+                        foreach( $cart_item['options'] as $option )
                         {
-                            $totalDiscount += ( ( (float) $cart_item['second_half']->product_price / 2 ) / 100 ) * $check['couponDiscount'];
+                            if( $half != 'second' && 
+                                strpos(strtolower($option['name']), 'second half') !== false )
+                            {
+                                $half = 'second';
+                            }
+
+                            if( $half == 'first' && $cart_item['first_half']->has_coupon == 1 )
+                            {
+                                $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                            }
+
+                            if( $half == 'second' && $cart_item['second_half']->has_coupon == 1 )
+                            {
+                                $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                            }
                         }
                     }
                     else
                     {
                         if( $cart_item['coupon'] == 1 )
                         {
-                            $totalDiscount += ( (float) $cart_item['price'] / 100 ) * $check['couponDiscount'];
+                            $totalDiscount += ( ( (double) $cart_item['price'] / 100 ) * (integer) $check['couponDiscount'] );
                         }
                     }
                 }
@@ -498,13 +501,13 @@ class checkout extends WMDS_Controller {
                 $totalWithDiscount = $total - $totalDiscount;
             }
 
-            if( $totalWithDiscount < $surcharge->order_less )
+            if( $totalWithDiscount > $min_order_amt )
             {
-                $low_order = $surcharge->order_less;
+                $low_order = 0;
             }
             else
             {
-                $low_order = 0;
+                $low_order = $order_less;
             }
         }
         else
@@ -533,10 +536,12 @@ class checkout extends WMDS_Controller {
             'theme'  => 'a',
             'id'     => 'page-payment'
         ));
-        $this->twiggy->set('pageposition', 'order');
-        $out = prepareProfilePage($this->twiggy);
-        $out->template('checkout/order-login')->display();
 
+        $this->twiggy->set('pageposition', 'order');
+
+        $out = prepareProfilePage($this->twiggy);
+
+        $out->template('checkout/order-login')->display();
     }
 
     /**

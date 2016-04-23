@@ -46,13 +46,14 @@ class WMDS_Controller extends CI_Controller {
          */
         $storeOpen = $this->session->userdata('storeOpen');
 
-        if(!$storeOpen OR ($storeOpen['checkTime']+300 < time())) {
+        if( !$storeOpen || ( ( $storeOpen['checkTime'] + 300 ) < time() ) )
+        {
             $this->load->model('general');
 
             $this->session->set_userdata(array(
                 'storeOpen' => array(
-                    'isOpen'    => $this->general->isOpenNow(),
-                    'checkTime' => time(),
+                    'isOpen'    => $this->general->isOpenNow(), 
+                    'checkTime' => time()
                 )
             ));
         }

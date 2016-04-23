@@ -3,8 +3,9 @@
 {% block content %}
 
     <script type="text/javascript">
-        var schedule = {{ schedule.forJquery }};
-        var rules    = {{ rules }};
+        var schedule = {{ schedule.forJquery }}, 
+            rules    = {{ rules }}, 
+            time     = {{ date().timestamp * 1000 }};
     </script>
 
     <div data-role="content">
@@ -22,7 +23,6 @@
 
                 {% if itemsNo != 0 %}
                 <div class="order-holder get-space">
-
                     <table class="ui-body-a ui-shadow table-stripe ui-responsive order-table">
                         <tbody>
                         {%  for item in cart %}
@@ -297,31 +297,31 @@
         {#</a>#}
 
         <div class="checkout-footer control-1" data-title="Please select your payment choice">
-                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-                    <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
-                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2aa" value="Cash On Delivery">#}
-                    {#<label for="radio-choice-v-2aa">Cash</label>#}
-                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2bb" value="Credit Card(Online)">#}
-                    {#<label for="radio-choice-v-2bb">Credit Card(Online)</label>#}
-                    {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2cc" value="Paypal">#}
-                    {#<label for="radio-choice-v-2cc">Paypal</label>#}
-                    {%  if paymentMethods is defined %}
-                        {% for pm in paymentMethods %}
-                            <input type="radio" name="payment" class="payment footer-change"  id="payment-type-{{ pm.id }}" value="{{ pm.id }}">
-                            <label class="footer-btns" for="payment-type-{{ pm.id }}">{{ pm.pay_type }}</label>
-                        {% endfor %}
-                    {% endif %}
-                </fieldset>
+            <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2aa" value="Cash On Delivery">#}
+                {#<label for="radio-choice-v-2aa">Cash</label>#}
+                {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2bb" value="Credit Card(Online)">#}
+                {#<label for="radio-choice-v-2bb">Credit Card(Online)</label>#}
+                {#<input type="radio" name="payment" class="payment footer-change" id="radio-choice-v-2cc" value="Paypal">#}
+                {#<label for="radio-choice-v-2cc">Paypal</label>#}
+                {%  if paymentMethods is defined %}
+                    {% for pm in paymentMethods %}
+                        <input type="radio" name="payment" class="payment footer-change"  id="payment-type-{{ pm.id }}" value="{{ pm.id }}">
+                        <label class="footer-btns" for="payment-type-{{ pm.id }}">{{ pm.pay_type }}</label>
+                    {% endfor %}
+                {% endif %}
+            </fieldset>
         </div>
 
         <div class="checkout-footer control-2" data-title="Select delivery or pickup">
-                <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-                    <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
-                    <input type="radio" class="footer-change" name="delivery" id="radio-choice-v-2a" value="D">
-                    <label class="footer-btns" for="radio-choice-v-2a">Home Delivery</label>
-                    <input type="radio" class="footer-change" name="delivery"  id="radio-choice-v-2b" value="P">
-                    <label class="footer-btns" for="radio-choice-v-2b">In-store Pickup</label>
-                </fieldset>
+            <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
+                <a href="#" class="back-arrow checkout-back" data-role="button">Back</a>
+                <input type="radio" class="footer-change" name="delivery" id="radio-choice-v-2a" value="D">
+                <label class="footer-btns" for="radio-choice-v-2a">Home Delivery</label>
+                <input type="radio" class="footer-change" name="delivery"  id="radio-choice-v-2b" value="P">
+                <label class="footer-btns" for="radio-choice-v-2b">In-store Pickup</label>
+            </fieldset>
         </div>
 
         {% if isopen.isOpen %}

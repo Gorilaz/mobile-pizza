@@ -29,15 +29,11 @@ class General extends CI_Model {
         $day = strtolower(date('l'));
         $time = date('H:i');
 
-        $dateRange = '( ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_t` ) ) ) AND ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_t` ) ) ) )';
+        $dateRange = '( ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `first_half_t` ) ) ) OR ( UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', \'' . $time . '\' ) ) BETWEEN UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_fr` ) ) AND UNIX_TIMESTAMP( CONCAT( DATE( NOW() ), \' \', `second_half_t` ) ) ) )';
 
         $row = $this->db->where(array('day' => $day))->where($dateRange . ' IS TRUE', '', FALSE)->get('tbl_shop_timings')->num_rows();
 
-        if ($row > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return $row > 0;
     }
 
     public function getSiteText($item) {
@@ -68,25 +64,28 @@ class General extends CI_Model {
      * @return array
      */
     public function shopSchedule() {
-        $forTwig    = array();
-        $forJquery  = array();
+        $forTwig = array();
+        $forJquery = array();
 
         $entries = $this->db->get('tbl_shop_timings')->result();
 
-        foreach($entries as $entry) {
-            if($entry->first_half_from != NULL && $entry->second_half_from != NULL) {
-                $weekday = date("w", strtotime($entry->day));
+        foreach( $entries as $entry )
+        {
+            $weekday = date('w', strtotime($entry->day));
 
-                $forTwig[$weekday]['name']             = date("F jS", strtotime($entry->day));
-                $forTwig[$weekday]['value']            = date("Y-m-d", strtotime($entry->day));
+            if( $entry->first_half_from != NULL && 
+                $entry->second_half_from != NULL && 
+                date('w') === $weekday )
+            {
+                $forTwig[$weekday]['name'] = date('F jS', strtotime($entry->day));
+                $forTwig[$weekday]['value'] = date('Y-m-d', strtotime($entry->day));
 
-                $forJquery[date("Y-m-d", strtotime($entry->day))][$entry->timing_for] = $this->formatTimesForSchedule($entry);
+                $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for] = $this->formatTimesForSchedule($entry);
             }
         }
 
         /* Sort array starting with today */
-        $this->aasort($forTwig,'value');
-        $today = date("w");
+        $this->aasort($forTwig, 'value');
 
         return array('forTwig' => $forTwig, 'forJquery' => $forJquery);
     }
@@ -118,53 +117,175 @@ class General extends CI_Model {
         $time = array();
 
         $start = strtotime($row->first_half_from);
-        $end   = strtotime($row->first_half_to);
+        $end = strtotime($row->first_half_to);
 
-        if( date('i') > 0 && date('i') <= 15 )
+        if( time() > $start )
         {
-            $start = strtotime(date('G') . ':15');
+            $start = time();
         }
-        else if( date('i') > 15 && date('i') <= 30 )
+
+        if( $row->timing_for === 'D' )
         {
-            $start = strtotime(date('G') . ':30');
+            $delivery_time = $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value;
+
+            $start += (integer) $delivery_time * 60;
         }
-        else if( date('i') > 30 && date('i') <= 45 )
+
+        if( (integer) date('i', $start) === 0 )
         {
-            $start = strtotime(date('G') . ':45');
+            $start = strtotime(date('G', $start) . ':00');
+        }
+        else if( ( (integer) date('i', $start) > 0 ) && 
+            ( (integer) date('i', $start) <= 15 ) )
+        {
+            $start = strtotime(date('G', $start) . ':15');
+        }
+        else if( ( (integer) date('i', $start) > 15 ) && 
+            ( (integer) date('i', $start) <= 30 ) )
+        {
+            $start = strtotime(date('G', $start) . ':30');
+        }
+        else if( ( (integer) date('i', $start) > 30 ) && 
+            ( (integer) date('i', $start) <= 45 ) )
+        {
+            $start = strtotime(date('G', $start) . ':45');
         }
         else
         {
-            $h = date('G');
+            $h = date('G', $start);
 
             $h++;
 
             $start = strtotime($h . ':00');
         }
 
-        $time[date("H:i", $start)] = date("g:i a", $start);
+        if( (integer) date('i', $end) === 0 )
+        {
+            $end = strtotime(date('G', $end) . ':00');
+        }
+        else if( ( (integer) date('i', $end) > 0 ) && 
+            ( (integer) date('i', $end) <= 15 ) )
+        {
+            $end = strtotime(date('G', $end) . ':15');
+        }
+        else if( ( (integer) date('i', $end) > 15 ) && 
+            ( (integer) date('i', $end) <= 30 ) )
+        {
+            $end = strtotime(date('G', $end) . ':30');
+        }
+        else if( ( (integer) date('i', $end) > 30 ) && 
+            ( (integer) date('i', $end) <= 45 ) )
+        {
+            $end = strtotime(date('G', $end) . ':45');
+        }
+        else
+        {
+            $h = date('G', $end);
 
-        while($start <= $end) {
+            $h++;
+
+            $end = strtotime($h . ':00');
+        }
+
+        while( $start <= $end )
+        {
+            if( date('d') === date('d', $start) )
+            {
+                $time[date('H:i', $start)] = date('g:i a', $start);
+            }
+            else
+            {
+                $time['24:00'] = '12:00 pm';
+            }
+
             $start = $start + 900;
-            if($end >= $start) {
-                $time[date("H:i", $start)] = date("g:i a", $start);
-            }
         }
 
+        $start = strtotime($row->second_half_from);
+        $end = strtotime($row->second_half_to);
 
-        // check if it's duplicated
-        if($row->first_half_fr != $row->second_half_fr) {
-            $start = strtotime($row->second_half_from);
-            $end   = strtotime($row->second_half_to);
-
-            $time[date("H:i", $start)] = date("g:i a", $start);
-
-            while($start <= $end) {
-                $start = $start + 900;
-                if($end >= $start) {
-                    $time[date("H:i", $start)] = date("g:i a", $start);
-                }
-            }
+        if( time() > $start )
+        {
+            $start = time();
         }
+
+        if( $row->timing_for === 'D' )
+        {
+            $delivery_time = $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value;
+
+            $start += (integer) $delivery_time * 60;
+        }
+
+        if( (integer) date('i', $start) === 0 )
+        {
+            $start = strtotime(date('G', $start) . ':00');
+        }
+        else if( ( (integer) date('i', $start) > 0 ) && 
+            ( (integer) date('i', $start) <= 15 ) )
+        {
+            $start = strtotime(date('G', $start) . ':15');
+        }
+        else if( ( (integer) date('i', $start) > 15 ) && 
+            ( (integer) date('i', $start) <= 30 ) )
+        {
+            $start = strtotime(date('G', $start) . ':30');
+        }
+        else if( ( (integer) date('i', $start) > 30 ) && 
+            ( (integer) date('i', $start) <= 45 ) )
+        {
+            $start = strtotime(date('G', $start) . ':45');
+        }
+        else
+        {
+            $h = date('G', $start);
+
+            $h++;
+
+            $start = strtotime($h . ':00');
+        }
+
+        if( (integer) date('i', $end) === 0 )
+        {
+            $end = strtotime(date('G', $end) . ':00');
+        }
+        else if( ( (integer) date('i', $end) > 0 ) && 
+            ( (integer) date('i', $end) <= 15 ) )
+        {
+            $end = strtotime(date('G', $end) . ':15');
+        }
+        else if( ( (integer) date('i', $end) > 15 ) && 
+            ( (integer) date('i', $end) <= 30 ) )
+        {
+            $end = strtotime(date('G', $end) . ':30');
+        }
+        else if( ( (integer) date('i', $end) > 30 ) && 
+            ( (integer) date('i', $end) <= 45 ) )
+        {
+            $end = strtotime(date('G', $end) . ':45');
+        }
+        else
+        {
+            $h = date('G', $end);
+
+            $h++;
+
+            $end = strtotime($h . ':00');
+        }
+
+        while( $start <= $end )
+        {
+            if( date('d') === date('d', $start) )
+            {
+                $time[date('H:i', $start)] = date('g:i a', $start);
+            }
+            else
+            {
+                $time['24:00'] = '12:00 pm';
+            }
+
+            $start = $start + 900;
+        }
+
         return $time;
     }
 

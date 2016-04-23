@@ -1237,7 +1237,8 @@ $( document ).on('pageinit', '#page-checkout', function() {
 
     var count = 1;
 
-    $(document).on('change','.footer-change', function() {
+    $(document).on('change','.footer-change', function(event) {
+        var self = this;
 
         count++;
 
@@ -1252,40 +1253,39 @@ $( document ).on('pageinit', '#page-checkout', function() {
         if($(this).attr('name') == 'payment') {
 
             // in case its online payment
-             if($(this).val() == 3 || $(this).val() == 2) {
-                 if(totalAmount < rules.cc) {
-                     showAlert( "", "Minimum amount for Credit Card payments is $"+rules.cc );
-                 } else {
-                     elem.hide();
-                     elem.next().show().fadeOut(250).fadeIn(250);
+            if($(this).val() == 3 || $(this).val() == 2) {
+                if(totalAmount < rules.cc) {
+                    showAlert( "", "Minimum amount for Credit Card payments is $"+rules.cc );
+                } else {
+                    elem.hide();
+                    elem.next().show().fadeOut(250).fadeIn(250);
 
-                     manageHelpFooterLine(next);
-                 }
-             }
-             //paypal
-             else if($(this).val() == 4) {
-                 if(totalAmount < rules.paypal) {
-                     showAlert( "", "Minimum amount for Paypal payments is $"+rules.paypal );
-                 } else {
-                     elem.hide();
-                     elem.next().show().fadeOut(250).fadeIn(250);
+                    manageHelpFooterLine(next);
+                }
+            }
+            //paypal
+            else if($(this).val() == 4) {
+                if(totalAmount < rules.paypal) {
+                    showAlert( "", "Minimum amount for Paypal payments is $"+rules.paypal );
+                } else {
+                    elem.hide();
+                    elem.next().show().fadeOut(250).fadeIn(250);
 
-                     manageHelpFooterLine(next);
-                 }
-             } else {
-                 elem.hide();
-                 elem.next().show().fadeOut(250).fadeIn(250);
+                    manageHelpFooterLine(next);
+                }
+            } else {
+                elem.hide();
+                elem.next().show().fadeOut(250).fadeIn(250);
 
-                 manageHelpFooterLine(next);
-             }
+                manageHelpFooterLine(next);
+            }
         }
 
         /**
          * Home/Pickup Delivery
          */
-        else if($(this).attr('name') == 'delivery') {
-            var self = this;
-
+        else if( $(this).attr('name') === 'delivery' )
+        {
             $('#time')
                 .empty()
                 .append((function() {
@@ -1326,15 +1326,38 @@ $( document ).on('pageinit', '#page-checkout', function() {
                     return options;
                 })());
 
-            if($(this).val() == "D") {
-                if(totalAmount < rules.min_order_amt) {
-                    if(rules.order_less > 0){
-                        showConfirm( "", "There is a $" + rules.order_less + " fee for order less than $" + rules.min_order_amt + ". Click Ok for proceed or Cancel for keep shoping.", function() {
-                            if($('#has_discount').data('discountper') == 'no'){
+                var date = $('#date').val();
+
+            if( !Object.keys(schedule[date][$(self).val()]).length )
+            {
+                manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
+
+                return undefined;
+            }
+
+            if( $(self).val() === 'D' )
+            {
+                if( parseFloat(totalAmount) > parseFloat(rules.min_order_amt) )
+                {
+                    elem.hide();
+                    elem.next().show().fadeOut(250).fadeIn(250);
+
+                    manageHelpFooterLine(next);
+                }
+                else
+                {
+                    if( parseFloat(rules.order_less) > 0 )
+                    {
+                        showConfirm( '', 'There is a $' + rules.order_less + ' fee for order less than $' + rules.min_order_amt + '. Click Ok for proceed or Cancel for keep shoping.', function() {
+                            if( $('#has_discount').data('discountper') === 'no' )
+                            {
                                 defaultPrice('low_amount');
-                            } else {
+                            }
+                            else
+                            {
                                 var discountpercet = $('#has_discount').data('discountper');
-                                discountPrice(discountpercet,'low_amount');
+
+                                discountPrice(discountpercet, 'low_amount');
                             }
 
                             r = null;
@@ -1346,17 +1369,18 @@ $( document ).on('pageinit', '#page-checkout', function() {
                         }, function() {
                             window.location.href = '//' + location.host + '/menu';
                         } );
-                    } else {
-                        ( "#popupMinOrderValueNotMet" ).popup("open");
                     }
+                    else
+                    {
+                        elem.hide();
+                        elem.next().show().fadeOut(250).fadeIn(250);
 
-                } else {
-                    elem.hide();
-                    elem.next().show().fadeOut(250).fadeIn(250);
-
-                    manageHelpFooterLine(next);
+                        manageHelpFooterLine(next);
+                    }
                 }
-            } else {
+            }
+            else if( $(self).val() === 'P' )
+            {
                 elem.hide();
                 elem.next().show().fadeOut(250).fadeIn(250);
 

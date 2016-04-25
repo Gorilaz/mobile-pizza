@@ -67,6 +67,8 @@ class General extends CI_Model {
         $forTwig = array();
         $forJquery = array();
 
+        $forJquery[date('Y-m-d')] = array('D' => array(), 'P' => array());
+
         $entries = $this->db->get('tbl_shop_timings')->result();
 
         foreach( $entries as $entry )

@@ -1481,919 +1481,944 @@ $(document)
      * @url /menu
      **********************************************************************************************************************/
     .on('pageinit', '#page-menu', function() {
-        $(document).on('click', '#click-checkout', function(){
-            window.location.href = '//' + location.host + '/checkout';
-        });
-    });
+        $(document)
+            .off('click', '#click-checkout')
+            .on('click', '#click-checkout', function() {
+                window.location.href = '//' + window.location.host + '/checkout';
+            });
+    })
+    .off('pageinit', '#page-checkout')
+    /***********************************************************************************************************************
+     * Events used on page review page
+     * @url /checkout
+     **********************************************************************************************************************/
+    .on('pageinit', '#page-checkout', function() {
+        var firstPanel = $('.control-1'), 
+            count = 1;
 
-/***********************************************************************************************************************
- * Events used on page review page
- * @url /checkout
- **********************************************************************************************************************/
-$( document ).on('pageinit', '#page-checkout', function() {
-    $(document).off('change','.footer-change');
-    $(document).off('click','.checkout-footer a');
-    $(document).off('change','#date');
-    
-    
-    $(document).on('click','#id-footer-help-line', function() {
-        manageHelpFooterLine(null);
-    });
-    
+        firstPanel
+            .show()
+            .fadeOut(250)
+            .fadeIn(250);
 
-    //$('.control-1').show().addClass('animated bounce');
-    var firstPanel = $('.control-1');
-    firstPanel.show().fadeOut(250).fadeIn(250);
-    manageHelpFooterLine(firstPanel);
-   
+        manageHelpFooterLine(firstPanel);
 
-    var count = 1;
+        $(document)
+            .off('click', '#id-footer-help-line')
+            .on('click', '#id-footer-help-line', function() {
+                manageHelpFooterLine(null);
+            })
+            .off('change', '.footer-change')
+            .on('change', '.footer-change', function() {
+                var self = this, 
+                    elem = $(self).closest('.checkout-footer'), 
+                    next = elem.next(), 
+                    totalAmount = parseFloat($('.order-total-price').data('value'));
 
-    $(document).on('change','.footer-change', function(event) {
-        var self = this;
+                count++;
 
-        count++;
-
-        var elem         = $(this).closest('.checkout-footer');
-        var next         = elem.next();
-        var totalAmount  = $('.order-total-price').data('value');
-
-        /**
-         * Payment Tab
-         * Based on selected payment processor, check if minimum amount is meet
-         */
-        if($(this).attr('name') == 'payment') {
-
-            // in case its online payment
-            if($(this).val() == 3 || $(this).val() == 2) {
-                if(totalAmount < rules.cc) {
-                    showAlert( "", "Minimum amount for Credit Card payments is $"+rules.cc );
-                } else {
-                    elem.hide();
-                    elem.next().show().fadeOut(250).fadeIn(250);
-
-                    manageHelpFooterLine(next);
-                }
-            }
-            //paypal
-            else if($(this).val() == 4) {
-                if(totalAmount < rules.paypal) {
-                    showAlert( "", "Minimum amount for Paypal payments is $"+rules.paypal );
-                } else {
-                    elem.hide();
-                    elem.next().show().fadeOut(250).fadeIn(250);
-
-                    manageHelpFooterLine(next);
-                }
-            } else {
-                elem.hide();
-                elem.next().show().fadeOut(250).fadeIn(250);
-
-                manageHelpFooterLine(next);
-            }
-        }
-
-        /**
-         * Home/Pickup Delivery
-         */
-        else if( $(this).attr('name') === 'delivery' )
-        {
-            $('#time')
-                .empty()
-                .append((function() {
-                    var date = $('#date').val(), 
-                        delivery = $(self).val(), 
-                        options = new Array, 
-                        time, timeIndex;
-
-                    options.push(
-                        $('<option>')
-                            .attr({
-                                'value': '', 
-                                'selected': 'selected'
-                            })
-                            .append(
-                                document.createTextNode('Select Time')
-                            )
-                    );
-
-                    for( timeIndex in schedule[date][delivery] )
+                if( $(self).attr('name') === 'payment' )
+                {
+                    /**
+                     * Payment Tab
+                     * Based on selected payment processor, check if minimum amount is meet
+                     */
+                    if( parseFloat($(self).val()) === 3 || 
+                        parseFloat($(self).val()) === 2 )
                     {
-                        if( schedule[date][delivery].hasOwnProperty(timeIndex) )
+                        // in case its online payment
+                        if( totalAmount < parseFloat(rules.cc) )
                         {
-                            time = schedule[date][delivery][timeIndex];
-
-                            options.push(
-                                $('<option>')
-                                    .attr({
-                                        'value': timeIndex
-                                    })
-                                    .append(
-                                        document.createTextNode(time)
-                                    )
-                            );
+                            showAlert('', 'Minimum amount for Credit Card payments is $' + rules.cc);
                         }
-                    }
-
-                    return options;
-                })());
-
-                var date = $('#date').val();
-
-            if( !Object.keys(schedule[date][$(self).val()]).length )
-            {
-                manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
-
-                return undefined;
-            }
-
-            if( $(self).val() === 'D' )
-            {
-                if( parseFloat(totalAmount) > parseFloat(rules.min_order_amt) )
-                {
-                    elem.hide();
-                    elem.next().show().fadeOut(250).fadeIn(250);
-
-                    manageHelpFooterLine(next);
-                }
-                else
-                {
-                    if( parseFloat(rules.order_less) > 0 )
-                    {
-                        showConfirm( '', 'There is a $' + rules.order_less + ' fee for order less than $' + rules.min_order_amt + '. Click Ok for proceed or Cancel for keep shoping.', function() {
-                            if( $('#has_discount').data('discountper') === 'no' )
-                            {
-                                defaultPrice('low_amount');
-                            }
-                            else
-                            {
-                                var discountpercet = $('#has_discount').data('discountper');
-
-                                discountPrice(discountpercet, 'low_amount');
-                            }
-
-                            r = null;
-
+                        else
+                        {
                             elem.hide();
-                            elem.next().show().fadeOut(250).fadeIn(250);
+
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
 
                             manageHelpFooterLine(next);
-                        }, function() {
-                            window.location.href = '//' + location.host + '/menu';
-                        } );
+                        }
+                    }
+                    else if( parseFloat($(self).val()) === 4 )
+                    {
+                        //paypal
+                        if( totalAmount < parseFloat(rules.paypal) )
+                        {
+                            showAlert('', 'Minimum amount for Paypal payments is $' + rules.paypal);
+                        }
+                        else
+                        {
+                            elem.hide();
+
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
+
+                            manageHelpFooterLine(next);
+                        }
                     }
                     else
                     {
                         elem.hide();
-                        elem.next().show().fadeOut(250).fadeIn(250);
+
+                        next
+                            .show()
+                            .fadeOut(250)
+                            .fadeIn(250);
 
                         manageHelpFooterLine(next);
                     }
                 }
-            }
-            else if( $(self).val() === 'P' )
-            {
-                elem.hide();
-                elem.next().show().fadeOut(250).fadeIn(250);
+                else if( $(self).attr('name') === 'delivery' )
+                {
+                    /**
+                     * Home/Pickup Delivery
+                     */
+                    var a_process_for_preparing = $(self).val(), 
+                        date = $('#date').val(), 
+                        time, timeIndex;
 
-                manageHelpFooterLine(next);
-            }
-        }
-        else if($(this).attr('name') == 'when') {
-            if($(this).val() == 'ASAP') {
-                submitOrder();
-            } else {
-                if(elem.next().length) {
-                    elem.hide();
-                    elem.next().show().fadeOut(250).fadeIn(250);
+                    $('#time')
+                        .empty()
+                        .append(
+                            $('<option>')
+                                .append(document.createTextNode('Select Time'))
+                                .attr({
+                                    'selected': 'selected', 
+                                    'value': ''
+                                })
+                        );
 
-                    manageHelpFooterLine(next);
-                } else {
-                    submitOrder();
+                    for( timeIndex in schedule[date][a_process_for_preparing] )
+                    {
+                        if( schedule[date][a_process_for_preparing].hasOwnProperty(timeIndex) )
+                        {
+                            time = schedule[date][a_process_for_preparing][timeIndex];
+
+                            $('#time')
+                                .append(
+                                    $('<option>')
+                                        .append(document.createTextNode(time))
+                                        .attr({
+                                            'value': timeIndex
+                                        })
+                                );
+                        }
+                    }
+
+                    $('#time').selectmenu('refresh');
+
+                    if( !Object.keys(schedule[date][a_process_for_preparing]).length )
+                    {
+                        manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
+
+                        return undefined;
+                    }
+
+                    if( a_process_for_preparing === 'D' )
+                    {
+                        if( totalAmount > parseFloat(rules.min_order_amt) )
+                        {
+                            elem.hide();
+
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
+
+                            manageHelpFooterLine(next);
+                        }
+                        else
+                        {
+                            if( parseFloat(rules.order_less) > 0 )
+                            {
+                                showConfirm('', 'There is a $' + rules.order_less + ' fee for order less than $' + rules.min_order_amt + '. Click Ok for proceed or Cancel for keep shoping.', function() {
+                                    var discountpercet = $('#has_discount').data('discountper');
+
+                                    if( discountpercet === 'no' )
+                                    {
+                                        defaultPrice('low_amount');
+                                    }
+                                    else
+                                    {
+                                        discountPrice(discountpercet, 'low_amount');
+                                    }
+
+                                    elem.hide();
+
+                                    next
+                                        .show()
+                                        .fadeOut(250)
+                                        .fadeIn(250);
+
+                                    manageHelpFooterLine(next);
+                                }, function() {
+                                    window.location.href = '//' + location.host + '/menu';
+                                });
+                            }
+                            else
+                            {
+                                elem.hide();
+
+                                next
+                                    .show()
+                                    .fadeOut(250)
+                                    .fadeIn(250);
+
+                                manageHelpFooterLine(next);
+                            }
+                        }
+                    }
+                    else if( a_process_for_preparing === 'P' )
+                    {
+                        elem.hide();
+
+                        next
+                            .show()
+                            .fadeOut(250)
+                            .fadeIn(250);
+
+                        manageHelpFooterLine(next);
+                    }
                 }
-            }
-        } else {
-            if(elem.next().length) {
-                elem.hide();
-                elem.next().show().fadeOut(250).fadeIn(250);
+                else if( $(self).attr('name') === 'when' )
+                {
+                    if( $(self).val() === 'ASAP' )
+                    {
+                        submitOrder();
+                    }
+                    else
+                    {
+                        if( !!$(next).length )
+                        {
+                            elem.hide();
 
-                manageHelpFooterLine(next);
-            } else {
-                submitOrder();
-            }
-        }
-    });
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
 
-    /**
-     * Click Keep Shoping
-     */
-    $(document).on('click', '#keep-shoping', function(){
-        window.location.href = '//' + location.host + '/menu';
-    });
+                            manageHelpFooterLine(next);
+                        }
+                        else
+                        {
+                            submitOrder();
+                        }
+                    }
+                }
+                else
+                {
+                    if( !!$(next).length )
+                    {
+                        elem.hide();
 
+                        next
+                            .show()
+                            .fadeOut(250)
+                            .fadeIn(250);
 
-    /**
-     * Click Procced
-     */
-    $(document).on('click', '#proceed', function(){
-        if($('#has_discount').data('discountper') == 'no'){
-           defaultPrice('low_amount');
-        } else {
-           var discountpercet = $('#has_discount').data('discountper');
-           discountPrice(discountpercet,'low_amount');
-        }
-        var elem = $('#dialog').data('elem');
-        elem.hide();//.addClass('animated flip');
-        //elem.next().show().addClass('animated bounce');
-        elem.next().show().fadeOut(250).fadeIn(250);
-        $('#dialog').dialog('close');
-    });
+                        manageHelpFooterLine(next);
+                    }
+                    else
+                    {
+                        submitOrder();
+                    }
+                }
+            })
+            .off('click tap', '.checkout-footer a')
+            .on('click tap', '.checkout-footer a', function() {
+                var self = this, 
+                    prev = $(self).closest('.checkout-footer').hide().prev();
 
+                manageHelpFooterLine(prev);
 
+                if( !!$(prev).length )
+                {
+                    prev
+                        .show()
+                        .fadeOut(250)
+                        .fadeIn(250);
+                }
+                else
+                {
+                    window.location.href = '//' + window.location.host+ '/menu';
+                }
 
-    $(document).on('click tap', '.checkout-footer a', function() {
-       var prev = $(this).closest('.checkout-footer').hide().prev();
-       
-       manageHelpFooterLine(prev);
-
-       if( prev.length ) {
-           //prev.show().addClass('animated bounce');
-           prev.show().fadeOut(250).fadeIn(250);
-       } else {
-            /*
-             * Placeholder
-             * Overwrite Back button
+                return false; // fix double event
+            })
+            .off('click', '#keep-shoping')
+            /**
+             * Click Keep Shoping
              */
-           //$.mobile.back(); // old code
-           window.location.href = '//' + location.host+ '/menu';
-       }
-       return false; // fix double event
-   });
+            .on('click', '#keep-shoping', function() {
+                window.location.href = '//' + location.host + '/menu';
+            })
+            .off('click', '#proceed')
+            /**
+             * Click Procced
+             */
+            .on('click', '#proceed', function() {
+                var discountpercet = $('#has_discount').data('discountper');
 
-    populateOrderAvailableHours();
-    $(document).on('change', '#date', function() {
-        populateOrderAvailableHours();
-    });
-
-
-
-    function populateOrderAvailableHours() {
-        var selected = $('#date').val();
-
-        if(selected === undefined || selected == '') {
-            var selected = $('#date').find('option:nth-child(2)').val();
-        }
-
-
-        if(selected !== undefined) {
-            var availableHours = schedule[selected]["P"];
-            var $timeEl = $('#time');
-            $timeEl.empty();
-
-            var firstVal = 'Select Time';
-
-            $timeEl.append($("<option></option>")
-                .attr("value", '').attr("selected", true).text("Select Time"));
-
-            $.each(availableHours, function(key, value) {
-                if(!firstVal) {
-                    firstVal = value;
+                if( discountpercet === 'no' )
+                {
+                    defaultPrice('low_amount');
                 }
-                $timeEl.append($("<option></option>")
-                    .attr("value", key).text(value));
+                else
+                {
+                    discountPrice(discountpercet, 'low_amount');
+                }
+
+                var elem = $('#dialog').data('elem');
+
+                elem.hide();
+
+                elem
+                    .next()
+                    .show()
+                    .fadeOut(250)
+                    .fadeIn(250);
+
+                $('#dialog').dialog('close');
+            })
+            .off('change', '.choose-coupon')
+            /**  Coupon  */
+            .on('change', '.choose-coupon', function() {
+                var self = this, 
+                    discountpercet = $(self).data('discount');
+
+                if( discountpercet === 'other' )
+                {
+                    $('#coupon').prop('disabled', false);
+
+                    $('#tr-coupon').removeClass('hide');
+
+                    $('#coupon-row').removeClass('hide');
+
+                    if( $('#radio-choice-v-2a').is(':checked') )
+                    {
+                        defaultPrice('low_amount');
+                    }
+                    else
+                    {
+                        defaultPrice();
+                    }
+                }
+                else
+                {
+                    if( !!$.trim($('#coupon-des').text()) )
+                    {
+                        $(self).attr('to-applying', 'to-applying');
+
+                        $('#icon-remove-coupon')[0].click();
+                    }
+                    else
+                    {
+                        $('#coupon').prop('disabled', true);
+
+                        $('#tr-coupon').addClass('hide');
+
+                        $('#coupon-row').removeClass('hide');
+
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            discountPrice(discountpercet, 'online_low_amount');
+                        }
+                        else
+                        {
+                            discountPrice(discountpercet, '');
+                        }
+                    }
+                }
+            })
+            .off('click', '#voucher')
+            /** other coupon */
+            .on('click', '#voucher', function() {
+                var coupon = $('#coupon').val(), 
+                    request = $.ajax({
+                        data: {
+                            coupon: coupon
+                        }, 
+                        dataType: 'json', 
+                        type: 'POST', 
+                        url: '//' + window.location.host + '/checkout/getCoupons'
+                    });
+
+                request.done(function(data) {
+                    if( data === 'false' )
+                    {
+                        defaultPrice();
+
+                        $('#icon-remove-coupon').addClass('hide');
+
+                        $('#coupon-des').empty();
+                        $('#coupon-dis').empty();
+                    }
+                    else
+                    {
+                        $('#coupon-des')
+                            .empty()
+                            .append(document.createTextNode(data.coupondescription));
+
+                        var discountpercet = parseInt(data.discountper, 10);
+
+                        discountPrice(discountpercet);
+
+                        $('#icon-remove-coupon').removeClass('hide');
+
+                        $('#coupon-row').removeClass('hide');
+                        
+                        $('#tr-coupon').addClass('hide');
+
+                        $('#other').val(data.id);
+                    }
+                });
+
+                request.fail(function(jqXHR, textStatus) {
+                    showAlert('', 'Request failed: ' + textStatus);
+                });
+            })
+            .off('click', '#icon-remove-coupon')
+            /** remove coupon  */
+            .on('click', '#icon-remove-coupon', function() {
+                showConfirm('', 'Remove voucher?', function() {
+                    if( !!$('[to-applying="to-applying"]').length )
+                    {
+                        var self = $('[to-applying="to-applying"]'), 
+                            discountpercet = $(self).data('discount');
+
+                        $(self).removeAttr('to-applying');
+
+                        $('#coupon').prop('disabled', true).val('');
+
+                        $('#tr-coupon').addClass('hide');
+
+                        $('#icon-remove-coupon').addClass('hide');
+
+                        $('#coupon-row').removeClass('hide');
+
+                        $('#coupon-des').empty();
+
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            discountPrice(discountpercet, 'online_low_amount');
+                        }
+                        else
+                        {
+                            discountPrice(discountpercet);
+                        }
+                    }
+                    else
+                    {
+                        $('#coupon').prop('disabled', false).val('');
+
+                        $('#tr-coupon').removeClass('hide');
+
+                        $('#icon-remove-coupon').addClass('hide');
+
+                        $('#coupon-des').empty();
+                        $('#coupon-dis').empty();
+
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            defaultPrice('low_amount');
+                        }
+                        else
+                        {
+                            defaultPrice();
+                        }
+                    }
+
+                    $('#other').val('');
+                }, function() {
+                    var self = $('[to-applying="to-applying"]');
+
+                    $(self).removeAttr('to-applying');
+                });
+            })
+            .off('click', '.remove-order-item')
+            .on('click', '.remove-order-item', function(event) {
+                event.preventDefault();
+
+                var self = this;
+
+                showConfirm('', 'Remove ' + $(self).data('title') + ' from your order?', function() {
+                    var hideItems = $(self).data('id'), 
+                        totalItem = $('.order-total-price'), 
+                        newTotal = ( parseFloat(totalItem.data('default')) - parseFloat($(self).data('value')) );
+
+                    $('.item-' + hideItems).hide();
+
+                    totalItem
+                        .data({
+                            'default': newTotal, 
+                            'value': newTotal
+                        })
+                        .empty()
+                        .append(document.createTextNode('$ ' + newTotal));
+
+                    var discountpercet = $('#has_discount').data('discountper');
+
+                    if( discountpercet === 'no' )
+                    {
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            defaultPrice('low_amount');
+                        }
+                        else
+                        {
+                            defaultPrice();
+                        }
+                    }
+                    else
+                    {
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            discountPrice(discountpercet, 'low_amount');
+                        }
+                        else
+                        {
+                            discountPrice(discountpercet, 'online');
+                        }
+                    }
+
+                    /**
+                     * Ajax call to remove 
+                     * the item from session
+                     */
+                    var request = $.ajax({
+                        context: document.body, 
+                        url: '/remove/' + hideItems
+                    });
+
+                    request.done(function(data) {
+                        // done!
+                    });
+
+                    if( newTotal === 0 )
+                    {
+                        $('.notice-holder').removeClass('hide');
+
+                        $('.order-holder').hide();
+
+                        $('.checkout-footer').hide();
+                    }
+                });
             });
 
-            $timeEl.parent().find('.ui-btn-text span').html(firstVal);
-        }
-
-
-    }
-
-    /* Unbind everything */
-    $(document).off('click','#cart-button');
-    $(document).off('click','.show-date');
-    $(document).off('click','.asap');
-    $(document).off('click','#voucher');
-    $(document).off('click','.remove-order-item');
-    $(document).off('change','.choose-coupon');
-    // $(document).off('click','#td-social a');
-
-/*     function submitOrder() {
-        if($('.later').is(':checked')){
-            var date = $('#date').val();
-            if(date){
-                $('#form-checkout').submit();
-            } else {
-                $('#date-error').removeClass('hide');
-            }
-        } else {
-            $('#form-checkout').submit();
-        }
-    } */
-
-    function submitOrder() {
-        if( $('.later').is(':checked') )
+        /**
+         * Apply percent
+         * 
+         * @param integer amountPercent
+         * @param float price
+         * @returns string
+         */
+        function applyPercentForPrice(amountPercent, price)
         {
-            if( !$('#date').val() || 
-                !$('#time').val() )
+            return ( ( parseFloat(price) / 100 ) * parseInt(amountPercent, 10) ).toFixed(2);
+        }
+
+        function defaultPrice(type)
+        {
+            if( typeof(type) === 'undefined' )
             {
-                $('#date-error').removeClass('hide');
+                type = false;
+            }
+
+            $('#coupon-row').addClass('hide');
+
+            $('#has_discount').data('discountper', 'no');
+
+            var total = parseFloat($('.order-total-price').data('default'));
+
+            if( $('#holiday-fee').data('fee') !== 'no' )
+            {
+                var feeDiscount = parseFloat($('#holiday-fee').data('fee')), 
+                    feePrice = ( ( total / 100 ) * feeDiscount );
+
+                total = ( total + feePrice );
+            }
+
+            if( type === 'low_amount' )
+            {
+                total = ( total + parseFloat(rules.order_less) );
+
+                $('#low_order_fee')
+                    .empty()
+                    .append(document.createTextNode('+$' + rules.order_less));
+
+                $('#low_order').removeClass('hide');
+            }
+
+            $('.order-total-price')
+                .data({
+                    'value': total.toFixed(2)
+                })
+                .empty()
+                .append(document.createTextNode('$ ' + total.toFixed(2)));
+        }
+
+        /**
+         * Apply discounts for price
+         * 
+         * @param integer discountpercet
+         * @param string type
+         * @returns none
+         */
+        function discountPrice(discountpercet, type)
+        {
+            type = type || '';
+
+            $('#has_discount').attr('data-discountper', discountpercet);
+
+            var defaultTotal = parseFloat($('.order-total-price').data('default')), 
+                total = 0, totalDiscount = 0, 
+                orderPrice, orderPriceIndex, 
+                orderPrices = $('.order-subtotal').find('.order-price').get();
+
+            for( orderPriceIndex in orderPrices )
+            {
+                if( orderPrices.hasOwnProperty(orderPriceIndex) )
+                {
+                    orderPrice = orderPrices[orderPriceIndex];
+
+                    if( $(orderPrice).is(':visible') )
+                    {
+                        var subTotal = parseFloat($(orderPrice).data('value')), 
+                            qty = parseInt($(orderPrice).data('qty'), 10);
+
+                        if( !isNaN(qty) )
+                        {
+                            subTotal *= qty;
+                        }
+
+                        if( isNaN(subTotal) )
+                        {
+                            continue;
+                        }
+                        else
+                        {
+                            if( parseFloat($(orderPrice).data('coupon')) === 1 )
+                            {
+                                var discount = parseFloat(applyPercentForPrice(discountpercet, subTotal));
+
+                                totalDiscount += discount;
+
+                                total += (subTotal - discount);
+                            }
+                            else
+                            {
+                                total += subTotal;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // add holiday fee
+            if( $('#holiday-fee').data('fee') !== 'no' )
+            {
+                var feePrice = parseFloat(applyPercentForPrice(parseFloat($('#holiday-fee').data('fee')), total));
+
+                total = parseFloat(prepareMathFloatValues(total, feePrice));
+
+                $('#fee-prince').html('+$' + feePrice.toFixed(2));
+            }
+
+            if( type == 'low_amount' || 
+                type == 'online_low_amount' )
+            {
+                total = parseFloat(prepareMathFloatValues(total, rules.order_less));
+
+                $('#low_order_fee').html('+$' + rules.order_less);
+
+                $('#low_order').removeClass('hide');
+            }
+
+            if( type == 'online' || 
+                type == 'online_low_amount' )
+            {
+                $('#icon-remove-coupon').removeClass('hide');
+
+                $('#coupon-des').html('Online Order Discount');
+            }
+
+            $('.order-total-price')
+                .data({
+                    'value': total.toFixed(2)
+                })
+                .empty()
+                .append(document.createTextNode('$ ' + total.toFixed(2)));
+
+            $('#coupon-dis').html('-$' + totalDiscount.toFixed(2));
+        }
+
+        /**
+         * Sum two values
+         * 
+         * @param float operandOne
+         * @param float operandTwo
+         * @param string operation
+         * @returns string or false
+         */
+        function prepareMathFloatValues(operandOne, operandTwo, operation)
+        {
+            operation = operation || '+';
+
+            if( operation === '+' )
+            {
+                return ( parseFloat(operandOne) + parseFloat(operandTwo) ).toFixed(2);
+            }
+            else if( operation === '-' )
+            {
+                return ( parseFloat(operandOne) - parseFloat(operandTwo) ).toFixed(2);
             }
             else
             {
-                $('#form-checkout').submit();
+                return false;
             }
         }
-        else
+
+        function submitOrder()
         {
-            if( $('[name="when"]:checked').val() === 'ASAP' )
-            {
-                $('#form-checkout').submit();
-            }
-            else
+            if( $('.later').is(':checked') )
             {
                 if( !$('#date').val() || 
                     !$('#time').val() )
                 {
-                    return false;
+                    $('#date-error').removeClass('hide');
                 }
                 else
                 {
-                    var date = $('#date').val(), 
-                        last_time = $('#time').find('option:last').attr('value');
-
-                    if( Date.now() > (new Date(date + ' ' + last_time)).getTime() )
+                    $('#form-checkout').submit();
+                }
+            }
+            else
+            {
+                if( $('[name="when"]:checked').val() === 'ASAP' )
+                {
+                    $('#form-checkout').submit();
+                }
+                else
+                {
+                    if( !$('#date').val() || 
+                        !$('#time').val() )
                     {
-                        manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
-
                         return false;
                     }
                     else
                     {
-                        $('#form-checkout').submit();
-                    }
-                }
-            }
-        }
-    }
+                        var date = $('#date').val(), 
+                            last_time = $('#time').find('option:last').attr('value');
 
-
-    /**
-     * Show Date-time picker
-     */
-
-
-    if($('#isopen').data('open') == 'close'){
-        $("#date-time :input").attr("disabled", false);
-        $('#date-time').removeClass('hide');
-    } else {
-        $("#date-time :input").attr("disabled", true);
-    }
-
-
-
-    $(document).on('click','.show-date', function(){
-
-        $("#date-time :input").attr("disabled", false);
-        $('#date-time').removeClass('hide');
-    });
-
-    $(document).on('click','.asap', function(){
-        $("#date-time :input").attr("disabled", true);
-        $('#date-time').addClass('hide');
-    });
-
-    /** END Date-time picker */
-
-
-    function defaultPrice(type){
-        if(type === undefined) {
-            var type = false;
-        }
-
-        $('#coupon-row').addClass('hide');
-        $('#has_discount').data('discountper', 'no');
-
-        var total = $('.order-total-price').data('default');
-        if($('#holiday-fee').data('fee') != 'no'){
-            var feeDiscount = $('#holiday-fee').data('fee');
-            var feePrice = ((parseFloat(total)/100)*parseFloat(feeDiscount)).toFixed(2);
-
-            total = (parseFloat(total) + parseFloat(feePrice)).toFixed(2);
-        }
-
-        if(type == 'low_amount'){
-            total = (parseFloat(total) + parseFloat(rules.order_less)).toFixed(2);
-            $('#low_order_fee').html('+$'+rules.order_less);
-            $('#low_order').removeClass('hide');
-        }
-
-        $('.order-total-price').html('$ ' + total).data('value',total);
-    }
-    
-    /**
-     * Apply percent
-     * @param int amountPercent
-     * @param float price
-     * @returns float
-     */
-    function applyPercentForPrice( amountPercent, price )
-    {
-        return ( (parseFloat(price) / 100) * parseInt(amountPercent) ).toFixed(2);
-    }
-    
-    /**
-     * Sum two values
-     * @param float value1
-     * @param float value2
-     * @returns float or false
-     */
-    function prepareMathFloatValues( operandOne, operandTwo, operation )
-    {
-        operation = operation || '+';
-        if( operation == '+' )
-        {
-            return (parseFloat(operandOne) + parseFloat(operandTwo)).toFixed(2);            
-        } else {
-        if( operation == '-' )
-        {
-            return (parseFloat(operandOne) - parseFloat(operandTwo)).toFixed(2);
-        }}
-        return false;
-    }
-
-    /**
-     * Apply discounts for price
-     * @param int discountpercet
-     * @param string type
-     * @returns null
-     */
-    function discountPrice( discountpercet, type )
-    {
-        type = !!type ? type : '';
-
-        $('#has_discount').attr('data-discountper', discountpercet);
-
-        var defaultTotal = parseFloat($('.order-total-price').data('default')), 
-            total = 0, totalDiscount = 0;
-
-        var orderPrice, orderPriceIndex, 
-            orderPrices = $('.order-subtotal').find('.order-price').get();
-
-        for( orderPriceIndex in orderPrices )
-        {
-            if( orderPrices.hasOwnProperty(orderPriceIndex) )
-            {
-                orderPrice = orderPrices[orderPriceIndex];
-
-                if( $(orderPrice).is(':visible') )
-                {
-                    var subTotal = parseFloat($(orderPrice).data('value')), 
-                        qty = parseInt($(orderPrice).data('qty'), 10);
-
-                    if( !isNaN(qty) )
-                    {
-                        subTotal *= qty;
-                    }
-
-                    if( isNaN(subTotal) )
-                    {
-                        continue;
-                    }
-                    else
-                    {
-                        if( $(orderPrice).data('coupon') == 1 )
+                        if( Date.now() > (new Date(date + ' ' + last_time)).getTime() )
                         {
-                            var discount = parseFloat(applyPercentForPrice(discountpercet, subTotal));
+                            manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
 
-                            totalDiscount += discount;
-
-                            total += (subTotal - discount);
+                            return false;
                         }
                         else
                         {
-                            total += subTotal;
+                            $('#form-checkout').submit();
                         }
                     }
                 }
             }
         }
 
-        // add holiday fee
-        if( $('#holiday-fee').data('fee') !== 'no' )
+        /**
+         * Show Date-time picker
+         */
+        if( $('#isopen').data('open') === 'close' )
         {
-            var feePrice = parseFloat(applyPercentForPrice(parseFloat($('#holiday-fee').data('fee')), total));
-
-            $('#fee-prince').html('+$' + feePrice.toFixed(2));
-
-            total = parseFloat(prepareMathFloatValues(total, feePrice));
-        }
-
-        if( type == 'low_amount' || 
-            type == 'online_low_amount' )
-        {
-            total = parseFloat(prepareMathFloatValues(total, rules.order_less));
-
-            $('#low_order_fee').html('+$' + rules.order_less);
-
-            $('#low_order').removeClass('hide');
-        }
-
-        if( type == 'online' || 
-            type == 'online_low_amount' )
-        {
-            $('#icon-remove-coupon').removeClass('hide');
-
-            $('#coupon-des').html('Online Order Discount');
-        }
-
-        $('.order-total-price').html( '$ ' + total.toFixed(2) );
-        $('.order-total-price').attr( 'data-value', total.toFixed(2) );
-        $('#coupon-dis').html( '-$' + totalDiscount.toFixed(2) );
-    }
-
-    /**  Coupon  */
-    $(document).on( 'change', '.choose-coupon', function() {
-        var _this = this, 
-            discountpercet = $(_this).data('discount');
-
-        if( discountpercet == 'other' )
-        {
-            $('#coupon').prop('disabled', false);
-            $('#tr-coupon').removeClass('hide');
-
-            $('#coupon-row').removeClass('hide');
-
-            if( $('#radio-choice-v-2a').is(':checked') )
-            {
-                defaultPrice('low_amount');
-            }
-            else
-            {
-                defaultPrice();
-            }
+            $('#date-time :input').attr('disabled', false);
+            $('#date-time').removeClass('hide');
         }
         else
         {
-            if( !!$.trim($('#coupon-des').text()) )
-            {
-                $(_this).attr('to-applying', 'to-applying');
-
-                $('#icon-remove-coupon')[0].click();
-            }
-            else
-            {
-                $('#coupon').prop('disabled', true);
-                $('#tr-coupon').addClass('hide');
-
-                $('#coupon-row').removeClass('hide');
-
-                if( $('#radio-choice-v-2a').is(':checked') )
-                {
-                    discountPrice(discountpercet, 'online_low_amount');
-                }
-                else
-                {
-                    discountPrice(discountpercet, '');
-                }
-            }
+            $('#date-time :input').attr('disabled', true);
         }
-    });
 
+        $(document)
+            .off('click', '.show-date')
+            .on('click', '.show-date', function() {
+                $('#date-time :input').attr('disabled', false);
+                $('#date-time').removeClass('hide');
+            })
+            .off('click', '.asap')
+            .on('click', '.asap', function() {
+                $('#date-time :input').attr('disabled', true);
+                $('#date-time').addClass('hide');
+            });
+        /** END Date-time picker */
 
-    /** other coupon */
-    $(document).on('click','#voucher', function()
-    {
-        var el = $('#coupon').val();
-        var request = $.ajax({
-            url: '//' + location.host + '/checkout/getCoupons',
-            type: "POST",
-            data: { 
-                coupon : el 
-            },
-            dataType: "json"
+        /**
+         * Social Locker
+         */
+        // $(document)
+        //     .off('click', '#td-social a')
+        //     .on('click', '#td-social a', function() {
+        //         $('#show-social-loker').removeClass('hide');
+        //     });
+
+        /**
+         * Need to check is present global vars
+         * @type String|FACEBOOKAPPID
+         */
+        // var FBAppID = '';
+
+        // if( typeof(FACEBOOKAPPID) === 'string' )
+        // {
+        //     FBAppID = FACEBOOKAPPID;
+        // }
+        /* use after for Facebook App ID - FBAppID */
+
+        // $('#social-loker').sociallocker({
+        //     buttons: { order: [ 'twitter-tweet', 'facebook-share' ] }, 
+        //     // a theme name that will be used
+        //     theme: 'secrets', 
+        //     // text that appears above the social buttons
+        //     text: { header: ' ', message: 'Free coke? Like us and it\'s yours!' }, 
+        //     facebook: {
+        //         appId: FBAppID, 
+        //         share: { title: 'share it', url: 'http://m.pizzaboy.bywmds.us/' }
+        //     }, 
+        //     twitter: {
+        //         tweet: {
+        //             title: 'tweet me', 
+        //             text: 'Tweet this message', 
+        //             url: 'http://m.pizzaboy.bywmds.us/'
+        //         }
+        //     }
+        // });
+
+        // $('.onp-sociallocker-text').remove();
+    })
+    .off('pageinit', '#page-payment')
+    /***********************************************************************************************************************
+     * Payment/Send Order
+     * @url /payment
+     **********************************************************************************************************************/
+    .on('pageinit', "#page-payment", function() {
+        verifyClean();
+
+        /* Unbind everything */
+        $(document).off('click','#sign-in');
+        $(document).off('click','#verify-btn');
+        $(document).off('click','#log-out');
+        $(document).off('change','#form_suburb');
+        $(document).off('click','#send-order');
+        $(document).off('click','.card-number');
+        $(document).off('keyup','.card-number');
+        $(document).off('keyup','#form_firstname');
+        $(document).off('keyup','#form_lastname');
+
+        prepareProfileFormValidation();
+        prepareLoginFormValidation();
+
+        /*
+         * Bind click action for standart login form
+         */
+        $(document).on('click','#sign-in',function(){
+            if($('#form-singin').valid())
+            {
+                signInRequest( this );
+            }
         });
-        request.done(function( data )
-        {
-            if( data != 'false' )
-            {
-                $('#coupon-des').html(data.coupondescription);
-                var discountpercet = parseInt(data.discountper) ;
-                discountPrice(discountpercet);
-                $('#icon-remove-coupon').removeClass('hide');
-                $('#coupon-row').removeClass('hide');
-                $('#tr-coupon').addClass('hide');
-                $('#other').val( data.id );
-            } else {
-                defaultPrice();
-                $('#icon-remove-coupon').addClass('hide');
-                $('#coupon-des').html('');
-                $('#coupon-dis').html('');
-            }
+
+        /*
+         * Bind click action for log out 
+         */
+        $(document).on('click', '#log-out', function(){
+            window.location.href = '//' + location.host + '/logout/payment';
         });
-        request.fail(function( jqXHR, textStatus )
-        {
-            showAlert( "", "Request failed: " + textStatus );
+
+        /*
+         * Bind click action for Verify button on profile page
+         */
+        $(document).on('click', '#verify-btn', function(){
+            verifyMobileBySMS();
         });
-    });
 
-    /** remove coupon  */
-    $(document).on('click', '#icon-remove-coupon', function() {
-        showConfirm( "", "Remove voucher ?", function() {
-            if( !!$('[to-applying="to-applying"]').length )
+        /*
+         *  change suburb, calculate total 
+         */
+        $(document).on('change', '#form_suburb', function(){
+            if( typeof has_delivery != 'undefined' 
+                && has_delivery == '1'
+               )
             {
-                var _this = $('[to-applying="to-applying"]'), 
-                    discountpercet = $(_this).data('discount');
+                var subtotal = $('#subtotal').html();
+                subtotal = subtotal.replace('$','');
 
-                $(_this).removeAttr('to-applying');
-
-                $('#coupon').prop('disabled', true);
-                $('#tr-coupon').addClass('hide');
-
-                $('#coupon-row').removeClass('hide');
-
-                if( $('#radio-choice-v-2a').is(':checked') )
+                var discount = $('#discount').val();
+                if( discount !== 'undefined' )
                 {
-                    discountPrice(discountpercet, 'online_low_amount');
+                    subtotal = parseFloat(subtotal) - parseFloat(discount);
                 }
-                else
+                var fee = $('#form_suburb option:selected').data('fee');
+
+                /** payment fee  */
+                var payment = $('#cc').data('cc');
+                if( payment != 0 )
                 {
-                    discountPrice(discountpercet, '');
+                    subtotal = parseFloat(subtotal) + parseFloat(payment);
                 }
-
-                $('#icon-remove-coupon').addClass('hide');
-
-                $('#coupon-des').html('');
-
-                $('#coupon').val('');
+                var total = parseFloat(fee) + parseFloat(subtotal) + parseFloat(low_order);
+                $('#delivery-fee').html('+$' + fee);
+                $('#total').html(total);
             }
-            else
-            {
-                $('#coupon').prop('disabled', false);
-                $('#tr-coupon').removeClass('hide');
+        }); // onchange form_suburb
 
-                if( $('#radio-choice-v-2a').is(':checked') )
-                {
-                    defaultPrice('low_amount');
-                }
-                else
-                {
-                    defaultPrice();
-                }
-
-                $('#icon-remove-coupon').addClass('hide');
-
-                $('#coupon-des').html('');
-                $('#coupon-dis').html('');
-
-                $('#coupon').val('');
-            }
-
-            $('#other').val('');
-        }, function() {
-            var _this = $('[to-applying="to-applying"]');
-
-            $(_this).removeAttr('to-applying');
-        } );
-    });
-    /**  END Coupon  */
-
-    $(document).on('click','.remove-order-item', function(e) {
-        e.preventDefault();
-
-        var _this = this;
-
-        showConfirm( "", "Remove "+ $(_this).data('title') +" from your order?", function() {
-
-            var valueToSubstract = $(_this).data('value');
-            var hideItems        = $(_this).data('id');
-
-            $('.item-'+hideItems).hide();
-            var totalItem = $('.order-total-price');
-            var newTotal  = totalItem.data('default')-valueToSubstract;
-
-            $('.order-total-price').html('$ '+newTotal).data('value',newTotal).data('default', newTotal);
-
-
-            if($('#has_discount').data('discountper') == 'no'){
-                if($('#radio-choice-v-2a').is(':checked')){
-                    defaultPrice('low_amount');
-                } else {
-                    defaultPrice();
-                }
-
-            } else {
-                var discountpercet = $('#has_discount').data('discountper');
-                if($('#radio-choice-v-2a').is(':checked')){
-                    discountPrice(discountpercet, 'low_amount');
-                } else {
-                    discountPrice(discountpercet, 'online');
-                }
-
-            }
-
-//            totalItem.html('$ '+newTotal).data('value',newTotal);
-//            totalItem.html('$ '+newTotal).data('value',newTotal);
-
-
-
-            /* Ajax call to remove the item from session */
-            $.ajax({
-                url: "/remove/"+hideItems,
-                context: document.body
-            }).done(function(data) {
-                    //done!
-                });
-
-            if(newTotal == 0) {
-                $('.notice-holder').removeClass('hide');
-                $('.order-holder').hide();
-                $('.checkout-footer').hide();
-            }
-        } );
-    });
-
-
-    /**
-     * Social Locker
-     */
-
-
-    /* $(document).on('click', '#td-social a', function(){
-
-        $('#show-social-loker').removeClass('hide');
-    }); */
-
-    /**
-     * Need to check is present global vars
-     * @type String|FACEBOOKAPPID
-     */
-    /* var FBAppID = '';
-    if( typeof FACEBOOKAPPID == 'string' )
-    {
-        FBAppID = FACEBOOKAPPID;
-    } */
-    /* use after for Facebook App ID - FBAppID */
-
-    /* $("#social-loker").sociallocker({
-
-        buttons: {
-            order: [
-                "twitter-tweet", "facebook-share"
-            ]
-        },
-
-        // a theme name that will be used
-        theme: "secrets",
-
-        // text that appears above the social buttons
-        text: {
-            header: " ",
-            message: "Free coke? Like us and it's yours!"
-        },
-        facebook: {
-            appId: FBAppID,
-            share: {
-                title: 'share it',
-                url: "http://m.pizzaboy.bywmds.us/"
-            }
-        },
-
-        twitter: {
-            tweet: {
-                title: "tweet me",
-                text: 'Tweet this message',
-                url: "http://m.pizzaboy.bywmds.us/"
-            }
-        }
-    });
-    $('.onp-sociallocker-text').remove(); */
-
-});
-
-
-/***********************************************************************************************************************
- * Payment/Send Order
- * @url /payment
- **********************************************************************************************************************/
-$( document ).on('pageshow', "#page-payment", function() {
-    verifyClean();    
-});
-$( document ).on('pageinit', "#page-payment", function() {
-
-    /* Unbind everything */
-    $(document).off('click','#sign-in');
-    $(document).off('click','#verify-btn');
-    $(document).off('click','#log-out');
-    $(document).off('change','#form_suburb');
-    $(document).off('click','#send-order');
-    $(document).off('click','.card-number');
-    $(document).off('keyup','.card-number');
-    $(document).off('keyup','#form_firstname');
-    $(document).off('keyup','#form_lastname');
-    
-    prepareProfileFormValidation();
-    prepareLoginFormValidation();
-
-    /*
-     * Bind click action for standart login form
-     */
-    $(document).on('click','#sign-in',function(){
-        if($('#form-singin').valid())
+        /** Copy first and last name of the cardholder */
+        if($('#cardholder-input').length)
         {
-            signInRequest( this );
+            $('#form_firstname, #form_lastname').on('keyup', function(){
+                $('#cardholder-input').val($('#form_firstname').val()
+                        + ' ' + $('#form_lastname').val());
+            });
         }
-    });
 
-    /*
-     * Bind click action for log out 
-     */
-    $(document).on('click', '#log-out', function(){
-        window.location.href = '//' + location.host + '/logout/payment';
-    });
-
-    /*
-     * Bind click action for Verify button on profile page
-     */
-    $(document).on('click', '#verify-btn', function(){
-        verifyMobileBySMS();
-    });
-
-    /*
-     *  change suburb, calculate total 
-     */
-    $(document).on('change', '#form_suburb', function(){
-        if( typeof has_delivery != 'undefined' 
-            && has_delivery == '1'
-           )
-        {
-            var subtotal = $('#subtotal').html();
-            subtotal = subtotal.replace('$','');
-
-            var discount = $('#discount').val();
-            if( discount !== 'undefined' )
-            {
-                subtotal = parseFloat(subtotal) - parseFloat(discount);
-            }
-            var fee = $('#form_suburb option:selected').data('fee');
-
-            /** payment fee  */
-            var payment = $('#cc').data('cc');
-            if( payment != 0 )
-            {
-                subtotal = parseFloat(subtotal) + parseFloat(payment);
-            }
-            var total = parseFloat(fee) + parseFloat(subtotal) + parseFloat(low_order);
-            $('#delivery-fee').html('+$' + fee);
-            $('#total').html(total);
-        }
-    }); // onchange form_suburb
-
-    /** Copy first and last name of the cardholder */
-    if($('#cardholder-input').length)
-    {
-        $('#form_firstname, #form_lastname').on('keyup', function(){
-            $('#cardholder-input').val($('#form_firstname').val()
-                    + ' ' + $('#form_lastname').val());
+        /** card number inputs */
+        $(document).on('click', '.card-number', function() {
+            $(this).val('');
         });
-    }
 
-    /** card number inputs */
-    $(document).on('click', '.card-number', function() {
-        $(this).val('');
-    });
-
-    /*
-     * Check if number and limit by 4 digit
-     */
-    $(document).on('keydown', '.card-number', function( event ) {
-        var lengthStr = $(this).val().length;
-        if( lengthStr <= $(this).data('length') )
-        {
-            if( $.inArray( event.keyCode, 
-                            [48, 49, 50, 51, 52, 53, 54, 55, 56, 57] ) > -1 )
+        /*
+         * Check if number and limit by 4 digit
+         */
+        $(document).on('keydown', '.card-number', function( event ) {
+            var lengthStr = $(this).val().length;
+            if( lengthStr <= $(this).data('length') )
             {
-                if( lengthStr == $(this).data('length') )
+                if( $.inArray( event.keyCode, 
+                                [48, 49, 50, 51, 52, 53, 54, 55, 56, 57] ) > -1 )
                 {
-                    var id = $(this).data('id');
-                    $('#' + id).focus();
+                    if( lengthStr == $(this).data('length') )
+                    {
+                        var id = $(this).data('id');
+                        $('#' + id).focus();
+                    }
+                    return true;
                 }
-                return true;
             }
-        }
-        event.preventDefault();
-        return false;
+            event.preventDefault();
+            return false;
+        });
+
+        /** Bind action click for Order now  */
+        $(document).on('click','#send-order', function(){
+            if($('#register_form').valid())
+            {
+                saveForm( 'saveOrder' );
+            }
+        }); // send-order
     });
-    
-    /** Bind action click for Order now  */
-    $(document).on('click','#send-order', function(){
-        if($('#register_form').valid())
-        {
-            saveForm( 'saveOrder' );
-        }
-    }); // send-order
-    
-}); // /payment
 
 
 /***********************************************************************************************************************
@@ -2442,7 +2467,7 @@ $( document ).on('pageinit', "#page-change", function() {
 
     $(document).on('click', '#save', function(){
 
-        $('#error-valid').html('');
+        $('#error-valid').empty();
         var pass = $('#pass').val();
         var conf = $('#conf').val();
 
@@ -2496,7 +2521,7 @@ $( document ).on('pageinit', "#your-orders", function() {
 
         request.done(function( data ) {
 
-            $('#tbody-orders').html('');
+            $('#tbody-orders').empty();
 
             var html = '';
             $(data.orders).each(function(){

@@ -590,23 +590,11 @@ class checkout extends WMDS_Controller {
         $sms = $this->security_model->smsSettings();
         $mail_content = $this->security_model->getEmailById(3);
 
-//            $code = rand(1000, 9999);
+        // $code = rand(1000, 9999);
         $code = 1111;
 
-
-        $this->load->library('email');
-
-        $from = $sms['sending_address'];
-        $from_name = 'admin_tastypizza';
-
-        $to = $this->input->post('mobile') . '@' . $sms['domain_name'];
-
-        $this->email->from($from, $from_name);
-        $this->email->to($to);
-
-        $this->email->subject($sms['subject']);
-
         $message = $mail_content->message;
+
         $message = str_replace("[[email]]", $post['email'], $message);
         $message = str_replace("[[code]]", $code, $message);
         $message = str_replace("[[firstname]]", $post['fname'], $message);
@@ -614,15 +602,37 @@ class checkout extends WMDS_Controller {
 
         $content_message = str_replace("[sitename]", base_url(), $message);
 
-        $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
+        if( $this->config->item('sms_service') === 'telerivet' )
+        {
+            $sms_template = strip_tags(str_replace('<br />', "\n", $content_message));
 
-        $this->email->message($email_template);
+            $this->Telerivet_Project->sendMessage(array(
+                'content' => $sms_template, 
+                'to_number' => $this->input->post('mobile')
+            ));
+        }
+        else
+        {
+            $this->load->library('email');
 
-        $this->email->send();
+            $from = $sms['sending_address'];
+            $from_name = 'admin_tastypizza';
+
+            $to = $this->input->post('mobile') . '@' . $sms['domain_name'];
+
+            $this->email->from($from, $from_name);
+            $this->email->to($to);
+
+            $this->email->subject($sms['subject']);
+
+            $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
+
+            $this->email->message($email_template);
+
+            $this->email->send();
+        }
 
         $this->session->set_userdata('sms_code', $code);
-
-
     }
 
 
@@ -645,23 +655,42 @@ class checkout extends WMDS_Controller {
         $user['new_mobile'] = $post['mobile'];
         $this->session->set_userdata('logged', $user);
 
-        $this->load->library('email');
-        $from = $sms['sending_address'];
-        $from_name = 'admin_tastypizza';
-        
-        $to = $post['mobile'] . '@' . $sms['domain_name'];
-        $this->email->from($from, $from_name);
-        $this->email->to($to);
-        $this->email->subject($sms['subject']);
         $message = $mail_content->message;
+
         $message = str_replace("[[email]]", $post['email'], $message);
         $message = str_replace("[[code]]", $code, $message);
         $message = str_replace("[[firstname]]", $post['fname'], $message);
         $message = str_replace("[[lastname]]", $post['lname'], $message);
+
         $content_message = str_replace("[sitename]", base_url(), $message);
-        $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
-        $this->email->message($email_template);
-        $this->email->send();
+
+        if( $this->config->item('sms_service') === 'telerivet' )
+        {
+            $sms_template = strip_tags(str_replace('<br />', "\n", $content_message));
+
+            $this->Telerivet_Project->sendMessage(array(
+                'content' => $sms_template, 
+                'to_number' => $post['mobile']
+            ));
+        }
+        else
+        {
+            $this->load->library('email');
+
+            $from = $sms['sending_address'];
+            $from_name = 'admin_tastypizza';
+
+            $to = $post['mobile'] . '@' . $sms['domain_name'];
+            $this->email->from($from, $from_name);
+            $this->email->to($to);
+            $this->email->subject($sms['subject']);
+
+            $email_template = str_replace('<br />', "\n", nl2br(utf8_encode($content_message)));
+            $this->email->message($email_template);
+            $this->email->send();
+        }
+
+        /*  */
         $this->session->set_userdata('sms_code', $code);
     }
 

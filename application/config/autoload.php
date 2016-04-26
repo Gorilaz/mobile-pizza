@@ -88,7 +88,8 @@ $autoload['helper'] = array(
 */
 
 $autoload['config'] = array(
-    'twiggy'
+    'twiggy', 
+    'sms'
 );
 
 

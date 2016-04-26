@@ -17,8 +17,27 @@ class WMDS_Controller extends CI_Controller {
             ->set('current_url',uri_string())
             ->set('author', 'WMD Solution Romania');
 
+        if( $this->config->item('sms_service') === 'telerivet' )
+        {
+            $telerivet_path = realpath(FCPATH . APPPATH . 'vendor/telerivet-php-client-master/telerivet.php');
 
+            if( $telerivet_path )
+            {
+                include_once $telerivet_path;
 
+                $this->load->model('security_model');
+
+                $sms_settings = $this->security_model->smsSettings();
+
+                $this->Telerivet_API = new Telerivet_API($sms_settings['telerivet_api_key']);
+
+                $this->Telerivet_Project = $this->Telerivet_API->initProjectById($sms_settings['telerivet_project_id']);
+            }
+            else
+            {
+                $this->config->set_item('sms_service', 'email2sms');
+            }
+        }
 
 
         /**

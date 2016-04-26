@@ -185,27 +185,40 @@ class Order extends WMDS_Controller{
         $this->load->model('security_model');
         $sms = $this->security_model->smsSettings();
 
-
         if($sms['sms_confirmation'] == 'enable'){
 
             $real_id = $this->security_model->getRealId($order_id);
 
-            $this->load->library('email');
-            $from = $sms['sending_address'];
-
-            $to = $sms['mob_number'] . '@' . $sms['domain_name'];
-
-            $this->email->from($from);
-            $this->email->to($to);
             $content_message = str_replace("[[order_no]]", $real_id, $sms['confirmation_text']);
             $content_message = str_replace("[[customer_number]]", $sms['mob_number'], $content_message);
 
-            $this->email->subject('Order no'.$real_id );
+            if( $this->config->item('sms_service') === 'telerivet' )
+            {
+                $content_message = strip_tags(str_replace("<br />", "\n", $content_message));
 
-            $this->email->message($content_message);
+                $this->Telerivet_Project->sendMessage(array(
+                    'content' => $content_message, 
+                    'to_number' => $sms['mob_number']
+                ));
+            }
+            else
+            {
+                $this->load->library('email');
+                $from = $sms['sending_address'];
 
-            $this->email->send();
+                $to = $sms['mob_number'] . '@' . $sms['domain_name'];
 
+                $this->email->from($from);
+                $this->email->to($to);
+                $content_message = str_replace("[[order_no]]", $real_id, $sms['confirmation_text']);
+                $content_message = str_replace("[[customer_number]]", $sms['mob_number'], $content_message);
+
+                $this->email->subject('Order no'.$real_id );
+
+                $this->email->message($content_message);
+
+                $this->email->send();
+            }
         }
     }
 

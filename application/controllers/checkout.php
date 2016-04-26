@@ -443,9 +443,6 @@ class checkout extends WMDS_Controller {
 
         $this->twiggy->set('cart_items', $cart_items);
 
-// echo '<pre>'; var_dump($cart_items); echo '</pre>';
-// echo '<pre>'; var_dump($check); echo '</pre>'; die;
-
         $order_less = (double) $surcharge->order_less;
         $min_order_amt = (double) $surcharge->min_order_amt;
 
@@ -501,13 +498,13 @@ class checkout extends WMDS_Controller {
                 $totalWithDiscount = $total - $totalDiscount;
             }
 
-            if( $totalWithDiscount > $min_order_amt )
+            if( $totalWithDiscount < $min_order_amt )
             {
-                $low_order = 0;
+                $low_order = $order_less;
             }
             else
             {
-                $low_order = $order_less;
+                $low_order = 0;
             }
         }
         else

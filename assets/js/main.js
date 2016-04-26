@@ -1622,18 +1622,7 @@ $(document)
 
                     if( a_process_for_preparing === 'D' )
                     {
-                        if( totalAmount > parseFloat(rules.min_order_amt) )
-                        {
-                            elem.hide();
-
-                            next
-                                .show()
-                                .fadeOut(250)
-                                .fadeIn(250);
-
-                            manageHelpFooterLine(next);
-                        }
-                        else
+                        if( totalAmount < parseFloat(rules.min_order_amt) )
                         {
                             if( parseFloat(rules.order_less) > 0 )
                             {
@@ -1672,6 +1661,17 @@ $(document)
 
                                 manageHelpFooterLine(next);
                             }
+                        }
+                        else
+                        {
+                            elem.hide();
+
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
+
+                            manageHelpFooterLine(next);
                         }
                     }
                     else if( a_process_for_preparing === 'P' )

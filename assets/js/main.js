@@ -1676,14 +1676,27 @@ $(document)
                     }
                     else if( a_process_for_preparing === 'P' )
                     {
-                        elem.hide();
+                        var current_date = $('#date').val(), 
+                            first_time = Object.keys(schedule[date][a_process_for_preparing])[0], 
+                            first_datetime = new Date(current_date + ' ' + first_time);
 
-                        next
-                            .show()
-                            .fadeOut(250)
-                            .fadeIn(250);
+                        if( Date.now() < first_datetime.getTime() )
+                        {
+                            manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + schedule[date][a_process_for_preparing][first_time]));
 
-                        manageHelpFooterLine(next);
+                            return false;
+                        }
+                        else
+                        {
+                            elem.hide();
+
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
+
+                            manageHelpFooterLine(next);
+                        }
                     }
                 }
                 else if( $(self).attr('name') === 'when' )

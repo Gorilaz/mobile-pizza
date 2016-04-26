@@ -1493,8 +1493,7 @@ $(document)
      * @url /checkout
      **********************************************************************************************************************/
     .on('pageinit', '#page-checkout', function() {
-        var firstPanel = $('.control-1'), 
-            count = 1;
+        var firstPanel = $('.control-1');
 
         firstPanel
             .show()
@@ -1502,6 +1501,8 @@ $(document)
             .fadeIn(250);
 
         manageHelpFooterLine(firstPanel);
+
+        $('#form-checkout').trigger('reset');
 
         $(document)
             .off('click', '#id-footer-help-line')
@@ -1514,8 +1515,6 @@ $(document)
                     elem = $(self).closest('.checkout-footer'), 
                     next = elem.next(), 
                     totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                count++;
 
                 if( $(self).attr('name') === 'payment' )
                 {

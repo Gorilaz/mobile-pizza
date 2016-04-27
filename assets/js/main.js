@@ -1626,7 +1626,7 @@ $(document)
                             if( parseFloat(rules.order_less) > 0 )
                             {
                                 showConfirm('', 'There is a $' + rules.order_less + ' fee for order less than $' + rules.min_order_amt + '. Click Ok for proceed or Cancel for keep shoping.', function() {
-                                    var discountpercet = $('#has_discount').data('discountper');
+                                    var discountpercet = $('#has_discount').attr('data-discountper');
 
                                     if( discountpercet === 'no' )
                                     {
@@ -1775,7 +1775,7 @@ $(document)
              * Click Procced
              */
             .on('click', '#proceed', function() {
-                var discountpercet = $('#has_discount').data('discountper');
+                var discountpercet = $('#has_discount').attr('data-discountper');
 
                 if( discountpercet === 'no' )
                 {
@@ -1974,7 +1974,7 @@ $(document)
                         .empty()
                         .append(document.createTextNode('$ ' + newTotal));
 
-                    var discountpercet = $('#has_discount').data('discountper');
+                    var discountpercet = $('#has_discount').attr('data-discountper');
 
                     if( discountpercet === 'no' )
                     {

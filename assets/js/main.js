@@ -2319,330 +2319,390 @@ $(document)
     .on('pageinit', "#page-payment", function() {
         verifyClean();
 
-        /* Unbind everything */
-        $(document).off('click','#sign-in');
-        $(document).off('click','#verify-btn');
-        $(document).off('click','#log-out');
-        $(document).off('change','#form_suburb');
-        $(document).off('click','#send-order');
-        $(document).off('click','.card-number');
-        $(document).off('keyup','.card-number');
-        $(document).off('keyup','#form_firstname');
-        $(document).off('keyup','#form_lastname');
+        $(document)
+            .off('click', '#sign-in')
+            /*
+             * Bind click action for standart login form
+             */
+            .on('click', '#sign-in', function() {
+                var self = this;
+
+                if( $('#form-singin').valid() )
+                {
+                    signInRequest(self);
+                }
+            })
+            .off('click', '#log-out')
+            /*
+             * Bind click action for log out
+             */
+            .on('click', '#log-out', function() {
+                window.location.href = '//' + window.location.host + '/logout/payment';
+            })
+            .off('click', '#verify-btn')
+            /*
+             * Bind click action for Verify button on profile page
+             */
+            .on('click', '#verify-btn', function() {
+                verifyMobileBySMS();
+            })
+            .off('change', '#form_suburb')
+            /*
+             * Change suburb, calculate total
+             */
+            .on('change', '#form_suburb', function() {
+                if( typeof(has_delivery) !== 'undefined' && 
+                    has_delivery === '1' )
+                {
+                    var subtotal = parseFloat($('#subtotal').text().replace('$', '')), 
+                        discount = parseFloat($('#discount').val()), 
+                        fee = parseFloat($('#form_suburb').find('option').filter(':selected').data('fee')), 
+                        payment = parseFloat($('#cc').data('cc'));
+
+                    if( !!discount )
+                    {
+                        subtotal -= discount;
+                    }
+
+                    if( !!fee )
+                    {
+                        subtotal += fee;
+                    }
+
+                    if( !!payment )
+                    {
+                        subtotal += payment;
+                    }
+
+                    var total = subtotal + parseFloat(low_order);
+
+                    $('#delivery-fee')
+                        .empty()
+                        .append('+$' + (fee || 0));
+
+                    $('#total')
+                        .empty()
+                        .append(document.createTextNode(total.toFixed(2)));
+                }
+            })
+            .off('click', '.card-number')
+            /*
+             * Card number inputs
+             */
+            .on('click', '.card-number', function() {
+                var self = this;
+
+                $(self).val('');
+            })
+            .off('keydown', '.card-number')
+            /*
+             * Check if number and limit by 4 digit
+             */
+            .on('keydown', '.card-number', function(event) {
+                var self = this, 
+                    lengthStr = $(self).val().length;
+
+                if( lengthStr <= parseFloat($(self).attr('data-length')) )
+                {
+                    if( $.inArray(event.keyCode, [ 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 ]) !== -1 )
+                    {
+                        if( lengthStr === parseFloat($(self).attr('data-length')) )
+                        {
+                            var id = $(self).data('id');
+
+                            $('#' + id).focus();
+                        }
+
+                        return true;
+                    }
+                }
+
+                event.preventDefault();
+
+                return false;
+            })
+            .off('click', '#send-order')
+            /*
+             * Bind action click for Order now
+             */
+            .on('click', '#send-order', function() {
+                if( $('#register_form').valid() )
+                {
+                    saveForm('saveOrder');
+                }
+            });
+
+        if( !!$('#cardholder-input').length )
+        {
+            $(document)
+                .off('keyup', '#form_firstname, #form_lastname')
+                /*
+                 * Copy first and last name of the cardholder
+                 */
+                .on('keyup', '#form_firstname, #form_lastname', function() {
+                    $('#cardholder-input')
+                        .val($('#form_firstname').val() + ' ' + $('#form_lastname').val());
+                });
+        }
 
         prepareProfileFormValidation();
         prepareLoginFormValidation();
+    })
+    .off('pageinit', '#page-recover')
+    /***********************************************************************************************************************
+     * Recovery Password
+     * @url /reset
+     **********************************************************************************************************************/
+    .on('pageinit', '#page-recover', function() {
+        $(document)
+            .off('click', '#recover')
+            .on('click', '#recover', function() {
+                var email = $('#email').val();
 
-        /*
-         * Bind click action for standart login form
-         */
-        $(document).on('click','#sign-in',function(){
-            if($('#form-singin').valid())
-            {
-                signInRequest( this );
-            }
-        });
-
-        /*
-         * Bind click action for log out 
-         */
-        $(document).on('click', '#log-out', function(){
-            window.location.href = '//' + location.host + '/logout/payment';
-        });
-
-        /*
-         * Bind click action for Verify button on profile page
-         */
-        $(document).on('click', '#verify-btn', function(){
-            verifyMobileBySMS();
-        });
-
-        /*
-         *  change suburb, calculate total 
-         */
-        $(document).on('change', '#form_suburb', function(){
-            if( typeof has_delivery != 'undefined' 
-                && has_delivery == '1'
-               )
-            {
-                var subtotal = $('#subtotal').html();
-                subtotal = subtotal.replace('$','');
-
-                var discount = $('#discount').val();
-                if( discount !== 'undefined' )
+                if( !!email )
                 {
-                    subtotal = parseFloat(subtotal) - parseFloat(discount);
-                }
-                var fee = $('#form_suburb option:selected').data('fee');
+                    var request = $.ajax({
+                        data: {
+                            email: email
+                        }, 
+                        dataType: 'json', 
+                        type: 'POST', 
+                        url: '//' + window.location.host + '/security/checkValidEmail'
+                    });
 
-                /** payment fee  */
-                var payment = $('#cc').data('cc');
-                if( payment != 0 )
+                    request.done(function(data) {
+                        if( data === 'valid' )
+                        {
+                            $('#popupRecover').popup('open');
+                        }
+                        else
+                        {
+                            $('#error-required')
+                                .empty()
+                                .append(document.createTextNode('Email address not found in database!'));
+                        }
+                    });
+
+                    request.fail(function(jqXHR, textStatus) {
+                        showAlert('', 'Request failed: ' + textStatus);
+                    });
+                }
+                else
                 {
-                    subtotal = parseFloat(subtotal) + parseFloat(payment);
+                    $('#error-valid')
+                        .empty()
+                        .append(document.createTextNode('Please input valid email address!'));
                 }
-                var total = parseFloat(fee) + parseFloat(subtotal) + parseFloat(low_order);
-                $('#delivery-fee').html('+$' + fee);
-                $('#total').html(total);
-            }
-        }); // onchange form_suburb
-
-        /** Copy first and last name of the cardholder */
-        if($('#cardholder-input').length)
-        {
-            $('#form_firstname, #form_lastname').on('keyup', function(){
-                $('#cardholder-input').val($('#form_firstname').val()
-                        + ' ' + $('#form_lastname').val());
             });
-        }
+    })
+    .off('pageinit', '#page-change')
+    /***********************************************************************************************************************
+     * Change Password
+     * @url /change-password
+     **********************************************************************************************************************/
+    .on('pageinit', '#page-change', function() {
+        $(document)
+            .off('click', '#save')
+            .on('click', '#save', function() {
+                $('#error-valid').empty();
 
-        /** card number inputs */
-        $(document).on('click', '.card-number', function() {
-            $(this).val('');
-        });
+                var pass = $('#pass').val(), 
+                    conf = $('#conf').val(), 
+                    code = $('#code').attr('data-code');
 
-        /*
-         * Check if number and limit by 4 digit
-         */
-        $(document).on('keydown', '.card-number', function( event ) {
-            var lengthStr = $(this).val().length;
-            if( lengthStr <= $(this).data('length') )
-            {
-                if( $.inArray( event.keyCode, 
-                                [48, 49, 50, 51, 52, 53, 54, 55, 56, 57] ) > -1 )
+                if( pass === conf )
                 {
-                    if( lengthStr == $(this).data('length') )
+                    var request = $.ajax({
+                        data: {
+                            code: code, 
+                            pass: pass
+                        }, 
+                        type: 'POST', 
+                        url: '//' + window.location.host + '/security/savePassword'
+                    });
+
+                    request.done(function(data) {
+                       window.location.href = '//' + window.location.host + '/login_page';
+                    });
+
+                    request.fail(function(jqXHR, textStatus) {
+                        showAlert('', 'Request failed: ' + textStatus);
+                    });
+                }
+                else
+                {
+                    $('#error-required')
+                        .empty()
+                        .append(document.createTextNode('Verification must be the same with the Password!'));
+                }
+            });
+    })
+    .off('pageinit', '#your-orders')
+    /***********************************************************************************************************************
+     * Your Orders
+     * @url /order/yourOrders
+     **********************************************************************************************************************/
+    .on('pageinit', '#your-orders', function() {
+        $(document)
+            .off('click', '#order-signin')
+            .on('click', '#order-signin', function() {
+                var self = this;
+
+                signInRequest(self);
+            })
+            .off('click', '.change-page')
+            .on('click', '.change-page', function() {
+                var self = this, 
+                    count = $('#page').data('count'), 
+                    page = $(self).data('change'), 
+                    request = $.ajax({
+                        data: {
+                            count: count, 
+                            page: page
+                        }, 
+                        dataType: 'json', 
+                        type: 'POST', 
+                        url: '//' + window.location.host + '/order/getAjaxOrders'
+                    });
+
+                request.done(function(data) {
+                    $('#tbody-orders').empty();
+
+                    var order, orderIndex, 
+                        orders = data.orders;
+
+                    for( orderIndex in orders )
                     {
-                        var id = $(this).data('id');
-                        $('#' + id).focus();
+                        if( orders.hasOwnProperty(orderIndex) )
+                        {
+                            order = orders[orderIndex];
+
+                            if( !!order.order_description )
+                            {
+                                $('#tbody-orders')
+                                    .append(
+                                        $('<tr>')
+                                            .addClass('tr-your-order')
+                                            .append(
+                                                $('<td>')
+                                                    .append(document.createTextNode(order.order_placement_date))
+                                            )
+                                            .append(
+                                                $('<td>')
+                                                    .html($(order.order_description))
+                                            )
+                                            .append(
+                                                $('<td>')
+                                                    .append(document.createTextNode(order.payment_amount))
+                                            )
+                                            .append(
+                                                $('<td>')
+                                                    .append(document.createTextNode(order.points_used))
+                                            )
+                                            .append(
+                                                $('<td>')
+                                                    .append(document.createTextNode(order.points_earned))
+                                            )
+                                            .append(
+                                                $('<td>')
+                                                    .append(
+                                                        $('<a>')
+                                                            .append(document.createTextNode('Order This Again'))
+                                                            .attr({
+                                                                'data-inline': 'true', 
+                                                                'data-role': 'button', 
+                                                                'href': base_url + 'order-again/' + order.order_id
+                                                            })
+                                                    )
+                                            )
+                                    );
+                            }
+                        }
                     }
-                    return true;
+
+                    $('#page').data('count', data.count);
+
+                    var total = $('#total').attr('data-total');
+
+                    if( data.count === 0 || 
+                        data.count === 5 )
+                    {
+                        $('#div-both').addClass('hide');
+                        $('#div-preview').addClass('hide');
+
+                        $('#div-next').removeClass('hide');
+                    }
+                    else if( data.count >= total )
+                    {
+                        $('#div-both').addClass('hide');
+                        $('#div-next').addClass('hide');
+
+                        $('#div-preview').removeClass('hide');
+                    }
+                    else
+                    {
+                        $('#div-preview').addClass('hide');
+                        $('#div-next').addClass('hide');
+
+                        $('#div-both').removeClass('hide');
+                    }
+
+                    $('#your-orders').trigger('create');
+                });
+
+                request.fail(function(jqXHR, textStatus) {
+                    showAlert('', 'Request failed: ' + textStatus);
+                });
+            });
+    })
+    .off('pageinit', '#security-login')
+    /***********************************************************************************************************************
+     * Your Account
+     * @url /login_page
+     **********************************************************************************************************************/
+    .on('pageinit', '#security-login', function() {
+        $(document)
+            .off('click', '#sign-in')
+            /*
+             * Bind click action for standart login form
+             */
+            .on('click', '#sign-in', function() {
+                var self = this;
+
+                if( $('#form-singin').valid() )
+                {
+                    signInRequest(self);
                 }
-            }
-            event.preventDefault();
-            return false;
-        });
-
-        /** Bind action click for Order now  */
-        $(document).on('click','#send-order', function(){
-            if($('#register_form').valid())
-            {
-                saveForm( 'saveOrder' );
-            }
-        }); // send-order
-    });
-
-
-/***********************************************************************************************************************
- * Recovery Password
- * @url /reset
- **********************************************************************************************************************/
-$( document ).on('pageinit', "#page-recover", function() {
-    /* Unbind everything */
-    $(document).off('click','#recover');
-
-    $(document).on('click', '#recover', function(){
-
-        var email = $('#email').val();
-        if(email){
-            var request = $.ajax({
-                url: '//' + location.host + '/security/checkValidEmail',
-                type: "POST",
-                data: { email : email },
-                dataType: "json"
             });
+    })
+    .off('pageshow', '#page-edit')
+    /***********************************************************************************************************************
+     * Your Account
+     * @url /security-edit
+     **********************************************************************************************************************/
+    .on('pageshow', '#page-edit', function() {
+        
 
-            request.done(function( data ) {
-                if(data == 'valid'){
-                    $('#popupRecover').popup('open');
-                } else {
-                    $('#error-required').html('Email address not found in database!');
+        $(document)
+            .off('click', '#verify-btn')
+            /*
+             * Bind click action for Verify button on profile page
+             */
+            .on('click', '#verify-btn', function() {
+                verifyMobileBySMS();
+            })
+            .off('click', '#save-edit')
+            /*
+             * Bind click action for save button for edit profile
+             */
+            .on('click', '#save-edit', function() {
+                if( $('#register_form').valid() )
+                {
+                    saveForm();
                 }
             });
 
-            request.fail(function( jqXHR, textStatus ) {
-                showAlert( "", "Request failed: " + textStatus );
-            });
-        } else {
-            $('#error-valid').html('Please input valid email address!');
-        }
+        verifyClean();
+
+        prepareProfileFormValidation();
     });
-});
-
-/***********************************************************************************************************************
- * Change Password
- * @url /change-password
- **********************************************************************************************************************/
-$( document ).on('pageinit', "#page-change", function() {
-    /* Unbind everything */
-    $(document).off('click','#save');
-
-    $(document).on('click', '#save', function(){
-
-        $('#error-valid').empty();
-        var pass = $('#pass').val();
-        var conf = $('#conf').val();
-
-        if(pass == conf){
-
-            var code = $('#code').data('code');
-            var request = $.ajax({
-                url: '//' + location.host + '/security/savePassword',
-                type: "POST",
-                data: { code : code, pass : pass }
-            });
-
-            request.done(function( data ) {
-               window.location.href = '//' + location.host + '/login_page';
-            });
-
-            request.fail(function( jqXHR, textStatus ) {
-                showAlert( "", "Request failed: " + textStatus );
-            });
-        } else {
-            $('#error-required').html('Verification must be the same with the Password!');
-        }
-    });
-});
-
-/***********************************************************************************************************************
- * Your Orders
- * @url /order/yourOrders
- **********************************************************************************************************************/
-$( document ).on('pageinit', "#your-orders", function() {
-
-    /* Unbind everything */
-    $(document).off('click','#order-signin');
-    $(document).on('click','#order-signin',function(){
-        signInRequest( this );
-    });
-
-
-    $(document).on('click', '.change-page', function(){
-
-        var count = $('#page').data('count');
-        var page = $(this).data('change');
-
-
-        var request = $.ajax({
-            url: '//' + location.host + '/order/getAjaxOrders',
-            type: "POST",
-            data: { count : count, page : page },
-            dataType: "json"
-        });
-
-        request.done(function( data ) {
-
-            $('#tbody-orders').empty();
-
-            var html = '';
-            $(data.orders).each(function(){
-                if(this.order_description){
-                    html += '<tr class="tr-your-order">' +
-                        '<td>' + this.order_placement_date + '</td>' +
-                        '<td>' + this.order_description + '</td>' +
-                        '<td>' + this.payment_amount + '</td>' +
-                        '<td>' + this.points_used + '</td>' +
-                        '<td>' + this.points_earned + '</td>' +
-                        '<td><a href="'+ base_url + 'order-again/'+ this.order_id +'" data-role="button" data-inline="true">Order This Again</a></td>' +
-                        '</tr>';
-
-                }
-
-            });
-
-
-            $('#tbody-orders').html(html);
-            $('#page').data('count', data.count);
-            var total = $('#total').data('total');
-
-            if(data.count == 0 || data.count == 5) {
-                $('#div-both').addClass('hide');
-                $('#div-preview').addClass('hide');
-
-                $('#div-next').removeClass('hide');
-
-            } else if(data.count >= total){
-                $('#div-both').addClass('hide');
-                $('#div-next').addClass('hide');
-
-                $('#div-preview').removeClass('hide');
-            } else {
-                $('#div-preview').addClass('hide');
-                $('#div-next').addClass('hide');
-
-                $('#div-both').removeClass('hide');
-            }
-
-            $('#your-orders').trigger('create');
-        });
-
-        request.fail(function( jqXHR, textStatus ) {
-            showAlert( "", "Request failed: " + textStatus );
-        });
-    });
-
-});
-
-
-
-/***********************************************************************************************************************
- * Your Account
- * @url /login_page
- **********************************************************************************************************************/
-
-$( document ).on('pageinit', "#security-login", function() {
-
-    /* Unbind everything */
-    $(document).off('click','#sign-in');
-    
-    prepareLoginFormValidation();
-    
-    /*
-     * Bind click action for standart login form
-     */
-    $(document).on('click', '#sign-in', function(){
-        if($('#form-singin').valid())
-        {
-            signInRequest( this );
-        }
-    });
-
-}); // /login_page
-
-
-/***********************************************************************************************************************
- * Your Account
- * @url /security-edit
- **********************************************************************************************************************/
-$( document ).on('pageshow', "#page-edit", function() {
-    console.log('pageshow#page-edit');
-    verifyClean();    
-});
-
-$( document ).on('pageinit', "#page-edit", function() {
-    console.log('pageinit#page-edit');
-    /* Unbind everything */
-    $(document).off('click','#save-edit');
-    $(document).off('click','#verify-btn');
-    
-    prepareProfileFormValidation();
-    
-    /*
-     * Bind click action for Verify button on profile page
-     */
-    $(document).on('click', '#verify-btn', function(){
-        verifyMobileBySMS();
-    });
-
-    /*
-     * Bind click action for save button for edit profile
-     */
-    $(document).on('click', '#save-edit', function(){
-        if($('#register_form').valid())
-        {
-            saveForm();
-        }
-    });
-
-}); // /security-edit

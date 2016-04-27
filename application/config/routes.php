@@ -89,7 +89,7 @@ $route['order/getAjaxOrders']           = 'order/getAjaxOrders';
  * Set routes for security controller
  */
 $route['login_page']                    = 'security/login_page';
-$route['change-password']               = 'security/changePassword';
+$route['change-password/(:any)']        = 'security/changePassword/$1';
 $route['security/save']                 = 'security/save';
 $route['security-edit']                 = 'security/edit';
 $route['security/login']                = 'security/login';

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Created by PhpStorm.
  * User: GabrielCol
@@ -8,13 +9,12 @@
 
 class WMDS_Controller extends CI_Controller {
     function __construct() {
-
         parent::__construct();
 
         /** Set Twig Global Variables */
         $this->twiggy
-            ->set('base_url',$this->config->base_url())
-            ->set('current_url',uri_string())
+            ->set('base_url', $this->config->base_url())
+            ->set('current_url', uri_string())
             ->set('author', 'WMD Solution Romania');
 
         if( $this->config->item('sms_service') === 'telerivet' )
@@ -39,11 +39,11 @@ class WMDS_Controller extends CI_Controller {
             }
         }
 
-
         /**
          * Set Site Settings - one time only
          */
-        if(!$this->session->userdata('siteSetting')) {
+        if( !$this->session->userdata('siteSetting') )
+        {
             $this->session->set_userdata(array(
                 'siteSetting' => $this->formatSiteSettingsForSession($this->db->get('sitesetting')->result())
             ));
@@ -53,12 +53,13 @@ class WMDS_Controller extends CI_Controller {
          * Set Loyality_program
          */
         $loyalityProgram = $this->db->select('value')->where('type', 'loyatly_program')->get('sitesetting')->row();
+
         $this->twiggy->set('loyalityProgram', $loyalityProgram->value);
 
-
-        /* Set twig variable */
+        /**
+         * Set twig variable
+         */
         $this->twiggy->set('settings', $this->session->userdata('siteSetting'));
-
 
         /**
          * Set if store is open or not - Refresh it once at 5min (300s)
@@ -123,4 +124,4 @@ class WMDS_Controller extends CI_Controller {
         }
         return $return;
     }
-} 
+}

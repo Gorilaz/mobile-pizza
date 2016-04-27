@@ -83,13 +83,24 @@ class General extends CI_Model {
                 $forTwig[$weekday]['value'] = date('Y-m-d', strtotime($entry->day));
 
                 $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for] = $this->formatTimesForSchedule($entry);
+
+                if( isset($forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['start_time']) )
+                {
+                    $start_time = $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['start_time'];
+
+                    unset($forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['start_time']);
+                }
             }
         }
 
         /* Sort array starting with today */
         $this->aasort($forTwig, 'value');
 
-        return array('forTwig' => $forTwig, 'forJquery' => $forJquery);
+        $times = array_keys($forJquery[date('Y-m-d')]['P']);
+
+        $start_time = isset($start_time) ? $start_time : false;
+
+        return array('forTwig' => $forTwig, 'forJquery' => $forJquery, 'start_time' => $start_time);
     }
 
     /**
@@ -120,6 +131,39 @@ class General extends CI_Model {
 
         $start = strtotime($row->first_half_from);
         $end = strtotime($row->first_half_to);
+
+        if( $row->timing_for === 'P' )
+        {
+            if( (integer) date('i', $start) === 0 )
+            {
+                $start_time = date('G', $start) . ':00';
+            }
+            else if( ( (integer) date('i', $start) > 0 ) && 
+                ( (integer) date('i', $start) <= 15 ) )
+            {
+                $start_time = date('G', $start) . ':15';
+            }
+            else if( ( (integer) date('i', $start) > 15 ) && 
+                ( (integer) date('i', $start) <= 30 ) )
+            {
+                $start_time = date('G', $start) . ':30';
+            }
+            else if( ( (integer) date('i', $start) > 30 ) && 
+                ( (integer) date('i', $start) <= 45 ) )
+            {
+                $start_time = date('G', $start) . ':45';
+            }
+            else
+            {
+                $h = date('G', $start);
+
+                $h++;
+
+                $start_time = $h . ':00';
+            }
+
+            $time['start_time'] = $start_time;
+        }
 
         if( time() > $start )
         {

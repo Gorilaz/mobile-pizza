@@ -4,6 +4,9 @@
 
     <script type="text/javascript">
         var schedule = {{ schedule.forJquery }}, 
+            {% if start_time is defined and start_time != false %}
+                start_time = '{{ start_time }}', 
+            {% endif %}
             rules    = {{ rules }}, 
             time     = {{ date().timestamp * 1000 }};
     </script>

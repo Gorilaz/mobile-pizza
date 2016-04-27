@@ -1676,12 +1676,12 @@ $(document)
                     else if( a_process_for_preparing === 'P' )
                     {
                         var current_date = $('#date').val(), 
-                            first_time = Object.keys(schedule[date][a_process_for_preparing])[0], 
+                            first_time = start_time, 
                             first_datetime = new Date(current_date + ' ' + first_time);
 
                         if( Date.now() < first_datetime.getTime() )
                         {
-                            manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + schedule[date][a_process_for_preparing][first_time]));
+                            manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + first_time));
 
                             return false;
                         }

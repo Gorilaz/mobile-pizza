@@ -1614,6 +1614,25 @@ $(document)
 
                     if( !Object.keys(schedule[date][a_process_for_preparing]).length )
                     {
+                        if( a_process_for_preparing === 'D' )
+                        {
+                            if( !!Object.keys(schedule[date]['P']).length )
+                            {
+                                manageHelpFooterLine($('<div>').data('title', 'The store will close soon. Only In-Store pickup is available.'));
+
+                                return undefined;
+                            }
+                        }
+                        else if( a_process_for_preparing === 'P' )
+                        {
+                            if( !!Object.keys(schedule[date]['D']).length )
+                            {
+                                manageHelpFooterLine($('<div>').data('title', 'The store will close soon. Only Home delivery is available.'));
+
+                                return undefined;
+                            }
+                        }
+
                         manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
 
                         return undefined;

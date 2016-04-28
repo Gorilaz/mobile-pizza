@@ -13,6 +13,7 @@ class Page extends WMDS_Controller {
     function __construct()
     {
         parent::__construct();
+
         $this->load->model('general');
         $this->load->model('products_model');
         $this->load->model('order_model');
@@ -20,16 +21,19 @@ class Page extends WMDS_Controller {
 
     public function myaccount() {
         $this->twiggy->set('page', array(
-            'title'  => 'My Account',
-            'role'   => 'page',
-            'theme'  => 'a',
-            'backButton'=> true,
+            'title'  => 'My Account', 
+            'role'   => 'page', 
+            'theme'  => 'a', 
+            'backButton'=> true
         ));
 
-        /** User mobile */
         $this->load->library('session');
+
         $user = $this->session->userdata('logged');
-        if(isset($user['mobile'])){
+
+        /** User mobile */
+        if( isset($user['mobile']) )
+        {
             $this->twiggy->set('mobile', $user['mobile']);
         }
 
@@ -70,15 +74,17 @@ class Page extends WMDS_Controller {
                 }
                 else
                 {
-                    redirect(base_url().'404_override');
+                    redirect(base_url() . '404_override');
                 }
             }
 
             $this->twiggy->set('referal', $referal);
-        } else {
+        }
+        else
+        {
             $this->twiggy->set('page', array(
-                'title'  => 'Welcome',
-                'role'   => 'page',
+                'title'  => 'Welcome', 
+                'role'   => 'page', 
                 'id'     => 'page-home'
             ));
 
@@ -90,7 +96,6 @@ class Page extends WMDS_Controller {
 
             $this->twiggy->template('page/home')->display();
         }
-
     }
 
     /**

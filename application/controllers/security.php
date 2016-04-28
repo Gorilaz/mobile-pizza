@@ -192,7 +192,7 @@ class Security extends WMDS_Controller {
                 $this->email->to($email);
 
                 $this->email->subject('Recovery Password');
-                $this->email->message('Hello ' . $email . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code);
+                $this->email->message('Hello ' . $email . '! To Recovery Your Password - please visit this <a href="' . base_url() . '/change-password/' . $code . '">link</a>');
 
                 $this->email->send();
             }
@@ -201,7 +201,7 @@ class Security extends WMDS_Controller {
                 if( $this->config->item('sms_service') === 'telerivet' )
                 {
                     $sendMessage = $this->Telerivet_Project->sendMessage(array(
-                        'content' => 'Hello ' . $mobile . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code, 
+                        'content' => 'Hello ' . $mobile . '! To Recovery Your Password - please visit: ' . base_url() . '/change-password/' . $code, 
                         'to_number' => $user['mobile']
                     ));
                 }
@@ -213,7 +213,7 @@ class Security extends WMDS_Controller {
                     $this->email->to($mobile . '@' . $sms['domain_name']);
 
                     $this->email->subject('Recovery Password');
-                    $this->email->message('Hello ' . $mobile . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code);
+                    $this->email->message('Hello ' . $mobile . '! To Recovery Your Password - please visit: ' . base_url() . '/change-password/' . $code);
 
                     $this->email->send();
                 }

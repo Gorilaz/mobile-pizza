@@ -1677,9 +1677,10 @@ $(document)
                     {
                         var current_date = $('#date').val(), 
                             first_time = start_time, 
-                            first_datetime = new Date(current_date + ' ' + first_time);
+                            first_datetime = new Date(current_date + ' ' + first_time), 
+                            current_datetime = new Date(current_date + ' ' + current_time);
 
-                        if( Date.now() < first_datetime.getTime() )
+                        if( current_datetime.getTime() < first_datetime.getTime() )
                         {
                             manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + first_time));
 
@@ -2268,9 +2269,10 @@ $(document)
                     else
                     {
                         var date = $('#date').val(), 
-                            last_time = $('#time').find('option:last').attr('value');
+                            last_time = $('#time').find('option:last').attr('value'), 
+                            current_datetime = new Date(date + ' ' + current_time);
 
-                        if( Date.now() > (new Date(date + ' ' + last_time)).getTime() )
+                        if( current_datetime.getTime() > (new Date(date + ' ' + last_time)).getTime() )
                         {
                             manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
 
@@ -2497,8 +2499,8 @@ $(document)
      **********************************************************************************************************************/
     .on('pageinit', '#page-recover', function() {
         $(document)
-            .off('click', '#recover')
-            .on('click', '#recover', function() {
+            .off('click', '#recover-by-email')
+            .on('click', '#recover-by-email', function() {
                 var email = $('#email').val();
 
                 if( !!email )

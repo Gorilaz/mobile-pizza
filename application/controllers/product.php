@@ -42,13 +42,17 @@ class product extends WMDS_Controller {
          * Calculate left points
          */
         $this->load->library('cart');
+
         $cart = $this->cart->contents();
+
         $userdPoints = 0;
+
         foreach($cart as $item){
             if(isset($item['points']) && !empty($item['points'])){
                 $userdPoints += $item['points'];
             }
         }
+
         $user = $this->session->userdata('logged');
 
         $pointsLeft = $user['order_points'] - $userdPoints;
@@ -91,8 +95,26 @@ class product extends WMDS_Controller {
             ->set('withPoints', $withPoints)
             ->set($productType);
 
-        $restaurant_name = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
-        $restaurant_suburb = $this->db->select('value')->where('type', 'restaurant_suburb')->get('sitesetting')->row()->value;
+        $sitesettings = $this->db->select('type, value')->where_in('type', array('restaurant_name', 'restaurant_suburb'))->get('sitesetting')->result();
+
+        if( !empty($sitesettings) )
+        {
+            foreach( $sitesettings as $sitesetting )
+            {
+                if( $sitesetting->type === 'restaurant_name' )
+                {
+                    $restaurant_name = $sitesetting->value;
+                }
+
+                if( $sitesetting->type === 'restaurant_suburb' )
+                {
+                    $restaurant_suburb = $sitesetting->value;
+                }
+            }
+        }
+
+        $restaurant_name = empty($restaurant_name) ? '' : $restaurant_name;
+        $restaurant_suburb = empty($restaurant_suburb) ? '' : $restaurant_suburb;
 
         $this->twiggy->set('page', array(
             'title'  => $product->product_name,

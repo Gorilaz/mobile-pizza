@@ -8,6 +8,7 @@ class checkout extends WMDS_Controller {
     function __construct()
     {
         parent::__construct();
+
         $this->load->model('general');
     }
 
@@ -65,26 +66,35 @@ class checkout extends WMDS_Controller {
          * Send cart data to view
          */
         $items = $this->getProductIdsWithCoupon();
+
         if( in_array('1', $items) )
         {
             /** verify if products has discount */
             $this->twiggy->set('haveCoupon', 'havecoupon');
+
             /**
              * Coupons
              */
             $logged = $this->session->userdata('logged');
-            if($logged){
+
+            if( $logged )
+            {
                 $coupons = $this->products_model->getCoupons($logged['userid']);
-            } else {
+            }
+            else
+            {
                 $coupons = $this->products_model->getCoupons();
             }
-            $hasSocialLocker = $this->products_model->getSocialLocker();
-            if($hasSocialLocker){
-                // $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
-            }
+
+            /* $hasSocialLocker = $this->products_model->getSocialLocker();
+
+            if( $hasSocialLocker )
+            {
+                $this->twiggy->set('socialLoker', $hasSocialLocker->couponcode);
+            } */
+
             $this->twiggy->set('coupons', $coupons);
             /** end Coupons */
-
         }
         
         $datesForOrder = $this->general->shopSchedule();
@@ -97,7 +107,9 @@ class checkout extends WMDS_Controller {
             {
                 $ids_parts = explode('_', $cart_item['id']);
 
-                if( is_array($ids_parts) && isset($ids_parts[0]) && isset($ids_parts[1]) )
+                if( is_array($ids_parts) && 
+                    isset($ids_parts[0]) && 
+                    isset($ids_parts[1]) )
                 {
                     $first_half_id = $ids_parts[0];
                     $second_half_id = $ids_parts[1];
@@ -134,22 +146,38 @@ class checkout extends WMDS_Controller {
      * Verify if all products has coupon
      */
     public function productsHaveCoupon(){
+        $hasCoupon = false;
 
         $this->load->model('products_model');
 
-        //$hasCoupon = true;
-        $hasCoupon = false;
         $cart = $this->cart->contents();
 
-        foreach($cart as $product){
+        $product_ids = array();
+
+        foreach( $cart as $product )
+        {
             $ids = explode('_', $product['id']);
-            foreach($ids as $id){
-                $productHasCoupon = $this->products_model->productHasCoupon($id);
-                //if($productHasCoupon == 0) {
-                //    $hasCoupon = false;
-                if($productHasCoupon == 1) {
-                    $hasCoupon = true;
-                    break;
+
+            foreach( $ids as $id )
+            {
+                $product_ids[] = $id;
+            }
+        }
+
+        if( !empty($product_ids) )
+        {
+            $products = $this->db->select('has_coupon')->where_in('product_id', $product_ids)->get('tbl_product')->result();
+
+            if( !empty($products) )
+            {
+                foreach( $products as $product )
+                {
+                    if( !empty($product->has_coupon) )
+                    {
+                        $hasCoupon = $hasCoupon;
+
+                        break;
+                    }
                 }
             }
         }
@@ -163,16 +191,36 @@ class checkout extends WMDS_Controller {
     public function getProductIdsWithCoupon()
     {
         $out = array();
+
         $this->load->model('products_model');
+
         $cart = $this->cart->contents();
-        foreach($cart as $product)
+
+        $product_ids = array();
+
+        foreach( $cart as $product )
         {
             $ids = explode('_', $product['id']);
-            foreach($ids as $id)
+
+            foreach( $ids as $id )
             {
-                $out[$id] = $this->products_model->productHasCoupon($id);
+                $product_ids[] = $id;
             }
         }
+
+        if( !empty($product_ids) )
+        {
+            $products = $this->db->select('product_id, has_coupon')->where_in('product_id', $product_ids)->get('tbl_product')->result();
+
+            if( !empty($products) )
+            {
+                foreach( $products as $product )
+                {
+                    $out[$product->product_id] = $product->has_coupon;
+                }
+            }
+        }
+
         return $out;
     }
 
@@ -180,13 +228,19 @@ class checkout extends WMDS_Controller {
     /**
      * Get Coupons (ajax)
      */
-    public function getCoupons(){
+    public function getCoupons() {
         $this->load->model('general');
+
         $coupon = $this->input->post('coupon');
+
         $coupons = $this->general->getCoupons($coupon);
-        if($coupons){
+
+        if( $coupons )
+        {
             echo json_encode($coupons);
-        } else {
+        }
+        else
+        {
             echo json_encode('false');
         }
     }

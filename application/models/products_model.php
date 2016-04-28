@@ -67,10 +67,9 @@ class Products_model extends CI_Model{
             ->order_by("variation_name", "asc")
             ->get('variation_group')
             ->result();
-//        die( $this->db->last_query());
-//        print_r($variations);die;
+
         if($variations) {
-            $result['halfs'] = $this->getMatchedPizzaForHalf($variations);
+            $result['halfs'] = $this->getMatchedPizzaForHalf($variations, $id);
 
             foreach($variations as $variation) {
                 $result['variations'][$variation->title][] = $variation;
@@ -81,40 +80,54 @@ class Products_model extends CI_Model{
 
     /**
      * @param $variations
+     * @param $product_id
      * @return bool|string
      */
-    public function getMatchedPizzaForHalf($variations) {
-        $result     = false;
+    public function getMatchedPizzaForHalf($variations, $product_id) {
+        $result = false;
 
-        if($variations) {
-            foreach($variations as $variation) {
-                if(isset($variation->half_pizza_group_id) && $variation->half_pizza_group_id > 0) {
+        if( !empty($variations) )
+        {
+            $half_pizza_group_ids = array();
 
-                    $halfs =  $this->db
-                        ->select('tbl_product.product_id, product_name, description, product_image, product_price, variation_price, variation_id')
-                        ->where('half_pizza_group_id',$variation->half_pizza_group_id)
-                        ->where('tbl_variations.available','Y')
-                        ->where('tbl_variations.product_id <> '.$variation->product_id)
-                        ->join('tbl_product','tbl_variations.product_id = tbl_product.product_id','INNER')
-                        ->get('tbl_variations')
-                        ->result();
-
-                    if($halfs) {
-                        foreach($halfs as $item) {
-                            $item->description = strip_tags($item->description);
-                            $result[$variation->half_pizza_group_id][$item->variation_id] = $item;
-                        }
-                    }
-
-
+            foreach( $variations as $variation )
+            {
+                if( !empty($variation->half_pizza_group_id) )
+                {
+                    $half_pizza_group_ids[] = $variation->half_pizza_group_id;
                 }
             }
         }
 
-//        print_r($result);
-        if($result) {
+        if( !empty($half_pizza_group_ids) )
+        {
+            $halfs = $this->db
+                          ->select('tbl_product.product_id, tbl_product.product_name, tbl_product.description, tbl_product.product_image, tbl_product.product_price, tbl_variations.variation_price, tbl_variations.variation_id, tbl_variations.half_pizza_group_id')
+                          ->where_in('tbl_variations.half_pizza_group_id', $half_pizza_group_ids)
+                          ->where('tbl_variations.available', 'Y')
+                          ->where('tbl_variations.product_id <> ' . $product_id)
+                          ->join('tbl_product', 'tbl_product.product_id = tbl_variations.product_id', 'INNER')
+                          ->get('tbl_variations')
+                          ->result();
+
+            if( !empty($halfs) )
+            {
+                $result = array();
+
+                foreach( $halfs as $item )
+                {
+                    $item->description = strip_tags($item->description);
+
+                    $result[$item->half_pizza_group_id][$item->variation_id] = $item;
+                }
+            }
+        }
+
+        if( $result )
+        {
             return json_encode($result);
         }
+
         return false;
     }
 
@@ -257,40 +270,74 @@ class Products_model extends CI_Model{
      * Get coupons
      * @param null $userId
      */
-    public function getCoupons($userId = null){
+    public function getCoupons($userId = null) {
+        $coupons = array();
 
         $now = date('Y-m-d');
-        $coupons = array();
-        if($userId){
+
+        $need_coupon_for_first_order = false;
+
+        if( $userId )
+        {
             $hasOrder = $this->hasOrder($userId);
-//            var_dump($hasOrder);die;
-            if(!$hasOrder){
-//                $this->db->where('coupontype', 'firstorder');
-                $coupons['firstOrder'] = $this->db->where('status', 'active')->
-                    where('expirydate >=', $now)->
-                    where('coupontype', 'firstorder')->
-                    order_by('discountper','desc')->
-                    limit(1)->
-                    get('tbl_coupon')->
-                    row_array();
+
+            if( !$hasOrder )
+            {
+                $need_coupon_for_first_order = true;
             }
-        } else {
-            $coupons['firstOrder'] = $this->db->where('status', 'active')->
-                where('expirydate >=', $now)->
-                where('coupontype', 'firstorder')->
-                order_by('discountper','desc')->
-                limit(1)->
-                get('tbl_coupon')->
-                row_array();
+        }
+        else
+        {
+            $need_coupon_for_first_order = true;
         }
 
-        $coupons['allOrder'] = $this->db->where('status', 'active')->
-            where('expirydate >=', $now)->
-            where('coupontype', 'allorders')->
-            order_by('discountper','desc')->
-            limit(1)->
-            get('tbl_coupon')->
-            row_array();
+        $this->db
+             ->where('status', 'active')
+             ->where('expirydate >=', $now);
+
+        if( $need_coupon_for_first_order )
+        {
+            $this->db
+                 ->where_in('coupontype', array('firstorder', 'allorders'));
+        }
+        else
+        {
+            $this->db
+                 ->where('coupontype', 'allorders');
+        }
+
+        $this->db
+             ->order_by('discountper','desc');
+
+        $all_coupons = $this->db
+                        ->get('tbl_coupon')
+                        ->result();
+
+        if( !empty($all_coupons) )
+        {
+            foreach( $all_coupons as $coupon )
+            {
+                if( $need_coupon_for_first_order && 
+                    $coupon->coupontype === 'firstorder' )
+                {
+                    $coupons['firstOrder'] = $coupon;
+                }
+
+                if( $coupon->coupontype === 'allorders' )
+                {
+                    $coupons['allOrder'] = $coupon;
+                }
+
+                if( ( $need_coupon_for_first_order && 
+                        isset($coupons['firstOrder']) && 
+                        isset($coupons['allOrder']) ) || 
+                    ( !$need_coupon_for_first_order && 
+                        isset($coupons['allOrder']) ) )
+                {
+                    break;
+                }
+            }
+        }
 
         return $coupons;
     }
@@ -300,15 +347,10 @@ class Products_model extends CI_Model{
      * @param $userId
      * @return bool
      */
-    public function hasOrder($userId){
-
+    public function hasOrder($userId) {
         $has_order = $this->db->where('userid', $userId)->count_all_results('mast_order');
 
-        if($has_order != 0){
-            return true;
-        } else {
-            return false;
-        }
+        return ( $has_order > 0 );
     }
 
     /**
@@ -343,17 +385,4 @@ class Products_model extends CI_Model{
 
        return $holidayFee->public_holiday_amt;
     }
-
-    /**
-     * verify if product has coupon
-     * @param int $id : product id
-     * @return mixed
-     */
-    public function productHasCoupon($id){
-        $hasCoupon = $this->db->select('has_coupon')->where('product_id', $id)->get('tbl_product')->row();
-
-        return $hasCoupon->has_coupon;
-    }
-
-
 }

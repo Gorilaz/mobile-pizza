@@ -1814,7 +1814,18 @@ $(document)
 
                     if( $('#radio-choice-v-2a').is(':checked') )
                     {
-                        defaultPrice('low_amount');
+                        var totalAmount = parseFloat($('.order-total-price').data('value'));
+
+                        if( totalAmount < parseFloat(rules.min_order_amt) )
+                        {
+                            defaultPrice('low_amount');
+                        }
+                        else
+                        {
+                            $('#low_order').addClass('hide');
+
+                            defaultPrice();
+                        }
                     }
                     else
                     {
@@ -1918,7 +1929,16 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            discountPrice(discountpercet, 'online_low_amount');
+                            var totalAmount = parseFloat($('.order-total-price').data('value'));
+
+                            if( totalAmount < parseFloat(rules.min_order_amt) )
+                            {
+                                discountPrice(discountpercet, 'online_low_amount');
+                            }
+                            else
+                            {
+                                discountPrice(discountpercet);
+                            }
                         }
                         else
                         {
@@ -1938,7 +1958,18 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            defaultPrice('low_amount');
+                            var totalAmount = parseFloat($('.order-total-price').data('value'));
+
+                            if( totalAmount < parseFloat(rules.min_order_amt) )
+                            {
+                                defaultPrice('low_amount');
+                            }
+                            else
+                            {
+                                $('#low_order').addClass('hide');
+
+                                defaultPrice();
+                            }
                         }
                         else
                         {
@@ -1980,7 +2011,18 @@ $(document)
                     {
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            defaultPrice('low_amount');
+                            var totalAmount = parseFloat($('.order-total-price').data('value'));
+
+                            if( totalAmount < parseFloat(rules.min_order_amt) )
+                            {
+                                defaultPrice('low_amount');
+                            }
+                            else
+                            {
+                                $('#low_order').addClass('hide');
+
+                                defaultPrice();
+                            }
                         }
                         else
                         {

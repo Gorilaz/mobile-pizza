@@ -220,6 +220,7 @@ class Page extends WMDS_Controller {
         }
 
         $products_db = $this->products_model->getProductsAndCategories();
+
         $products = array();
 
         if($products_db) {

@@ -81,8 +81,24 @@ class Security_model extends CI_Model{
             return false;
         }
     }
-    
+
     /**
+     * Check if mobile is valid
+     * @param $mobile
+     * @param $code
+     * @return bool
+     */
+    public function checkValidMobile($mobile, $code){
+        $count = $this->db->where('mobile', $mobile)->count_all_results('users');
+        if ($count == 1){
+            $this->db->where('mobile', $mobile)->update('users', array('verify_code' => $code));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+        /**
      * Check if mobile number have verifycation
      * @param string $mobile
      * @param string $verifyCode
@@ -185,6 +201,21 @@ class Security_model extends CI_Model{
     public function getUserByEmail($email)
     {
         $this->db->where('email', $email);
+        $query = $this->db->get('users');
+        if( $query->num_rows == 1 )
+        {
+            return $query->row_array();
+        }
+        return false;
+    }
+
+    /**
+     * Get User fields by Mobile
+     * @param $mobile
+     */
+    public function getUserByMobile($mobile)
+    {
+        $this->db->where('mobile', $mobile);
         $query = $this->db->get('users');
         if( $query->num_rows == 1 )
         {

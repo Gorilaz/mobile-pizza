@@ -6,14 +6,18 @@
             <div id="page-recover">
                 <span class="recover-error" id="error-valid"></span>
                 <label for="email">Email Address</label>
-                <input type="text" id="email">
-                <a href="#" data-role="button" data-theme="a" id="recover">Recover Password</a>
+                <input type="text" id="email" />
+                <a href="#" data-role="button" data-theme="a" id="recover-by-email">Recover Password By Email</a>
+                <br /><br />
+                <label for="mobile">Mobile Number</label>
+                <input type="text" id="mobile" />
+                <a href="#" data-role="button" data-theme="a" id="recover-by-mobile">Recover Password By Mobile</a>
             </div>
             <div data-role="popup" id="popupRecover" data-theme="d" class="ui-corner-all" >
                 <form id="form-signin">
                     <div id="signin-div">
-                        <h3>An email was sent to your address containing information about how to recover your password.</h3>
-                        <button type="button" data-theme="b" data-icon="check">Ok</button>
+                        <h3 id="popupRecover_content"></h3>
+                        <a href="#" type="button" data-theme="b" data-icon="check" data-rel="back">Ok</a>
                     </div>
                 </form>
             </div>

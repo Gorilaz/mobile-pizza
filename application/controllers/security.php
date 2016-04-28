@@ -161,43 +161,62 @@ class Security extends WMDS_Controller {
      */
     public function checkValidEmail(){
         $email = $this->input->post('email');
+        $mobile = $this->input->post('mobile');
 
         $this->load->model('security_model');
 
-        $user = $this->security_model->getUserByEmail($email);
         $sms = $this->security_model->smsSettings();
 
         $code = md5(uniqid(rand(), true));
-        $valid = $this->security_model->checkValidEmail($email, $code);
+
+        if( !!$email )
+        {
+            $user = $this->security_model->getUserByEmail($email);
+
+            $valid = $this->security_model->checkValidEmail($email, $code);
+        }
+        else if( !!$mobile )
+        {
+            $user = $this->security_model->getUserByMobile($mobile);
+
+            $valid = $this->security_model->checkValidMobile($mobile, $code);
+        }
 
         if( $valid )
         {
-            $this->load->library('email');
-
-            $this->email->from('office@pizza.com', 'Pizza');
-            $this->email->to($email);
-
-            $this->email->subject('Recovery Password');
-            $this->email->message('Hello ' . $email . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code);
-
-            $this->email->send();
-
-            if( $this->config->item('sms_service') === 'telerivet' )
+            if( !!$email )
             {
-                $sendMessage = $this->Telerivet_Project->sendMessage(array(
-                    'content' => 'Hello ' . $email . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code, 
-                    'to_number' => $user['mobile']
-                ));
-            }
-            else
-            {
+                $this->load->library('email');
+
                 $this->email->from('office@pizza.com', 'Pizza');
-                $this->email->to($user['mobile'] . '@' . $sms['domain_name']);
+                $this->email->to($email);
 
                 $this->email->subject('Recovery Password');
                 $this->email->message('Hello ' . $email . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code);
 
                 $this->email->send();
+            }
+            else if( !!$mobile )
+            {
+                if( $this->config->item('sms_service') === 'telerivet' )
+                {
+                    $sendMessage = $this->Telerivet_Project->sendMessage(array(
+                        'content' => 'Hello ' . $mobile . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code, 
+                        'to_number' => $user['mobile']
+                    ));
+                }
+                else
+                {
+                    $this->load->library('email');
+
+                    $this->email->from('office@pizza.com', 'Pizza');
+                    $this->email->to($mobile . '@' . $sms['domain_name']);
+
+                    $this->email->subject('Recovery Password');
+                    $this->email->message('Hello ' . $mobile . '! To Recovery Your Password - please visit:' . base_url() . '/change-password/' . $code);
+
+                    $this->email->send();
+                }
             }
 
             echo json_encode('valid');

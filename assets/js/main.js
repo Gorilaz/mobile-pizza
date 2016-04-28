@@ -2517,6 +2517,10 @@ $(document)
                     request.done(function(data) {
                         if( data === 'valid' )
                         {
+                            $('#popupRecover_content')
+                                .empty()
+                                .append(document.createTextNode('An email was sent to your address containing information about how to recover your password.'));
+
                             $('#popupRecover').popup('open');
                         }
                         else
@@ -2524,6 +2528,49 @@ $(document)
                             $('#error-required')
                                 .empty()
                                 .append(document.createTextNode('Email address not found in database!'));
+                        }
+                    });
+
+                    request.fail(function(jqXHR, textStatus) {
+                        showAlert('', 'Request failed: ' + textStatus);
+                    });
+                }
+                else
+                {
+                    $('#error-valid')
+                        .empty()
+                        .append(document.createTextNode('Please input valid email address!'));
+                }
+            })
+            .off('click', '#recover-by-mobile')
+            .on('click', '#recover-by-mobile', function() {
+                var mobile = $('#mobile').val();
+
+                if( !!mobile )
+                {
+                    var request = $.ajax({
+                        data: {
+                            mobile: mobile
+                        }, 
+                        dataType: 'json', 
+                        type: 'POST', 
+                        url: '//' + window.location.host + '/security/checkValidEmail'
+                    });
+
+                    request.done(function(data) {
+                        if( data === 'valid' )
+                        {
+                            $('#popupRecover_content')
+                                .empty()
+                                .append(document.createTextNode('An SMS was sent to your number containing information about how to recover your password.'));
+
+                            $('#popupRecover').popup('open');
+                        }
+                        else
+                        {
+                            $('#error-required')
+                                .empty()
+                                .append(document.createTextNode('Mobile number not found in database!'));
                         }
                     });
 

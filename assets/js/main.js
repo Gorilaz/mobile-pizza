@@ -2529,6 +2529,8 @@ $(document)
 
                 if( !!email )
                 {
+                    $('#error-valid').empty();
+
                     var request = $.ajax({
                         data: {
                             email: email
@@ -2549,8 +2551,7 @@ $(document)
                         }
                         else
                         {
-                            $('#error-required')
-                                .empty()
+                            $('#error-valid')
                                 .append(document.createTextNode('Email address not found in database!'));
                         }
                     });
@@ -2572,6 +2573,8 @@ $(document)
 
                 if( !!mobile )
                 {
+                    $('#error-valid').empty();
+
                     var request = $.ajax({
                         data: {
                             mobile: mobile
@@ -2592,8 +2595,7 @@ $(document)
                         }
                         else
                         {
-                            $('#error-required')
-                                .empty()
+                            $('#error-valid')
                                 .append(document.createTextNode('Mobile number not found in database!'));
                         }
                     });

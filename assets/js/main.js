@@ -2510,6 +2510,11 @@ $(document)
 
         prepareProfileFormValidation();
         prepareLoginFormValidation();
+
+        if( !!firstOrderDeleted )
+        {
+            showAlert('', 'Sorry, but it seems this is not your first oder. The First Order Discount has been removed.');
+        }
     })
     .off('pageinit', '#page-recover')
     /***********************************************************************************************************************

@@ -11,6 +11,12 @@
         {% else %}
         var logged = 1;
         {% endif %}
+
+        {% if firstOrderDeleted is defined and firstOrderDeleted != false %}
+            var firstOrderDeleted = true;
+        {% else %}
+            var firstOrderDeleted = false;
+        {% endif %}
     </script>
 
 

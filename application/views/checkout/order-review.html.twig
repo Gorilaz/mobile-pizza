@@ -7,7 +7,7 @@
             {% if start_time is defined and start_time != false %}
                 start_time = '{{ start_time }}', 
             {% endif %}
-            current_time = '{{ 'now'|date('H:i') }}';
+            current_time = '{{ 'now'|date('H:i') }}', 
             rules    = {{ rules }}, 
             time     = {{ date().timestamp * 1000 }};
     </script>

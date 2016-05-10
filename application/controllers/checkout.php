@@ -72,11 +72,11 @@ class checkout extends WMDS_Controller {
             /** verify if products has discount */
             $this->twiggy->set('haveCoupon', 'havecoupon');
 
+            $logged = $this->session->userdata('logged');
+
             /**
              * Coupons
              */
-            $logged = $this->session->userdata('logged');
-
             if( $logged )
             {
                 $coupons = $this->products_model->getCoupons($logged['userid']);
@@ -426,6 +426,9 @@ class checkout extends WMDS_Controller {
                 if(!isset($coupons['firstOrder']) || empty($coupons['firstOrder'])){
                     unset($check['couponName']);
                     unset($check['couponDiscount']);
+
+                    $this->twiggy->set('firstOrderDeleted', true);
+
                     $this->session->set_userdata('checkout', $check);
                     $hasCoupon = false;
                 }

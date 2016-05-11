@@ -19,7 +19,6 @@ class Order extends WMDS_Controller{
      * Save order in database
      */
     public function save_order($payment = null){
-
         $cart = $this->cart->contents();
 
         /** start Description */
@@ -143,7 +142,6 @@ class Order extends WMDS_Controller{
 
             redirect(base_url().'paypal');
         } else {
-//            print_r($cart);die;
             $order_id    = $this->order_model->saveOrder($check, $newTotal, $discount, $delivery_fee, $user['userid'], $html, 'save');
 
             /** sms confirmation */
@@ -181,12 +179,14 @@ class Order extends WMDS_Controller{
      * SMS Confirmation
      * @param $order_id
      */
-    private function confirmationSms($order_id){
+    private function confirmationSms($order_id)
+    {
         $this->load->model('security_model');
+
         $sms = $this->security_model->smsSettings();
 
-        if($sms['sms_confirmation'] == 'enable'){
-
+        if( $sms['sms_confirmation'] === 'enable' )
+        {
             $real_id = $this->security_model->getRealId($order_id);
 
             $content_message = str_replace("[[order_no]]", $real_id, $sms['confirmation_text']);
@@ -247,11 +247,8 @@ class Order extends WMDS_Controller{
         require_once(FCPATH."application/helpers/dompdf/dompdf_config.inc.php");
         require_once(FCPATH. 'application/libraries/phpqrcode/phpqrcode.php');
 
-//        include_once('create_map.php');
-
         $user = $this->session->userdata('logged');
         $subUrb = $this->order_model->getSubUrb($user['suburb']);
-//        print_r($user);die;
         $order = $this->order_model->getOrder($orderId);
         $checkout = $this->session->userdata('checkout');
 
@@ -405,8 +402,6 @@ class Order extends WMDS_Controller{
 
         $data['restaurant_name'] = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
 
-//        print_r($order);
-//        print_r($checkout);die;
         if(empty($order['order_date'])){
             $when = 'Delivery Time: ASAP';
         } else {
@@ -657,7 +652,6 @@ class Order extends WMDS_Controller{
         $pdf_path = FCPATH.'templates/pdf/';
         $name = 'DEMOTEST_'.$order['real_id'].'.pdf';
         $filename= $pdf_path.$name;
-//        print_pre($filename);die;
         file_put_contents($filename, $output);
 
         $this->gprs_printer($data);
@@ -694,16 +688,33 @@ class Order extends WMDS_Controller{
         $p_printer_data=strip_tags($p_printer_data);
         $p_printer_data=trim(preg_replace('/\s+/', ' ', $p_printer_data)); //remove line breaks
 
-        $sitesettings  = $this->SS_Model->getSiteSettingsDetails();
-        $sent_by_gsm_printer= $sitesettings[49];
-        if($sent_by_gsm_printer=='Y') {$p_status='to_be_printed';} else {$p_status='no_gprs_print';}
+        $sitesetting = $this->db->select('value')->where('type', 'order_by_gsm_printer')->get('sitesetting')->row();
+
+        if( $sitesetting )
+        {
+            $sent_by_gsm_printer = $sitesetting->value;
+        }
+        else
+        {
+            $sent_by_gsm_printer = '0';
+        }
+
+        if( empty($sent_by_gsm_printer) )
+        {
+            $p_status='no_gprs_print';
+        }
+        else
+        {
+            $p_status = 'to_be_printed';
+        }
+
         $this->order_model->recordPrinterData($data['order_number'],$p_printer_data, $p_status);
 
         $text_file_path = FCPATH.'templates/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
 
         if ( file_put_contents($text_file_path, $p_printer_data) === false )
         {
-            //echo 'Unable to write the file'; die;
+            // echo 'Unable to write the file'; die;
         }
     } //VV end function gprs printer
 
@@ -816,139 +827,192 @@ class Order extends WMDS_Controller{
  //VV for GPRS printer - almost identical to getTextFileItemsDescription()
     private function p_getTextFileItemsDescription()
     {
-
         $order = '';
-        if ($this->cart->contents()) {
-            foreach ($this->cart->contents() as $items) {
-                if ( !empty($items['options']['product_type']) && $items['options']['product_type'] == 'single' ) {
 
-                    $remove          = '';
-                    $extra           = '';
-                    $comment         = '';
+        if( $this->cart->contents() )
+        {
+            foreach( $this->cart->contents() as $items )
+            {
+                if( !empty($items['product_type']) && $items['product_type'] == 'single' )
+                {
                     $variation_group = '';
+                    $current = '';
+                    $extra = '';
 
-                    if (!empty($items['options']['variation_group'])) {
-                        $var_group = unserialize($items['options']['variation_group']);
-                        foreach ($var_group as $key => $val) {
-
-
-                            if (ucwords(strtoupper($val['variation_group']))=="SIZE" || number_format($val['variation_price'], 2)=='0.00'){
-                              $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
-                            }
-                            else
-                            {
-                              $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'], 2) . ')';
-                            }
-
-
-
-                           // $variation_group .= '>'.ucwords(strtoupper($val['variation_group'])) . ':' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'], 2) . ')';
-
-                        }
-                    }
-                    if (!empty($items['options']['comment'])) {
-                        $comment = '>COMMENTS: ' . $items['options']['comment'];
-                    }
-                    if (!empty($items['options']['extra'])) {
-                        $extra_ing = unserialize($items['options']['extra']);
-                        foreach ($extra_ing as $val) {
-
-                            $extra .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price, 2).')';
-                        }
-                    }
-
-                    if (!empty($items['options']['current'])) {
-                        $current_ing = unserialize($items['options']['current']);
-                        foreach ($current_ing as $val) {
-                            $remove .= '>NO: ' . ucwords($val->ingredient_name) . ',';
-                        }
-                    }
-
-                    $item_price=number_format($items['qty']*$items['price'],2);
-                    $order .= '|'.$items['qty'] . '|' . strtoupper($items['name']) .'|'.$item_price.'|'.$variation_group . $remove . $extra . $comment.';';
-
-                    //VV OK $order .= '|'.$items['qty'] . '|' . ucwords($items['name']) .'|'.number_format($items['price'],2).'|'.$variation_group . $remove . $extra . $comment.';';
-                    //orig$order .= '|'.$items['qty'] . '|' . ucwords($items['name']) . '(' . $variation_group . $remove . $extra . $comment . '),';
-
-                }
-                elseif ( !empty($items['options']['product_type']) && $items['options']['product_type'] == 'half_half' ) {
                     $comment = '';
-                    if (!empty($items['options']['comment'])) {
-                        $comment       = '\nCOMMENTS: ' . $items['options']['comment'];
-                    }
-                    $first_product = unserialize($items['options']['first_product']);
-                    //error_log('ITEMS DATA IS '. var_dump($items));
-                    //   error_log('ITEMS DATA IS: ' . print_r($items));
 
-                    //number_format($first_product['default_price'] / 2, 2)
+                    foreach( $items['options'] as $option )
+                    {
+                        if( strpos(strtolower($option['name']), 'size:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value);
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '-no:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $current .= '>NO: ' . ucwords($value);
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '+extra:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $extra .= '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                            }
+                        }
+                    }
+
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                    }
+
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+
+                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $current . $extra . $comment . ';';
+                }
+                else if( !empty($items['product_type']) && $items['product_type'] === 'half' )
+                {
+                    $half = false;
 
                     $first_product_variation_group = '';
-                    if (!empty($first_product['variation_group'])) {
-                        $var_group = unserialize($first_product['variation_group']);
-                        foreach ($var_group as $key => $val) {
-
-                            if(ucwords(strtoupper($val['variation_group']))=='SIZE' || number_format($val['variation_price'] / 2, 2) =='0.00') {
-                             $first_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
-
-                            }
-                            else {
-                              $first_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'] / 2, 2) . ')';
-
-                            }
-                        }
-                    }
                     $first_product_current_options = '';
-                    if (!empty($first_product['current'])) {
-                        $current_ing = unserialize($first_product['current']);
-                        foreach ($current_ing as $val) {
-                            $first_product_current_options .= '>NO: ' . ucwords($val->ingredient_name);
-                        }
-                    }
                     $first_product_extra_options = '';
-                    if (!empty($first_product['extra'])) {
-                        $extra_ing = unserialize($first_product['extra']);
-                        foreach ($extra_ing as $val) {
-                            $first_product_extra_options .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price / 2, 2).')';
 
-                        }
-                    }
-
-                    $second_product                 = unserialize($items['options']['second_product']);
                     $second_product_variation_group = '';
-                    if (!empty($second_product['variation_group'])) {
-                        $var_group = unserialize($second_product['variation_group']);
-                        foreach ($var_group as $key => $val) {
-
-                            if(ucwords(strtoupper($val['variation_group']))=='SIZE') {
-                             $second_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']);
-                            }
-                            else {
-                              $second_product_variation_group .= '>'. ucwords(strtoupper($val['variation_group'])) . ': ' . ucwords($val['variation_name']) . '(+' . number_format($val['variation_price'] / 2, 2) . ')';
-                            }
-                        }
-                    }
                     $second_product_current_options = '';
-                    if (!empty($second_product['current'])) {
-                        $current_ing = unserialize($second_product['current']);
-                        foreach ($current_ing as $val) {
-                            $second_product_current_options .= '>NO: ' . ucwords($val->ingredient_name);
-                        }
-                    }
                     $second_product_extra_options = '';
-                    if (!empty($second_product['extra'])) {
-                        $extra_ing = unserialize($second_product['extra']);
-                        foreach ($extra_ing as $val) {
-                            $second_product_extra_options .= '>EXTRA: ' . ucwords($val->ingredient_name) . '(+' . number_format($val->price / 2, 2).')';
+
+                    $comment = '';
+
+                    foreach( $items['options'] as $option )
+                    {
+                        if( $half === false && 
+                            strpos(strtolower($option['name']), 'first half') !== false )
+                        {
+                            $half = 'first';
+
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $first_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                        }
+
+                        if( $half === 'first' && 
+                            strpos(strtolower($option['name']), 'second half') !== false )
+                        {
+                            $half = 'second';
+
+                            $second_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                        }
+
+                        if( strpos(strtolower($option['name']), 'size:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $product_variation_group = '>' . strtoupper($name) . ': ' . strtoupper($value);
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_variation_group .= $product_variation_group;
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_variation_group .= $product_variation_group;
+                                }
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '-no:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $product_current_options = '>NO: ' . ucwords($value);
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_current_options .= $product_current_options;
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_current_options .= $product_current_options;
+                                }
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '+extra:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) && 
+                                !empty($value) )
+                            {
+                                $product_extra_options = '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_extra_options .= $product_extra_options;
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_extra_options .= $product_extra_options;
+                                }
+                            }
                         }
                     }
 
-                    $order .= '|'.$items['qty'] . '|HALF & HALF PIZZA' . '||'. '\n1st Half: ' . strtoupper($first_product['product_name']) . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . strtoupper($second_product['product_name']) .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options .$comment.';';
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                    }
 
-                   // $order .= '|'.$items['qty'] . '|'. ucwords($items['name']) . '(First Half ' . ucwords($first_product['product_name']) . '
-                   //          (' . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '),
-                   //          Second Half ' . ucwords($second_product['product_name']) . '(' . $second_product_variation_group . $second_product_current_options . $second_product_extra_options . ')'
-                   //     . $comment . '),';
-                }//end elseif
+                    $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '||' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
+                }
             }
         }
 

@@ -1870,11 +1870,20 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            discountPrice(discountpercet, 'online_low_amount');
+                            var totalAmount = parseFloat($('.order-total-price').data('value'));
+
+                            if( totalAmount < parseFloat(rules.min_order_amt) )
+                            {
+                                discountPrice(discountpercet, 'online_low_amount');
+                            }
+                            else
+                            {
+                                discountPrice(discountpercet);
+                            }
                         }
                         else
                         {
-                            discountPrice(discountpercet, '');
+                            discountPrice(discountpercet);
                         }
                     }
                 }

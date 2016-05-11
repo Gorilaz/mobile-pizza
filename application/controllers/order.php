@@ -928,6 +928,8 @@ class Order extends WMDS_Controller{
                         {
                             $half = 'second';
 
+                            $option_name_parts = explode(':', $option['name']);
+
                             $second_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
                         }
 

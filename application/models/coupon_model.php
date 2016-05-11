@@ -132,17 +132,19 @@ class Coupon_Model extends CI_Model {
     // get Country record by country_id
     #-----------------------------------------
 
-    public function getCouponById($coupon_id = 0) {
-        if ($coupon_id > 0) {
-            // $query = $this->db->query("select * from mast_country where country_id=".$country_id);
-
-            $query = $this->db->get_where('tbl_coupon', array('id' => $coupon_id));
+    public function getCouponById($coupon_id = 0)
+    {
+        if( !empty($coupon_id) )
+        {
+            $query = $this->db->get_where('tbl_coupon', array('couponcode' => $coupon_id));
 
             $row = array();
-            if ($query->num_rows() > 0) {
+
+            if( $query->num_rows() > 0 )
+            {
                 $row = $query->row();
             }
-//error_log('getCouponById - ' . var_export($row, true));
+
             return $row;
         }
     }

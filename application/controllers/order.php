@@ -295,8 +295,8 @@ class Order extends WMDS_Controller{
 
         if( is_object($vdata) )
         {
-            $data['coupon_type'] = $vdata['coupontype'];
-            $data['voucher_code'] = $vdata['couponcode'];
+            $data['coupon_type'] = $vdata->coupontype;
+            $data['voucher_code'] = $vdata->couponcode;
         }
 
         if( !empty($data['coupon_type']) && $data['coupon_type'] == 'firstorder' )
@@ -342,10 +342,10 @@ class Order extends WMDS_Controller{
         // user detail
         $usersInfo = $this->session->userdata('logged');
 
-        $data['cust_name'] = $usersInfo['first_name'] . ' ' . $usersInfo['last_name']; //VV
-        $data['p_cust_address'] = $usersInfo['address'] . '\n' . $subUrb; //VV for gprs printer
+        $data['cust_name'] = $usersInfo['first_name'] . ' ' . $usersInfo['last_name']; // VV
+        $data['p_cust_address'] = $usersInfo['address'] . '\n' . $subUrb; // VV for gprs printer
 
-        $data['p_order_get_date'] = date('D d/m H:i', strtotime($order['order_date'])); //VV GPRS Printer
+        $data['p_order_get_date'] = date('D d/m H:i', strtotime($order['order_date'])); // VV GPRS Printer
 
         if( strtotime($order['order_placement_date']) == strtotime($order['order_date']) )
         {
@@ -402,10 +402,14 @@ class Order extends WMDS_Controller{
 
         $data['restaurant_name'] = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
 
-        if(empty($order['order_date'])){
+        if(empty($order['order_date']))
+        {
             $when = 'Delivery Time: ASAP';
-        } else {
+        }
+        else
+        {
             $order_date =  DateTime::createFromFormat('Y-m-d H:i:s', $order['order_date'])->format('d-m-Y H:i');
+
             $when = 'Delivery Time: '.$order_date;
         }
 
@@ -664,29 +668,59 @@ class Order extends WMDS_Controller{
     //VV GPRS PRINTER
     function gprs_printer($data)
     {
-        $p_rest_id='#RestID*';
-        $p_delivery_or_pickup=strtoupper($data['order_option']).'*';
-        $p_order_number=$data['order_number'].'*';
-        //$p_items='|1|Sliced beef sliced very very long title |7.10|>SIZE:Large(+10.00)>NO:Capsicum>EXTRA:Basil(+1.50)>Comments:Extra crispy please and easy on cheese;|2|Pork|5.50|*';
-        $p_items=substr($data['p_txt_file_item_desc'], 0, -1); //remove last ";"
-        $p_items=$p_items.'*';
-        $p_discount=$data['p_discount'].';';
-        $p_total_amount='$'.$data['total_amount'].';;';
-        if($p_delivery_or_pickup=='HOME DELIVERY*') {$p_cust_name=$data['cust_name'].'\n'.$data['p_cust_address'].';';} else {$p_cust_name=$data['cust_name'].';';$p_delivery_or_pickup='IN-STORE PICKUP*';}
-        $p_asap_or_later=$data['p_order_get_date'].';';
-        $p_deliver_and_other_fees='$'.number_format($data['all_extra_fees'], 2) .';';
-        $p_paid_or_not=$data['paid_or_not'];
-        $p_payment_method=$data['payment_method'].';';
-        $p_cust_mobile=$data['cust_mobile'].'*';
-        $p_order_comment=strip_tags($data['order_comment']);
-        $p_order_comment=trim(str_replace('ORDER COMMENTS: :','',$p_order_comment));
-        $p_order_comment=str_replace('&nbsp;','',$p_order_comment).'*';
-        if ($p_order_comment=='*') $p_order_comment=='';
-        $p_order_received_at='ORDER RECEIVED: '. date("H:i m-d").'*';
-        $p_part_order='#'; //add "PART1/2 if neccessary - TO DO LATER"
-        $p_printer_data=$p_rest_id.$p_delivery_or_pickup.$p_order_number.$p_items.$p_discount.$p_total_amount.$p_cust_name.$p_asap_or_later.$p_deliver_and_other_fees.$p_paid_or_not.' - '.$p_payment_method.$p_cust_mobile.$p_order_comment.$p_order_received_at.$p_part_order;
-        $p_printer_data=strip_tags($p_printer_data);
-        $p_printer_data=trim(preg_replace('/\s+/', ' ', $p_printer_data)); //remove line breaks
+        $p_rest_id = '#RestID*';
+
+        $p_delivery_or_pickup = strtoupper($data['order_option']) . '*'; // home delivery / pickup
+
+        $p_order_number = $data['order_number'] . '*'; // number of order
+
+        $p_items = substr($data['p_txt_file_item_desc'], 0, -1) . '*'; // description of the content of the order (products, extras)
+
+        $p_discount = $data['p_discount'] . ';'; // description of the discount
+
+        $p_total_amount = '$' . $data['total_amount'] . ';;'; // total order amount
+
+        if( $p_delivery_or_pickup === 'HOME DELIVERY*' )
+        {
+            $p_cust_name = $data['cust_name'] . '\n' . $data['p_cust_address'] . ';';
+        }
+        else
+        {
+            $p_cust_name = $data['cust_name'] . ';';
+
+            $p_delivery_or_pickup = 'IN-STORE PICKUP*';
+        }
+
+        $p_asap_or_later = $data['p_order_get_date'] . ';';
+
+        $p_deliver_and_other_fees = '$' . number_format($data['all_extra_fees'], 2) . ';';
+
+        $p_paid_or_not = $data['paid_or_not'];
+
+        $p_payment_method = $data['payment_method'] . ';';
+
+        $p_cust_mobile = $data['cust_mobile'] . '*';
+
+        $p_order_comment = strip_tags($data['order_comment']);
+
+        $p_order_comment = trim(str_replace('ORDER COMMENTS: :', '', $p_order_comment));
+
+        $p_order_comment = str_replace('&nbsp;', '', $p_order_comment) . '*';
+
+        if( $p_order_comment === '*' )
+        {
+            $p_order_comment = '';
+        }
+
+        $p_order_received_at = 'ORDER RECEIVED: ' . date('H:i m-d') . '*';
+
+        $p_part_order = '#'; //add "PART1/2 if neccessary - TO DO LATER"
+
+        $p_printer_data = $p_rest_id . $p_delivery_or_pickup . $p_order_number . $p_items . $p_discount . $p_total_amount . $p_cust_name . $p_asap_or_later . $p_deliver_and_other_fees . $p_paid_or_not . ' - ' . $p_payment_method . $p_cust_mobile . $p_order_comment . $p_order_received_at . $p_part_order;
+
+        $p_printer_data = strip_tags($p_printer_data);
+
+        $p_printer_data = trim(preg_replace('/\s+/', ' ', $p_printer_data)); //remove line breaks
 
         $sitesetting = $this->db->select('value')->where('type', 'order_by_gsm_printer')->get('sitesetting')->row();
 

@@ -45,11 +45,23 @@ class Order_model extends CI_Model{
         $this->db->update('tbl_order_number',array('order_number' => $real_id));
         /** end */
 
-        if($checkout['when'] == 'Later '){
+        $current_timestamp = date('Y-m-d H:i:s');
+
+        if( trim($checkout['when']) === 'Later' )
+        {
             $time = date('H:i:s', strtotime($checkout['time']));
-            $str_date = $checkout['date'].' '.$time;
+
+            if( empty($checkout['date']) )
+            {
+                $checkout['date'] = date('Y-m-d');
+            }
+
+            $str_date = $checkout['date'] . ' ' . $time;
+
             $placement_date = date('Y-m-d H:i:s', strtotime($str_date));
-        } else {
+        }
+        else
+        {
             $placement_date = null;
         }
 
@@ -84,7 +96,7 @@ class Order_model extends CI_Model{
             'discount'              => $discount,
             'delivery_fee'          => $delivery_fee,
             'order_date'            => $placement_date,
-            'order_placement_date'  => date('Y-m-d H:i:s'),
+            'order_placement_date'  => $current_timestamp,
             'from_mobile'           => 1
         );
 

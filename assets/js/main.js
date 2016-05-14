@@ -558,6 +558,16 @@ function manageHelpFooterLine(lineObj)
 }
 // manageHelpFooterLine
 
+function convertToSlug(Text)
+{
+    return Text
+        .toLowerCase()
+        .replace(/ /g,'_')
+        .replace(/[^\w-]+/g,'');
+}
+
+$.mobile.collapsible.prototype.options.expandCueText = '';
+
 $(document)
     .off('pageinit', '#page-home')
     /***********************************************************************************************************************
@@ -1481,11 +1491,51 @@ $(document)
      * @url /menu
      **********************************************************************************************************************/
     .on('pageinit', '#page-menu', function() {
+        $(window)
+            .off('hashchange')
+            .on('hashchange', function() {
+                checkHash();
+            });
+
         $(document)
             .off('click', '#click-checkout')
             .on('click', '#click-checkout', function() {
                 window.location.href = '//' + window.location.host + '/checkout';
             });
+
+        function checkHash() {
+            if( !!window.location.hash )
+            {
+                var hash = window.location.hash.substr(1), 
+                    anchorElement = $('[data-anchor="' + hash + '"]');
+
+                if( !!$(anchorElement).length )
+                {
+                    $(anchorElement).first().trigger('click');
+                }
+            }
+        };
+
+        $(document).ready(function() {
+            var collapsible, collapsibleIndex, collapsibles = $('[data-role="collapsible"]').get(), 
+                collapsibleSlug, collapsibleText;
+
+            for( collapsibleIndex in collapsibles )
+            {
+                if( collapsibles.hasOwnProperty(collapsibleIndex) )
+                {
+                    collapsible = collapsibles[collapsibleIndex];
+
+                    collapsibleText = $.trim($(collapsible).find('.ui-collapsible-heading').text());
+
+                    collapsibleSlug = convertToSlug(collapsibleText);
+
+                    $(collapsible).find('.ui-collapsible-heading-toggle').attr('data-anchor', collapsibleSlug);
+                }
+            }
+
+            checkHash();
+        });
     })
     .off('pageinit', '#page-checkout')
     /***********************************************************************************************************************

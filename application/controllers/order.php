@@ -23,115 +23,240 @@ class Order extends WMDS_Controller{
 
         /** start Description */
         $html = '';
-        foreach ($cart as $c){
 
+        foreach( $cart as $c )
+        {
             $html .= '<div class="mar ovfl-hidden">
                             <div class="fl"><strong>' . $c['name'] . '</strong></div>
                         </div>
 
                         <div class="mar ovfl-hidden">
-                            <div class="fl">* Qty :'. $c['qty'] .'</div>
+                            <div class="fl">* Qty :' . $c['qty'] . '</div>
                             <div class="fr"></div>
                         </div>';
 
-            foreach($c['options'] as $option){
-
+            foreach( $c['options'] as $option )
+            {
                  $html .= '<div class="mar smlTxt ovfl-hidden">
                      <div class="mar ovfl-hidden" style="margin-bottom:0px;">
-                          <div class="fl">'.$option['name'].'</div>
+                          <div class="fl">' . $option['name'] . '</div>
                      </div>
                  </div>
-                 <div class="mar smlTxt ovfl-hidden"></div>
-                 ';
+                 <div class="mar smlTxt ovfl-hidden"></div>';
             }
         }
 
         $check = $this->session->userdata('checkout');
-        if( !isset( $check['delivery'] ) ) {
+
+        if( !isset($check['delivery']) )
+        {
             // Back to menu when Hardware back button press
-            redirect(base_url().'menu');
+            redirect(base_url() . 'menu');
         }
 
         /** Counpon */
-        if(isset( $check['couponDiscount'])){
+        if( isset($check['couponDiscount']) )
+        {
             $html .= '<div class="mar ovfl-hidden">
-                            <div class="fl">Coupon: ' . $check['couponName'] . ': '. $check['couponDiscount'] .'%</div>
+                            <div class="fl">Coupon: ' . $check['couponName'] . ': ' . $check['couponDiscount'] . '%</div>
                         </div>';
-        } elseif(isset( $check['couponName'])) {
+        }
+        else if( isset($check['couponName']) )
+        {
             $html .= '<div class="mar ovfl-hidden">
                             <div class="fl">Coupon:' . $check['couponName'] . '</div>
                         </div>';
         }
 
-
         /** Comments */
         $html .= '<div class="mar ovfl-hidden">
-                            <div class="fl">Order Commnets:'. $check['comment'] .'</div>
+                            <div class="fl">Order Commnets:' . $check['comment'] . '</div>
                         </div>';
         /** end Description */
-        //TODO: coupon discount, comment
+
+        // TODO: coupon discount, comment
         $user = $this->session->userdata('logged');
 
+        $cart_items = $this->cart->contents();
 
-        /** new total */
-        $total = $this->cart->total();
-        $newTotal = $total;
-        if(isset($check['couponDiscount']) && is_numeric($check['couponDiscount'])){
-            $discount = number_format(($total/100)*(int)$check['couponDiscount'], 1, '.', '');
-            /** total - coupon discount */
-            $newTotal = $total - $discount;
-        } else {
-            $discount = '';
-        }
+        $productIdsWithCoupon = array();
 
-        /*
-         * Calculate total points used in order
-         */
-        $points_used = 0;
-        foreach($cart as $item) {
+        $product_ids = array();
 
-            if(isset($item['points'])) {
-                $points_used+=$item['points'];
+        foreach( $cart_items as $cart_item )
+        {
+            $ids = explode('_', $cart_item['id']);
+
+            foreach( $ids as $id )
+            {
+                $product_ids[] = $id;
             }
         }
-        $check['loyalityPointsUsed'] = $points_used;
+
+        if( !empty($product_ids) )
+        {
+            $products = $this->db->select('product_id, has_coupon')->where_in('product_id', $product_ids)->get('tbl_product')->result();
+
+            if( !empty($products) )
+            {
+                foreach( $products as $product )
+                {
+                    $productIdsWithCoupon[$product->product_id] = $product->has_coupon;
+                }
+            }
+        }
+
+        $this->load->model('products_model');
+
+        foreach( $cart_items as $key => $cart_item )
+        {
+            if( $cart_item['product_type'] === 'half' )
+            {
+                $ids_parts = explode('_', $cart_item['id']);
+
+                if( isset($ids_parts[0]) && isset($ids_parts[1]) )
+                {
+                    $first_half_id = $ids_parts[0];
+                    $second_half_id = $ids_parts[1];
+
+                    $cart_items[$key]['first_half'] = $this->products_model->getProductById($first_half_id);
+                    $cart_items[$key]['second_half'] = $this->products_model->getProductById($second_half_id);
+                }
+            }
+            else
+            {
+                $cart_items[$key]['coupon'] = $productIdsWithCoupon[$cart_item['id']];
+            }
+        }
+
+        $surcharge = $this->order_model->getMinOrder();
+
+        $total = $this->cart->total();
+
+        $newTotal = $total;
+
+        $min_order_amt = (double) $surcharge->min_order_amt;
+        $order_less = (double) $surcharge->order_less;
+
+        $totalDiscount = 0;
+
+        if( !empty($check['couponDiscount']) )
+        {
+            foreach( $cart_items as $key => $cart_item )
+            {
+                if( isset($half) && $half != false )
+                {
+                    $half = false;
+                }
+
+                if( $cart_item['product_type'] == 'half' )
+                {
+                    $half = 'first';
+
+                    foreach( $cart_item['options'] as $option )
+                    {
+                        if( $half != 'second' && 
+                            strpos(strtolower($option['name']), 'second half') !== false )
+                        {
+                            $half = 'second';
+                        }
+
+                        if( $half == 'first' && $cart_item['first_half']->has_coupon == 1 )
+                        {
+                            $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                        }
+
+                        if( $half == 'second' && $cart_item['second_half']->has_coupon == 1 )
+                        {
+                            $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                        }
+                    }
+                }
+                else
+                {
+                    if( $cart_item['coupon'] == 1 )
+                    {
+                        $totalDiscount += ( ( (double) $cart_item['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                    }
+                }
+            }
+        }
+
+        $discount = number_format($totalDiscount, 2, '.', '');
+
+        $newTotal -= $totalDiscount;
+
+        $fees = 0;
+
+        if( $order_less > 0 )
+        {
+            if( $min_order_amt > $newTotal )
+            {
+                $newTotal += $order_less;
+
+                $fees += $order_less;
+            }
+        }
 
         /** total + suburb delivery fee */
-        if( isset($check['delivery']) && $check['delivery'] == 'D' && isset($user['suburb'])) {
+        if( isset($check['delivery']) && 
+            $check['delivery'] === 'D' && 
+            isset($user['suburb']) )
+        {
             $delivery_fee = $this->order_model->getDeliveryFee($user['suburb']);
-            if($delivery_fee){
-                $newTotal += $delivery_fee;
+
+            if( !empty($delivery_fee) )
+            {
+                $newTotal += (double) $delivery_fee;
+
+                $fees += (double) $delivery_fee;
             }
-        } else {
-            $delivery_fee = 0;
         }
 
         /** verify if holliday fee */
         $holidayFee = $this->session->userdata('holiday_fee');
-        if($holidayFee){
-            $holidayPrice = number_format((($total/100)*$holidayFee), 2, '.', '');
+
+        if( !empty($holidayFee) )
+        {
+            $holidayPrice = ( ( $total / 100 ) * (double) $holidayFee );
+
             $newTotal += $holidayPrice;
+
+            $fees += $holidayPrice;
         }
         /** end holliday fee */
 
         /** credit-card, paypal fee */
         $surchargeOrder = $this->session->userdata('surchange');
-        if(!empty($surchargeOrder)){
-            $newTotal += $surchargeOrder['value'];
+
+        if( !empty($surchargeOrder) )
+        {
+            $newTotal += (double) $surchargeOrder['value'];
+
+            $fees += (double) $surchargeOrder['value'];
         }
         /** end */
 
+        $fees = number_format($fees, 2, '.', '');
 
-        /** low order */
-        $lowOrder = $this->session->userdata('low_order');
-        $newTotal += $lowOrder;
-        /**end*/
-        /** checkout options */
-//        $order_id = $this->order_model->saveOrder($checkout, $total, $discount, $delivery_fee, $user['userid'], $html);
+        /*
+         * Calculate total points used in order
+         */
+        $points_used = 0;
 
-        if($payment == 'paypal'){
-            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $delivery_fee, $user['userid'], $html, 'pending');
+        foreach( $cart as $item )
+        {
+            if( isset($item['points']) )
+            {
+                $points_used += $item['points'];
+            }
+        }
 
+        $check['loyalityPointsUsed'] = $points_used;
+
+        if( $payment == 'paypal' )
+        {
+            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'pending');
 
             $paypalFields = array(
                 'total'   => $newTotal,
@@ -142,7 +267,7 @@ class Order extends WMDS_Controller{
 
             redirect(base_url().'paypal');
         } else {
-            $order_id    = $this->order_model->saveOrder($check, $newTotal, $discount, $delivery_fee, $user['userid'], $html, 'save');
+            $order_id    = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'save');
 
             /** sms confirmation */
             $this->confirmationSms($order_id);
@@ -1047,7 +1172,9 @@ class Order extends WMDS_Controller{
                         $comment = '\nCOMMENTS: ' . $items['instruction'];
                     }
 
-                    $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '||' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+
+                    $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price . '|' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
                 }
             }
         }

@@ -32,18 +32,28 @@ class checkout extends WMDS_Controller {
         
         /** verify if holliday fee */
         $holiday = $this->products_model->getPublicHoliday();
-        if($holiday){
+
+        if( !empty($holiday) )
+        {
             $arr_hol = explode(',', $holiday);
+
             $dateNow = date('d/m/Y');
-            foreach($arr_hol as $holiday){
-                if($holiday == $dateNow){
+
+            foreach( $arr_hol as $holiday )
+            {
+                if( $holiday == $dateNow )
+                {
                     $holidayFee = $this->products_model->getHolidayFee();
+
                     $totalCart = $this->cart->total();
-                    $holidayPrice = number_format( ( ($totalCart/100) * $holidayFee), 2, '.', '' );
+
+                    $holidayPrice = number_format( ( ($totalCart / 100) * $holidayFee), 2, '.', '' );
+
                     $this->twiggy->set('holidayFee', array(
                         'discount'    => $holidayFee,
                         'price'  => $holidayPrice
                     ));
+
                     $this->session->set_userdata('holiday_fee', $holidayFee);
                 }
             }
@@ -444,12 +454,6 @@ class checkout extends WMDS_Controller {
                     'discount'  => $check['couponDiscount']
                 ));
             }
-
-//
-
-            //  $discount = number_format(($total/100)*$check['couponDiscount'], 1, '.', '');
-            // $new_total = $total - $discount;
-
         }
 
         /** delivery fee */

@@ -2412,6 +2412,11 @@ $(document)
                 $('#date-time :input').attr('disabled', true);
                 $('#date-time').addClass('hide');
             });
+
+        $(document).ready(function() {
+            $('[name="coupon"]').first().next('label').trigger('click');
+        });
+
         /** END Date-time picker */
 
         /**

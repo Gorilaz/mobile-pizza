@@ -1616,11 +1616,20 @@ $(document)
                     {
                         if( a_process_for_preparing === 'D' )
                         {
-                            if( !!Object.keys(schedule[date]['P']).length )
+                            if( !!time_is_over[a_process_for_preparing] )
                             {
-                                manageHelpFooterLine($('<div>').data('title', 'The store will close soon. Only In-Store pickup is available.'));
+                                if( !!Object.keys(schedule[date]['P']).length )
+                                {
+                                    manageHelpFooterLine($('<div>').data('title', 'The store will close soon. Only In-Store pickup is available.'));
 
-                                return undefined;
+                                    return undefined;
+                                }
+                                else
+                                {
+                                    manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
+
+                                    return undefined;
+                                }
                             }
                         }
                         else if( a_process_for_preparing === 'P' )
@@ -1631,11 +1640,13 @@ $(document)
 
                                 return undefined;
                             }
+                            else
+                            {
+                                manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
+
+                                return undefined;
+                            }
                         }
-
-                        manageHelpFooterLine($('<div>').data('title', 'Sorry, the shop is closed for today'));
-
-                        return undefined;
                     }
 
                     if( a_process_for_preparing === 'D' )
@@ -1726,6 +1737,18 @@ $(document)
                     }
                     else
                     {
+                        if( $('#radio-choice-v-2a').is(':checked') )
+                        {
+                            var date = $('#date').val();
+
+                            if( !Object.keys(schedule[date]['D']).length )
+                            {
+                                manageHelpFooterLine($('<div>').data('title', 'Sorry, today this option is no longer available.'));
+
+                                return undefined;
+                            }
+                        }
+
                         if( !!$(next).length )
                         {
                             elem.hide();

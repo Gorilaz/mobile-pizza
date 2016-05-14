@@ -67,6 +67,8 @@ class General extends CI_Model {
         $forTwig = array();
         $forJquery = array();
 
+        $time_is_over = array();
+
         $forJquery[date('Y-m-d')] = array('D' => array(), 'P' => array());
 
         $entries = $this->db->get('tbl_shop_timings')->result();
@@ -90,6 +92,10 @@ class General extends CI_Model {
 
                     unset($forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['start_time']);
                 }
+
+                $time_is_over[$entry->timing_for] = $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['time_is_over'];
+
+                unset($forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['time_is_over']);
             }
         }
 
@@ -100,7 +106,7 @@ class General extends CI_Model {
 
         $start_time = isset($start_time) ? $start_time : false;
 
-        return array('forTwig' => $forTwig, 'forJquery' => $forJquery, 'start_time' => $start_time);
+        return array('forTwig' => $forTwig, 'forJquery' => $forJquery, 'start_time' => $start_time, 'time_is_over' => $time_is_over);
     }
 
     /**
@@ -131,6 +137,8 @@ class General extends CI_Model {
 
         $start = strtotime($row->first_half_from);
         $end = strtotime($row->first_half_to);
+
+        $time_is_over = true;
 
         if( $row->timing_for === 'P' )
         {
@@ -233,6 +241,8 @@ class General extends CI_Model {
             $end = strtotime($h . ':00');
         }
 
+        $time_is_over = ( $time_is_over && ( time() > $end ) );
+
         while( $start <= $end )
         {
             if( date('d') === date('d', $start) )
@@ -318,6 +328,8 @@ class General extends CI_Model {
             $end = strtotime($h . ':00');
         }
 
+        $time_is_over = ( $time_is_over && ( time() > $end ) );
+
         while( $start <= $end )
         {
             if( date('d') === date('d', $start) )
@@ -331,6 +343,8 @@ class General extends CI_Model {
 
             $start = $start + 900;
         }
+
+        $time['time_is_over'] = $time_is_over;
 
         return $time;
     }

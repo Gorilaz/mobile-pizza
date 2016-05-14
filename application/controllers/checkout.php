@@ -138,6 +138,7 @@ class checkout extends WMDS_Controller {
                 'paymentMethods' => $paymentMethods,
                 'rules'     => json_encode($paymentRules),
                 'schedule'  => array('forTwig' => $datesForOrder['forTwig'], 'forJquery' => json_encode($datesForOrder['forJquery'])), 
+                'time_is_over' => json_encode($datesForOrder['time_is_over']), 
                 'start_time' => $datesForOrder['start_time']
             )
         );

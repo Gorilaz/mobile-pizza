@@ -4,6 +4,7 @@
 
     <script type="text/javascript">
         var schedule = {{ schedule.forJquery }}, 
+            time_is_over = {{ time_is_over }}, 
             {% if start_time is defined and start_time != false %}
                 start_time = '{{ start_time }}', 
             {% endif %}

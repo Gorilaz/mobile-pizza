@@ -472,7 +472,7 @@ class Order extends WMDS_Controller{
 
         $data['p_order_get_date'] = date('D d/m H:i', strtotime($order['order_date'])); // VV GPRS Printer
 
-        if( strtotime($order['order_placement_date']) == strtotime($order['order_date']) )
+        if( strtotime($order['order_placement_date']) == strtotime($order['order_date']) || empty($order['order_date']) )
         {
             $data['p_order_get_date'] = 'ASAP'; //VV GPRS Printer
         }

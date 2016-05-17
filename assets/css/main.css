@@ -1301,9 +1301,9 @@ a.panel-list span {
 
 .right-panel-footer {
     z-index: 1002;
-    bottom:0%;
+    bottom: 1px;
     width: 100%;
-    right: 0px;
+    right: 0;
     position: fixed;
     min-width: 200px;
     width:15%;

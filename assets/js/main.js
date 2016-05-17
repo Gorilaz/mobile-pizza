@@ -603,7 +603,7 @@ $(document)
             $('#' + id + ' .ingredients-list:not(.fixed)')
                 .outerHeight($(window).outerHeight() - 
                     $('#' + id + ' .ingredients-list.fixed').outerHeight() - 
-                    $('#' + id).next('[id*="doneBtnForRightPanelingredients"]').find('.side-close-button').height());
+                    $('#' + id).find('[id*="doneBtnForRightPanelingredients"]').find('.side-close-button').height());
         }
         // resizeIngredients
 
@@ -650,37 +650,6 @@ $(document)
             });
 
         window.before_resize = $(window).height();
-
-        /**
-         * Show/Hide footer panel for Done button
-         * 
-         * @returns true
-         */
-        function manageDoneButtonForRightPanel()
-        {
-            var position = 0;
-
-            for( position = 1; position <= 2; position++ )
-            {
-                if( $('#doneBtnForRightPanelingredients' + position).hasClass('ui-panel-closed') )
-                {
-                    $('#doneBtnForRightPanelingredients' + position).removeClass('ui-panel-closed');
-                    $('#doneBtnForRightPanelingredients' + position).addClass('ui-panel-open');
-
-                    $('#doneBtnForRightPanelingredients' + position).show();
-                }
-                else if( $('#doneBtnForRightPanelingredients' + position).hasClass('ui-panel-open') )
-                {
-                    $('#doneBtnForRightPanelingredients' + position).removeClass('ui-panel-open');
-                    $('#doneBtnForRightPanelingredients' + position).addClass('ui-panel-closed');
-
-                    $('#doneBtnForRightPanelingredients' + position).hide();
-                }
-            }
-
-            return true;
-        }
-        // manageDoneButtonForRightPanel
 
         /**
          * Deal with half / half pizza
@@ -1217,15 +1186,15 @@ $(document)
                 $(targetBlock).html(content);
 
                 $(targetBlock)
-                    .after(
+                    .append(
                         $('<div>')
-                            .addClass('right-panel-footer ui-panel-closed')
+                            .addClass('right-panel-footer ui-panel-open')
                             .append(
                                 $('<p>')
                                     .addClass('side-close-button')
                                     .append(
                                         $('<a>')
-                                            .addClass('panel-list btn btn-blue ui-link done-btn-right-panel')
+                                            .addClass('btn btn-blue ui-link done-btn-right-panel')
                                             .append(
                                                 document.createTextNode('Done')
                                             )
@@ -1241,7 +1210,6 @@ $(document)
                             .attr({
                                 'id': 'doneBtnForRightPanelingredients' + pizzaNo
                             })
-                            .hide()
                     );
 
                     content
@@ -1252,7 +1220,14 @@ $(document)
 
                 if( data )
                 {
-                    $('.ingredientsHolder').removeClass('hide');
+                    var holder = $('.ingredientsHolder'), 
+                        link = $(holder).find('a'), 
+                        href = $(link).attr('data-href');
+
+                    if( !!href )
+                    {
+                        $(link).attr('href', href).removeAttr('data-href');
+                    }
                 }
 
                 /**
@@ -1447,33 +1422,13 @@ $(document)
             .on('click', '.ui-header, .ui-content, .ui-footer', function() {
                 $('#ingredients').panel('close');
             })
-            .off('panelclose', '#ingredients')
-            .on('panelclose', '#ingredients', function() {
-                manageDoneButtonForRightPanel();
-
-                $('[data-role="footer"]').fixedtoolbar({ tapToggle: true });
-            })
             .off('panelopen', '#ingredients')
             .on('panelopen', '#ingredients', function() {
-                manageDoneButtonForRightPanel();
-
                 resizeIngredients();
-
-                $('[data-role="footer"]').fixedtoolbar({ tapToggle: false });
-            })
-            .off('panelclose', '#ingredients2')
-            .on('panelclose', '#ingredients2', function() {
-                manageDoneButtonForRightPanel();
-
-                $('[data-role="footer"]').fixedtoolbar({ tapToggle: true });
             })
             .off('panelopen', '#ingredients2')
             .on('panelopen', '#ingredients2', function() {
-                manageDoneButtonForRightPanel();
-
                 resizeIngredients('ingredients2');
-
-                $('[data-role="footer"]').fixedtoolbar({ tapToggle: false });
             });
 
         /* Trigger actions on page init */

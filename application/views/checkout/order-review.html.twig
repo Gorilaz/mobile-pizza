@@ -47,7 +47,7 @@
                                 {% if item.points is defined %}
                                     <td class="order-price"></td>
                                 {% else %}
-                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-qty="' ~ item.qty ~ '" data-value="' ~ item.prod_price ~ '"' }}{% endif %}>${{ item.prod_price }}</td>
+                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-qty="' ~ item.qty ~ '" data-value="' ~ item.prod_price ~ '"' }}{% endif %}>${{ item.prod_price }} x {{ item.qty }}</td>
                                 {% endif %}
                             </tr>
 
@@ -61,7 +61,7 @@
                                 {% endif %}
                                 <tr class="{% if half is defined and half != false %}{{ 'order-subtotal without-border-bottom ' }}{% endif %}item-{{ item.rowid }}">
                                     <td class="order-item order-item-padded">{{ option.name }}</td>
-                                    <td class="order-price"{% if half is defined and half != false %}{% if half == 'first' %}{{ ' data-coupon="' ~ item.first_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% elseif half == 'second' %}{{ ' data-coupon="' ~ item.second_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% endif %}{% endif %}>{% if option.price %} ${{ option.price }} {% endif %}</td>
+                                    <td class="order-price"{% if half is defined and half != false %}{% if half == 'first' %}{{ ' data-coupon="' ~ item.first_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% elseif half == 'second' %}{{ ' data-coupon="' ~ item.second_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% endif %}{% endif %}>{% if option.price %} ${{ option.price }} x {{ item.qty }} {% endif %}</td>
                                 </tr>
                             {% endfor %}
 
@@ -75,7 +75,7 @@
 
                                 {% if item.points is defined %}
                                     <td class="order-item">Total points</td>
-                                    <td class="order-price">{{ item.points }}</td>
+                                    <td class="order-price">{{ item.points }} x {{ item.qty }}</td>
                                 {% else %}
                                     <td class="order-item">Total</td>
                                     <td class="order-price"{% if half is not defined or half == false %}{{ ' data-coupon="' ~ productsWithCoupon[item.id] ~ '" data-value="' ~ item.subtotal ~ '"' }}{%endif%}>$ {{ item.subtotal }}</td>

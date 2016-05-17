@@ -36,6 +36,105 @@ class General extends CI_Model {
         return $row > 0;
     }
 
+    public function weWillOpen()
+    {
+        $schedule = array();
+
+        $entries = $this->db->get('tbl_shop_timings')->result();
+
+        $time_is_over = array();
+
+        foreach( $entries as $entry )
+        {
+            $weekday = date('w', strtotime($entry->day));
+
+            if( $entry->first_half_from != NULL && 
+                $entry->second_half_from != NULL )
+            {
+                $schedule[$entry->day][$entry->timing_for] = $this->timesForSchedule($entry);
+
+                if( date('w') === $weekday )
+                {
+                    $time_is_over[$entry->timing_for] = $schedule[$entry->day][$entry->timing_for]['time_is_over'];
+                }
+
+                unset($schedule[$entry->day][$entry->timing_for]['time_is_over']);
+            }
+        }
+
+        if( !empty($time_is_over['D']) && !empty($time_is_over['P']) )
+        {
+            $current_timestamp = time();
+            $current_weekday = date('l', $current_timestamp);
+
+            $date_timestamp = $current_timestamp;
+
+            do
+            {
+                $date_timestamp = strtotime(date('Y-m-d', $date_timestamp) . ' + 1 day');
+
+                $date_weekday = strtolower(date('l', $date_timestamp));
+
+                if( isset($schedule[$date_weekday]) )
+                {
+                    if( !empty($schedule[$date_weekday]['D']) || !empty($schedule[$date_weekday]['P']) )
+                    {
+                        reset($schedule[$date_weekday]['D']);
+                        reset($schedule[$date_weekday]['P']);
+
+                        $date_start_D = key($schedule[$date_weekday]['D']);
+                        $date_start_P = key($schedule[$date_weekday]['P']);
+
+                        if( empty($schedule[$date_weekday]['D']) )
+                        {
+                            return date('Y-m-d', $date_timestamp) . ' ' . $date_start_P;
+                        }
+
+                        if( empty($schedule[$date_weekday]['P']) )
+                        {
+                            return date('Y-m-d', $date_timestamp) . ' ' . $date_start_D;
+                        }
+
+                        if( strtotime(date('Y-m-d', $date_timestamp) . ' ' . $date_start_D) < strtotime(date('Y-m-d', $date_timestamp) . ' ' . $date_start_P) )
+                        {
+                            return date('Y-m-d', $date_timestamp) . ' ' . $date_start_D;
+                        }
+
+                        return date('Y-m-d', $date_timestamp) . ' ' . $date_start_P;
+                    }
+                }
+            }
+            while( $date_weekday !== $current_weekday );
+        }
+        else
+        {
+            $weekday = strtolower(date('l'));
+
+            reset($schedule[$weekday]['D']);
+            reset($schedule[$weekday]['P']);
+
+            $start_D = key($schedule[$weekday]['D']);
+            $start_P = key($schedule[$weekday]['P']);
+
+            if( !empty($time_is_over['D']) )
+            {
+                return date('Y-m-d') . ' ' . $start_P;
+            }
+
+            if( !empty($time_is_over['P']) )
+            {
+                return date('Y-m-d') . ' ' . $start_D;
+            }
+
+            if( strtotime($start_D) < strtotime($start_P) )
+            {
+                return date('Y-m-d') . ' ' . $start_D;
+            }
+
+            return date('Y-m-d') . ' ' . $start_P;
+        }
+    }
+
     public function getSiteText($item) {
 
         if(!is_array($item)) {
@@ -127,6 +226,187 @@ class General extends CI_Model {
         }
         $array=$ret;
     }
+    
+    /**
+     * Helper for hours
+     * @param $row
+     * @return array|bool
+     */
+    private function timesForSchedule($row)
+    {
+        $time = array();
+
+        $start = strtotime($row->first_half_from);
+        $end = strtotime($row->first_half_to);
+
+        $time_is_over = true;
+
+        if( $row->timing_for === 'D' )
+        {
+            $delivery_time = $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value;
+
+            $start += (integer) $delivery_time * 60;
+        }
+
+        if( (integer) date('i', $start) === 0 )
+        {
+            $start = strtotime(date('G', $start) . ':00');
+        }
+        else if( ( (integer) date('i', $start) > 0 ) && 
+            ( (integer) date('i', $start) <= 15 ) )
+        {
+            $start = strtotime(date('G', $start) . ':15');
+        }
+        else if( ( (integer) date('i', $start) > 15 ) && 
+            ( (integer) date('i', $start) <= 30 ) )
+        {
+            $start = strtotime(date('G', $start) . ':30');
+        }
+        else if( ( (integer) date('i', $start) > 30 ) && 
+            ( (integer) date('i', $start) <= 45 ) )
+        {
+            $start = strtotime(date('G', $start) . ':45');
+        }
+        else
+        {
+            $h = date('G', $start);
+
+            $h++;
+
+            $start = strtotime($h . ':00');
+        }
+
+        if( (integer) date('i', $end) === 0 )
+        {
+            $end = strtotime(date('G', $end) . ':00');
+        }
+        else if( ( (integer) date('i', $end) > 0 ) && 
+            ( (integer) date('i', $end) <= 15 ) )
+        {
+            $end = strtotime(date('G', $end) . ':15');
+        }
+        else if( ( (integer) date('i', $end) > 15 ) && 
+            ( (integer) date('i', $end) <= 30 ) )
+        {
+            $end = strtotime(date('G', $end) . ':30');
+        }
+        else if( ( (integer) date('i', $end) > 30 ) && 
+            ( (integer) date('i', $end) <= 45 ) )
+        {
+            $end = strtotime(date('G', $end) . ':45');
+        }
+        else
+        {
+            $h = date('G', $end);
+
+            $h++;
+
+            $end = strtotime($h . ':00');
+        }
+
+        $time_is_over = ( $time_is_over && ( time() > $end ) );
+
+        while( $start <= $end )
+        {
+            if( date('d') === date('d', $start) )
+            {
+                $time[date('H:i', $start)] = date('g:i a', $start);
+            }
+            else
+            {
+                $time['24:00'] = '12:00 pm';
+            }
+
+            $start = $start + 900;
+        }
+
+        $start = strtotime($row->second_half_from);
+        $end = strtotime($row->second_half_to);
+
+        if( $row->timing_for === 'D' )
+        {
+            $delivery_time = $this->db->where('type', 'delivery_time')->get('sitesetting')->row()->value;
+
+            $start += (integer) $delivery_time * 60;
+        }
+
+        if( (integer) date('i', $start) === 0 )
+        {
+            $start = strtotime(date('G', $start) . ':00');
+        }
+        else if( ( (integer) date('i', $start) > 0 ) && 
+            ( (integer) date('i', $start) <= 15 ) )
+        {
+            $start = strtotime(date('G', $start) . ':15');
+        }
+        else if( ( (integer) date('i', $start) > 15 ) && 
+            ( (integer) date('i', $start) <= 30 ) )
+        {
+            $start = strtotime(date('G', $start) . ':30');
+        }
+        else if( ( (integer) date('i', $start) > 30 ) && 
+            ( (integer) date('i', $start) <= 45 ) )
+        {
+            $start = strtotime(date('G', $start) . ':45');
+        }
+        else
+        {
+            $h = date('G', $start);
+
+            $h++;
+
+            $start = strtotime($h . ':00');
+        }
+
+        if( (integer) date('i', $end) === 0 )
+        {
+            $end = strtotime(date('G', $end) . ':00');
+        }
+        else if( ( (integer) date('i', $end) > 0 ) && 
+            ( (integer) date('i', $end) <= 15 ) )
+        {
+            $end = strtotime(date('G', $end) . ':15');
+        }
+        else if( ( (integer) date('i', $end) > 15 ) && 
+            ( (integer) date('i', $end) <= 30 ) )
+        {
+            $end = strtotime(date('G', $end) . ':30');
+        }
+        else if( ( (integer) date('i', $end) > 30 ) && 
+            ( (integer) date('i', $end) <= 45 ) )
+        {
+            $end = strtotime(date('G', $end) . ':45');
+        }
+        else
+        {
+            $h = date('G', $end);
+
+            $h++;
+
+            $end = strtotime($h . ':00');
+        }
+
+        $time_is_over = ( $time_is_over && ( time() > $end ) );
+
+        while( $start <= $end )
+        {
+            if( date('d') === date('d', $start) )
+            {
+                $time[date('H:i', $start)] = date('g:i a', $start);
+            }
+            else
+            {
+                $time['24:00'] = '12:00 pm';
+            }
+
+            $start = $start + 900;
+        }
+
+        $time['time_is_over'] = $time_is_over;
+
+        return $time;
+    }
+    
     /**
      * Helper for hours
      * @param $row

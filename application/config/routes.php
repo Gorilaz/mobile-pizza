@@ -49,6 +49,7 @@ $route['default_controller']            = 'page';
  */
 $route['menu']                          = 'page/menu';
 $route['my-account']                    = 'page/myaccount';
+$route['about_us']                      = 'page/staticpage/about-us';
 $route['order-again/(:num)']            = 'page/orderAgain/$1';
 $route['404_override']                  = 'page/staticpage/404';
 $route['(:num)']                        = 'page/index/$1';

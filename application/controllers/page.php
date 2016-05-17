@@ -365,13 +365,20 @@ class Page extends WMDS_Controller {
         }
         else
         {
-            $this->twiggy->set('page', array(
+            $page = array(
                 'title'         => $page->title, 
                 'data'          => $page, 
                 'backButton'    => true, 
                 'role'          => 'page', 
                 'theme'         => 'a'
-            ));
+            );
+
+            if( $name === 'about-us' )
+            {
+                $page['isAbout'] = true;
+            }
+
+            $this->twiggy->set('page', $page);
         }
 
         $this->twiggy->template('page/staticPage')->display();

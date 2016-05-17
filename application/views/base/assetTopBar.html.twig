@@ -21,4 +21,22 @@
             <a class="top-button right-button" href="{{ base_url }}login_page" data-transition="none"><i class="icon-user"></i></a>
         {% endif %}
     </div>
+    {% if isopen.isOpen != true %}
+        {% if page is not defined %}
+            {% set showWeClosed = true %}
+        {% else %}
+            {% if page.isAbout is not defined %}
+                {% set showWeClosed = true %}
+            {% else %}
+                {% set showWeClosed = false %}
+            {% endif %}
+        {% endif %}
+    {% else %}
+        {% set showWeClosed = false %}
+    {% endif %}
+    {% if showWeClosed %}
+        <div class="we-closed">
+            <a href="{{ base_url }}about_us"><p>We are currently closed. We will open again on {{ isopen.we_will_open|date('l j/n \a\t ga') }}<br />See our full schedule here.</p></a>
+        </div>
+    {% endif %}
 </div><!-- /header -->

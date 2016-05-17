@@ -1344,3 +1344,14 @@ h4.center{
     border-top: 12px solid white; 
     bottom: -20px; 
 }*/
+.we-closed {
+    background-color: #4f7928;
+}
+.we-closed a {
+    color: #ffffff !important;
+    font-size: .7em;
+    text-align: center;
+}
+.we-closed p{
+    line-height:1.2
+}

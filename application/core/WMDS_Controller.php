@@ -70,11 +70,22 @@ class WMDS_Controller extends CI_Controller {
         {
             $this->load->model('general');
 
+            $isOpenNow = $this->general->isOpenNow();
+
+            $storeOpen = array(
+                'isOpen' => $isOpenNow, 
+                'checkTime' => time()
+            );
+
+            if( empty($isOpenNow) )
+            {
+                $weWillOpen = $this->general->weWillOpen();
+
+                $storeOpen['we_will_open'] = strtotime($weWillOpen);
+            }
+
             $this->session->set_userdata(array(
-                'storeOpen' => array(
-                    'isOpen'    => $this->general->isOpenNow(), 
-                    'checkTime' => time()
-                )
+                'storeOpen' => $storeOpen
             ));
         }
 

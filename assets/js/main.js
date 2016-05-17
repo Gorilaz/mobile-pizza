@@ -1626,7 +1626,7 @@ $(document)
                 else if( $(self).attr('name') === 'delivery' )
                 {
                     /**
-                     * Home/Pickup Delivery
+                     * Home / Pickup Delivery
                      */
                     var a_process_for_preparing = $(self).val(), 
                         date = $('#date').val(), 
@@ -1706,15 +1706,15 @@ $(document)
                             if( parseFloat(rules.order_less) > 0 )
                             {
                                 showConfirm('', 'There is a $' + rules.order_less + ' fee for order less than $' + rules.min_order_amt + '. Click Ok for proceed or Cancel for keep shoping.', function() {
-                                    var discountpercet = $('#has_discount').attr('data-discountper');
+                                    var coupon = $('[name="coupon"]:checked').attr('value');
 
-                                    if( discountpercet === 'no' )
+                                    if( !!coupon )
                                     {
-                                        defaultPrice('low_amount');
+                                        discountPrice(discountpercet, 'low_amount');
                                     }
                                     else
                                     {
-                                        discountPrice(discountpercet, 'low_amount');
+                                        defaultPrice('low_amount');
                                     }
 
                                     elem.hide();
@@ -1907,21 +1907,12 @@ $(document)
 
                     if( $('#radio-choice-v-2a').is(':checked') )
                     {
-                        var totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                        if( totalAmount < parseFloat(rules.min_order_amt) )
-                        {
-                            defaultPrice('low_amount');
-                        }
-                        else
-                        {
-                            $('#low_order').addClass('hide');
-
-                            defaultPrice();
-                        }
+                        defaultPrice('low_amount');
                     }
                     else
                     {
+                        $('#low_order').addClass('hide');
+
                         defaultPrice();
                     }
                 }
@@ -1943,16 +1934,7 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            var totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                            if( totalAmount < parseFloat(rules.min_order_amt) )
-                            {
-                                discountPrice(discountpercet, 'online_low_amount');
-                            }
-                            else
-                            {
-                                discountPrice(discountpercet);
-                            }
+                            discountPrice(discountpercet, 'online_low_amount');
                         }
                         else
                         {
@@ -2014,6 +1996,7 @@ $(document)
                 showConfirm('', 'Remove voucher?', function() {
                     if( !!$('[to-applying="to-applying"]').length )
                     {
+                        // alert('1231232');
                         var self = $('[to-applying="to-applying"]'), 
                             discountpercet = $(self).data('discount');
 
@@ -2031,16 +2014,7 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            var totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                            if( totalAmount < parseFloat(rules.min_order_amt) )
-                            {
-                                discountPrice(discountpercet, 'online_low_amount');
-                            }
-                            else
-                            {
-                                discountPrice(discountpercet);
-                            }
+                            discountPrice(discountpercet, 'online_low_amount');
                         }
                         else
                         {
@@ -2060,18 +2034,7 @@ $(document)
 
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            var totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                            if( totalAmount < parseFloat(rules.min_order_amt) )
-                            {
-                                defaultPrice('low_amount');
-                            }
-                            else
-                            {
-                                $('#low_order').addClass('hide');
-
-                                defaultPrice();
-                            }
+                            defaultPrice('low_amount');
                         }
                         else
                         {
@@ -2113,18 +2076,7 @@ $(document)
                     {
                         if( $('#radio-choice-v-2a').is(':checked') )
                         {
-                            var totalAmount = parseFloat($('.order-total-price').data('value'));
-
-                            if( totalAmount < parseFloat(rules.min_order_amt) )
-                            {
-                                defaultPrice('low_amount');
-                            }
-                            else
-                            {
-                                $('#low_order').addClass('hide');
-
-                                defaultPrice();
-                            }
+                            defaultPrice('low_amount');
                         }
                         else
                         {
@@ -2207,7 +2159,7 @@ $(document)
                 $('#low_order_fee')
                     .empty()
                     .append(document.createTextNode('+$' + rules.order_less));
-
+// alert('1212123');
                 $('#low_order').removeClass('hide');
             }
 

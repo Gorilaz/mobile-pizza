@@ -114,13 +114,10 @@ class Order extends WMDS_Controller{
             {
                 $ids_parts = explode('_', $cart_item['id']);
 
-                if( isset($ids_parts[0]) && isset($ids_parts[1]) )
+                if( is_array($ids_parts) && isset($ids_parts[0]) && isset($ids_parts[1]) )
                 {
-                    $first_half_id = $ids_parts[0];
-                    $second_half_id = $ids_parts[1];
-
-                    $cart_items[$key]['first_half'] = $this->products_model->getProductById($first_half_id);
-                    $cart_items[$key]['second_half'] = $this->products_model->getProductById($second_half_id);
+                    $cart_items[$key]['first_half'] = $this->products_model->getProductById($ids_parts[0]);
+                    $cart_items[$key]['second_half'] = $this->products_model->getProductById($ids_parts[1]);
                 }
             }
             else
@@ -144,31 +141,31 @@ class Order extends WMDS_Controller{
         {
             foreach( $cart_items as $key => $cart_item )
             {
-                if( isset($half) && $half != false )
+                if( isset($half) && $half !== false )
                 {
                     $half = false;
                 }
 
-                if( $cart_item['product_type'] == 'half' )
+                if( $cart_item['product_type'] === 'half' )
                 {
                     $half = 'first';
 
                     foreach( $cart_item['options'] as $option )
                     {
-                        if( $half != 'second' && 
+                        if( $half !== 'second' && 
                             strpos(strtolower($option['name']), 'second half') !== false )
                         {
                             $half = 'second';
                         }
 
-                        if( $half == 'first' && $cart_item['first_half']->has_coupon == 1 )
+                        if( $half === 'first' && $cart_item['first_half']->has_coupon == 1 )
                         {
-                            $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                            $totalDiscount += ( ( ( (double) $option['price'] * (integer) $cart_item['qty'] ) / 100 ) * (integer) $check['couponDiscount'] );
                         }
 
-                        if( $half == 'second' && $cart_item['second_half']->has_coupon == 1 )
+                        if( $half === 'second' && $cart_item['second_half']->has_coupon == 1 )
                         {
-                            $totalDiscount += ( ( $option['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                            $totalDiscount += ( ( ( (double) $option['price'] * (integer) $cart_item['qty'] ) / 100 ) * (integer) $check['couponDiscount'] );
                         }
                     }
                 }
@@ -176,7 +173,7 @@ class Order extends WMDS_Controller{
                 {
                     if( $cart_item['coupon'] == 1 )
                     {
-                        $totalDiscount += ( ( (double) $cart_item['price'] / 100 ) * (integer) $check['couponDiscount'] );
+                        $totalDiscount += ( ( ( (double) $cart_item['price'] * (integer) $cart_item['qty'] ) / 100 ) * (integer) $check['couponDiscount'] );
                     }
                 }
             }

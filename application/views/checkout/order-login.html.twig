@@ -38,39 +38,44 @@
                             {% if half is defined and half != false %}
                                 {% set half = false %}
                             {% endif %}
+
                             {% if cart_item.product_type == 'half' %}
                                 {% set half = 'first' %}
-                                {% set total = ( total + cart_item.prod_price ) %}
+
+                                {% set total = ( total + ( cart_item.prod_price * cart_item.qty ) ) %}
+
                                 {% for option in cart_item.options %}
                                     {% if half != 'second' and 'second half' in option.name|lower %}
                                         {% set half = 'second' %}
                                     {% endif %}
+
                                     {% if half == 'first' and cart_item.first_half.has_coupon == 1 %}
-                                        {% set discount = ( ( option.price / 100 ) * coupon.discount ) %}
+                                        {% set discount = ( ( ( option.price * cart_item.qty ) / 100 ) * coupon.discount ) %}
                                         {% set totalDiscount = ( totalDiscount + discount ) %}
-                                        {% set total = ( total + ( option.price - discount ) ) %}
+                                        {% set total = ( total + ( ( option.price * cart_item.qty ) - discount ) ) %}
                                     {% else %}
                                         {% if half == 'first' %}
-                                            {% set total = ( total + option.price ) %}
+                                            {% set total = ( total + ( option.price * cart_item.qty ) ) %}
                                         {% endif %}
                                     {% endif %}
+
                                     {% if half == 'second' and cart_item.second_half.has_coupon == 1 %}
-                                        {% set discount = ( ( option.price / 100 ) * coupon.discount ) %}
+                                        {% set discount = ( ( ( option.price * cart_item.qty ) / 100 ) * coupon.discount ) %}
                                         {% set totalDiscount = ( totalDiscount + discount ) %}
-                                        {% set total = ( total + ( option.price - discount ) ) %}
+                                        {% set total = ( total + ( ( option.price * cart_item.qty ) - discount ) ) %}
                                     {% else %}
                                         {% if half == 'second' %}
-                                            {% set total = ( total + option.price ) %}
+                                            {% set total = ( total + ( option.price * cart_item.qty ) ) %}
                                         {% endif %}
                                     {% endif %}
                                 {% endfor%}
                             {% else %}
                                 {% if cart_item.coupon == 1 %}
-                                    {% set discount = ( ( cart_item.subtotal / 100 ) * coupon.discount ) %}
+                                    {% set discount = ( ( ( cart_item.price * cart_item.qty ) / 100 ) * coupon.discount ) %}
                                     {% set totalDiscount = ( totalDiscount + discount ) %}
-                                    {% set total = ( total + ( cart_item.subtotal - discount ) ) %}
+                                    {% set total = ( total + ( ( cart_item.price * cart_item.qty ) - discount ) ) %}
                                 {% else %}
-                                    {% set total = ( total + cart_item.subtotal ) %}
+                                    {% set total = ( total + ( cart_item.price * cart_item.qty ) ) %}
                                 {% endif %}
                             {% endif %}
                         {% endfor %}

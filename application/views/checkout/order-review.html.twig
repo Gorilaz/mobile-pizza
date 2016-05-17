@@ -47,7 +47,7 @@
                                 {% if item.points is defined %}
                                     <td class="order-price"></td>
                                 {% else %}
-                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-value="' ~ item.prod_price ~ '"' }}{% endif %}>${{ item.prod_price }}</td>
+                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-qty="' ~ item.qty ~ '" data-value="' ~ item.prod_price ~ '"' }}{% endif %}>${{ item.prod_price }}</td>
                                 {% endif %}
                             </tr>
 

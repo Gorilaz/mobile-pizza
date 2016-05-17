@@ -2011,7 +2011,6 @@ $(document)
                 showConfirm('', 'Remove voucher?', function() {
                     if( !!$('[to-applying="to-applying"]').length )
                     {
-                        // alert('1231232');
                         var self = $('[to-applying="to-applying"]'), 
                             discountpercet = $(self).data('discount');
 
@@ -2174,7 +2173,7 @@ $(document)
                 $('#low_order_fee')
                     .empty()
                     .append(document.createTextNode('+$' + rules.order_less));
-// alert('1212123');
+
                 $('#low_order').removeClass('hide');
             }
 

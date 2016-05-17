@@ -127,6 +127,8 @@ function saveOrder()
 
                 $('#errors').empty();
 
+                $.mobile.loading('hide');
+
                 showAlert('', errors);
             }
             else
@@ -136,6 +138,8 @@ function saveOrder()
         });
 
         request.fail(function(jqXHR, textStatus) {
+            $.mobile.loading('hide');
+
             showAlert('', 'Request failed: ' + textStatus);
         });
     }

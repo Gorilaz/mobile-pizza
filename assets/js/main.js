@@ -1512,6 +1512,15 @@ $(document)
                 if( !!$(anchorElement).length )
                 {
                     $(anchorElement).first().trigger('click');
+
+                    if( $('[data-role="header"]').hasClass('ui-fixed-hidden') )
+                    {
+                        $('html, body').animate({ scrollTop: $(anchorElement).offset().top }, 200);
+                    }
+                    else
+                    {
+                        $('html, body').animate({ scrollTop: ( $(anchorElement).offset().top - $('[data-role="header"]').height() ) }, 200);
+                    }
                 }
             }
         };

@@ -1723,6 +1723,8 @@ $(document)
 
                                     if( !!coupon )
                                     {
+                                        var discountpercet = coupon;
+
                                         discountPrice(discountpercet, 'low_amount');
                                     }
                                     else

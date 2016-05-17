@@ -435,6 +435,8 @@ class checkout extends WMDS_Controller {
         /** coupon */
         $check = $this->session->userdata('checkout');
 
+        $this->twiggy->set('check', $check);
+
         $logged = $this->session->userdata('logged');
 
         if(isset($check['couponName']) && isset($check['couponDiscount']))

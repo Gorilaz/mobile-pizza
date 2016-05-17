@@ -22,7 +22,22 @@
 
     <div data-role="content">
         <div class="get-space single-options">
-            {{ pg }}
+            <!-- {{ pg }} -->
+            
+            {% if check.delivery == 'D' %}
+                {% set delivery = 'Delivery for ' %}
+            {% else %}
+                {% set delivery = 'Pickup for ' %}
+            {% endif %}
+
+            {% if check.when == 'ASAP' %}
+                {% set when = 'now'|date('j/n') ~ ' ASAP' %}
+            {% else %}
+                {% set when = 'now'|date('j/n') ~ ' ' ~ check.time %}
+            {% endif %}
+
+            {{ delivery ~ when }}
+
             <!--- Start Total  --->
             <table class="ui-body-a ui-shadow table-stripe ui-responsive order-table">
                 <tbody>

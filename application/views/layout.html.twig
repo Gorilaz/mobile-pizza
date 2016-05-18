@@ -18,8 +18,8 @@
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/font-awesome/css/font-awesome.min.css" />
 
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/js/library/jquery_mobile/jquery.mobile.custom.structure.min.css" />
-        <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/jqueryMobile/pizzaBoy.min.css" />
-        <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/main.min.css" />
+        <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/jqueryMobile/pizzaBoy.css" />
+        <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/main.css" />
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/animate-custom.css" />
 
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.9.1.js"></script>#}
@@ -43,7 +43,9 @@
         <script type="text/javascript" src="{{ base_url }}assets/js/jquery_validator/additional-methods.min.js"></script>
 
         <script type="text/javascript">
+
             var desktopUrl = '{{ settings.desktop_url }}';
+
 
             $(function() {
                 FastClick.attach(document.body);
@@ -54,7 +56,9 @@
             });
 
             $.extend($.mobile, { ajaxEnabled: false });
+
         </script>
+
 
         <!-- Social Locker scripts begin here -->
         <!-- link href="{{ base_url }}assets/social_loker/css/jquery.op.sociallocker.min.css" rel="stylesheet" type="text/css" />
@@ -92,9 +96,14 @@
                 </div>
             {% endif %}
 
+
             {% block footerjs %}{% endblock %}
         </div>
 
         {% block out_datarole %}{% endblock %}
     </body>
+
+
+
+
 </html>

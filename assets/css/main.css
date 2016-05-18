@@ -410,7 +410,7 @@ form.ui-bar-c {
     font-size: 2em;
     color: #1b72d6;
    /* margin-bottom: 2.5em; */
-    margin-bottom: 1em; 
+    margin-bottom: 1em;
 }
 
 .button-login, .button-register {
@@ -1270,11 +1270,11 @@ h1 {
 
 .item-search-divider {
     padding-left: 0px!important;
-    margin-top: 0px!important;    
+    margin-top: 0px!important;
     margin-bottom: 5px!important;
 }
 li div.ui-input-search {
-    margin-top: 0px!important;    
+    margin-top: 0px!important;
 }
 .ingredients-list.ui-panel {
     background: transparent;
@@ -1282,13 +1282,13 @@ li div.ui-input-search {
 }
 
 a.panel-list span {
-    font-weight: normal!important;   
+    font-weight: normal!important;
     text-decoration: none;
-    color: #2489ce!important;   
-    font-size: 1em!important;   
+    color: #2489ce!important;
+    font-size: 1em!important;
 }
 .side-close-button.ui-li-desc {
-    font-size: 1em;   
+    font-size: 1em;
 }
 
 .side-close-button {
@@ -1310,7 +1310,7 @@ a.panel-list span {
 }
 
 .solid {
-    border: 1px solid #cccccc!important;  
+    border: 1px solid #cccccc!important;
 }
 h4.center{
     text-align: center;
@@ -1332,17 +1332,17 @@ h4.center{
 }
 /*
 .footer-help-line::before, .footer-help-line::after {
-    content: ''; 
+    content: '';
     position: absolute;
-    left: 50%; 
+    left: 50%;
     bottom: -20px;
     border: 10px solid transparent;
     border-top: 10px solid #4693f0;
 }
 
 .footer-help-line::after {
-    border-top: 12px solid white; 
-    bottom: -20px; 
+    border-top: 12px solid white;
+    bottom: -20px;
 }*/
 .we-closed {
     background-color: #4f7928;
@@ -1355,3 +1355,20 @@ h4.center{
 .we-closed p{
     line-height:1.2
 }
+
+div#when {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 25px;
+    color: #007700;
+}
+
+td#subtotal, td#delivery-fee, h4#total, td#min_order_fee, td#holiday_fee, td#payment_fee  {
+    text-align: right;
+}
+
+
+
+

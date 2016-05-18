@@ -20,23 +20,27 @@
     </script>
 
 
-    <div data-role="content">
-        <div class="get-space single-options">
-            <!-- {{ pg }} -->
-            
-            {% if check.delivery == 'D' %}
+
+    {% if check.delivery == 'D' %}
                 {% set delivery = 'Delivery for ' %}
             {% else %}
                 {% set delivery = 'Pickup for ' %}
             {% endif %}
 
             {% if check.when == 'ASAP' %}
-                {% set when = 'now'|date('j/n') ~ ' ASAP' %}
+                {% set when = ' ASAP' %}
             {% else %}
                 {% set when = 'now'|date('j/n') ~ ' ' ~ check.time %}
-            {% endif %}
+    {% endif %}
 
-            {{ delivery ~ when }}
+    <div id="when">
+        {{ delivery ~ when }}
+    </div>
+
+    <div data-role="content">
+        <div class="get-space single-options">
+            <!-- {{ pg }} -->
+
 
             <!--- Start Total  --->
             <table class="ui-body-a ui-shadow table-stripe ui-responsive order-table">
@@ -105,7 +109,7 @@
                     {% if hasDeliveryFee == 1 %}
                         <tr>
                             <td><b>Delivery Fee</b></td>
-                            <td id="delivery-fee">{% if delivery_fee is defined and delivery_fee is not empty %}+${{ delivery_fee }}{% else %}$0{% endif %}</td>
+                            <td id="delivery-fee">{% if delivery_fee is defined and delivery_fee is not empty %}+${{ delivery_fee|number_format(2, '.', ',') }}{% else %}$0.00{% endif %}</td>
                             {% if delivery_fee is defined  %}
                                 {% set total = total + delivery_fee %}
                             {% endif %}
@@ -115,7 +119,7 @@
                         <tr>
                             {% set total = total + paymentFee.value %}
                             <td><b>{{ paymentFee.name }}</b></td>
-                            <td>+${{ paymentFee.value }}</td>
+                            <td id="payment_fee">+${{ paymentFee.value|number_format(2, '.', '') }}</td>
                         </tr>
                     {% endif %}
 
@@ -123,7 +127,7 @@
                         <tr>
                             {% set total = total + low_order %}
                             <td><b>Minimum order fee</b></td>
-                            <td>+${{ low_order }}</td>
+                            <td id="min_order_fee">+${{ low_order|number_format(2, '.', ',') }}</td>
                         </tr>
                     {% endif %}
 
@@ -132,27 +136,27 @@
                             {% set holidatyPrice = ( total / 100 ) * holidayFee %}
                             {% set total = total + holidatyPrice %}
                             <td><b>Public Holiday Fee ({{ holidayFee }}%)</b></td>
-                            <td>+${{ holidatyPrice|number_format(2, '.', '') }}</td>
+                            <td id="holiday_fee">+${{ holidatyPrice|number_format(2, '.', '') }}</td>
                         </tr>
                     {% endif %}
 
                     <tr>
                         <td><h4>Total</h4></td>
-                        <td><h4 class="left">$</h4><h4 id="total">{{ total|number_format(2, '.', '') }}</h4></td>
+                        <td><h4 id="total">${{ total|number_format(2, '.', '') }}</h4></td>
                     </tr>
                 </tbody>
             </table>
         </div>
             <!-- End Total -->
         <input type="hidden" id="cc" data-cc="{%- if paymentFee is defined and paymentFee is not null -%}{{ paymentFee.value }}{%- else -%}0{%- endif -%}" >
-        
+
 
             {% if logged == 0 %}
 
                 <hr class="solid" />
-                
+
                 {% include 'login-form.html.twig' %}
-                
+
                 <div class="get-space">
                     <legend>OR:</legend>
                     <h4 class="center">Register</h4>
@@ -189,7 +193,7 @@
 
 
 {% block footerjs %}
-    
+
     <script type="text/javascript">
 
         SOCIALRETURNURL = 'payment/socialLoker';

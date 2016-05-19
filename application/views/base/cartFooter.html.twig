@@ -4,11 +4,13 @@
         <div class="value">${{ minOrder }}</div>
     </div>
     <div class="cart-center">
+    {% if sitemode_online %}
         <a class="cart-button" href="#" id="click-checkout" data-transition="none">
             <i class="icon-shopping-cart"></i>
             <em>Checkout</em>
             <span>{{ itemsNo }}</span>
         </a>
+    {% endif %}
     </div>
     <div class="cart-side cart-right after">
         <div class="text text-total">Total:</div>

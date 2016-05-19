@@ -1381,6 +1381,13 @@ h4.center{
     text-shadow:none;
 }
 
+.we-offline {
+    background-color: #cc0000;
+    text-align: center;
+    text-shadow: none;
+    color: #fff;
+}
+
 div#when {
     width: 50%;
     margin: 0 auto;

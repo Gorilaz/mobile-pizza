@@ -66,6 +66,17 @@ class WMDS_Controller extends CI_Controller {
          */
         $storeOpen = $this->session->userdata('storeOpen');
 
+        $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
+
+        $this->twiggy->set('sitemode_online', $sitemode === 'online' ? true : false);
+
+        if( $sitemode !== 'online' )
+        {
+            $offlinecontent = $this->db->select('value')->where('type', 'offlinecontent')->get('sitesetting')->row()->value;
+
+            $this->twiggy->set('offlinecontent', $offlinecontent);
+        }
+
         if( !$storeOpen || ( ( $storeOpen['checkTime'] + 300 ) < time() ) )
         {
             $this->load->model('general');

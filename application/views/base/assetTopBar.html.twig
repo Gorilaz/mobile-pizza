@@ -39,4 +39,7 @@
             <a href="{{ base_url }}about_us"><p>We are currently closed. We will open again on {{ isopen.we_will_open|date('l j/n \\a\\t ga') }}<br />See our full schedule here.</p></a>
         </div>
     {% endif %}
+    {% if sitemode_online == false %}
+        <div class="we-offline">{{ offlinecontent }}</div>
+    {% endif %}
 </div><!-- /header -->

@@ -18,6 +18,13 @@ class checkout extends WMDS_Controller {
      */
     public function index() {
 
+        $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
+
+        if( $sitemode !== 'online' )
+        {
+            redirect(base_url() . 'menu');
+        }
+
         $this->load->model('products_model');
 //        $cart = $this->cart->contents();
 //        $productsIds = array();
@@ -261,6 +268,14 @@ class checkout extends WMDS_Controller {
      */
     public function payment($socialLogin = '')
     {
+
+        $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
+
+        if( $sitemode !== 'online' )
+        {
+            redirect(base_url() . 'menu');
+        }
+
         $socialLogin = ( $socialLogin === 'socialLogin' ? true : false );
 
         $this->twiggy->set('socialLogin', $socialLogin);
@@ -811,7 +826,4 @@ class checkout extends WMDS_Controller {
             echo json_encode(array('valid' => false));
         }
     }
-
-
-
 }

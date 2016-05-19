@@ -59,7 +59,7 @@ $route['(:num)']                        = 'page/index/$1';
  */
 $route['checkout']                      = 'checkout/index';
 $route['payment']                       = 'checkout/payment';
-$route['payment/socialLoker']           = 'checkout/payment/socialLoker';
+$route['payment/socialLogin']           = 'checkout/payment/socialLogin';
 $route['checkout/getCoupons']           = 'checkout/getCoupons';
 $route['checkout/verifyMobile']         = 'checkout/verifyMobile';
 $route['checkout/verifyCode']           = 'checkout/verifyCode';

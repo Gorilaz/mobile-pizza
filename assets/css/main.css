@@ -1224,7 +1224,7 @@ h1 {
 }
 
 #tbody-orders td {
-    text-align: center;
+    /* text-align: center; */
 }
 
 #referal-div{
@@ -1251,7 +1251,6 @@ h1 {
 
 #mobile-div{
     width: 110px;
-    float: left;
 }
 #mobile-code-div{
     margin-left: 2px;
@@ -1259,9 +1258,33 @@ h1 {
 }
 
 #verify-div{
-    float: left;
-    margin-top: -7px;
     margin-left: 15px;
+}
+
+.inline-block {
+    display: inline-block;
+}
+
+.vertical-align-top {
+    vertical-align: top;
+}
+
+.vertical-align-middle {
+    vertical-align: middle;
+}
+
+.help {
+    margin-left: 15px;
+}
+
+.help span {
+    margin-left: 15px;
+    max-width: 200px;
+
+    color: #4f7928;
+    font-size: 0.9em;
+    font-weight: bold;
+    line-height: 1.2;
 }
 
 .ui-li-divider {
@@ -1370,7 +1393,3 @@ div#when {
 td#subtotal, td#delivery-fee, h4#total, td#min_order_fee, td#holiday_fee, td#payment_fee  {
     text-align: right;
 }
-
-
-
-

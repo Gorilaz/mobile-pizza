@@ -400,13 +400,17 @@ function changeMobile()
     request.done(function(data) {
         $('#form_mobile').attr('readonly', 'readonly');
 
-        $('#popupDialog').popup('open');
-
         $('#sms-code').data('final', 'yes');
 
         $('#sms-code').show();
 
-        $('#verify-btn').find('.ui-btn-text').html($('#verify-btn').data('titlefinal'));
+        $('#verify-btn').hide();
+
+        $('.help').removeClass('hide');
+
+        $('#submit-btn').removeClass('hide');
+
+        $('#popupDialog').popup('open');
     });
 
     request.fail(function(jqXHR, textStatus) {
@@ -424,24 +428,31 @@ function verifyClean()
 {
     $('#form_mobile').removeAttr('readonly');
 
-    if( $('#form_mobile').data('current') === '' )
+    $('#sms-code').data('final', 'no');
+
+    $('#sms-code').hide().val('');
+
+    if( $('#form_mobile').attr('data-current') === '' || 
+        $('#form_mobile').val() !== $('#form_mobile').attr('data-current') )
     {
         $('#verify-div').show();
+
+        $('#changeMobileNumber').addClass('hide');
     }
     else
     {
         $('#verify-div').hide();
+
+        $('#changeMobileNumber').removeClass('hide');
     }
 
     $('#sms-error-label').hide();
 
-    $('#sms-code').hide();
+    $('#verify-btn').show();
 
-    $('#sms-code').data('final', 'no');
+    $('.help').addClass('hide');
 
-    $('#sms-code').val('');
-
-    $('#verify-btn').find('.ui-btn-text').html($('#verify-btn').data('titlestart'));
+    $('#submit-btn').addClass('hide');
 
     return true;
 }
@@ -483,9 +494,9 @@ function verifyMobileBySMS()
             request.done(function(data) {
                 if( data.valid )
                 {
-                    verifyClean();
-
                     $('#form_mobile').data('current', $('#form_mobile').val());
+
+                    verifyClean();
 
                     $('#register_form').valid();
                 }
@@ -2410,11 +2421,25 @@ $(document)
             .on('click', '#log-out', function() {
                 window.location.href = '//' + window.location.host + '/logout/payment';
             })
+            .off('input', '#form_mobile')
+            .on('input', '#form_mobile', function() {
+                $('#verify-btn')[( $('#form_mobile').val().length < 10 ? 'addClass' : 'removeClass' )]('ui-disabled');
+            })
+            .off('click', '#changeMobileNumber')
+            .on('click', '#changeMobileNumber', function() {
+                $('#form_mobile').val('');
+
+                verifyClean();
+            })
             .off('click', '#verify-btn')
             /*
              * Bind click action for Verify button on profile page
              */
             .on('click', '#verify-btn', function() {
+                verifyMobileBySMS();
+            })
+            .off('click', '#submit-btn')
+            .on('click', '#submit-btn', function() {
                 verifyMobileBySMS();
             })
             .off('change', '#form_suburb')

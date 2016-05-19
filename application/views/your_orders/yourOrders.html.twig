@@ -28,7 +28,7 @@
                 </div>
                 {% elseif orders is defined %}
                 <div class="get-space single-options">
-                    <table data-role="table" data-mode="reflow" class="ui-responsive">
+                    <table id="yourOrdersTable" data-role="table" data-mode="reflow" class="ui-responsive">
                         <thead>
                             <tr id="tbl-header-yorders">
                                 <th>Date</th>
@@ -43,9 +43,9 @@
                             {% for order in orders %}
                                 {% if order.order_description is not empty %}
                             <tr class="tr-your-order">
-                                <td>{{ order.order_placement_date }}</td>
+                                <td>{{ order.order_placement_date|date('Y, F jS g:i a') }}</td>
                                 <td>{{ order.order_description }}</td>
-                                <td>{{ order.payment_amount }}</td>
+                                <td>{{ '$' ~ order.payment_amount }}</td>
                                 <td>{{ order.points_used }}</td>
                                 <td>{{ order.points_earned }}</td>
                                 <td>

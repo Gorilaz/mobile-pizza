@@ -285,12 +285,12 @@ class Order_model extends CI_Model{
      * @return mixed
      */
     public function getYourOrders($userId, $offset, $limit){
-
-        $orders = $this->db->select('order_id, order_description, payment_amount, points_earned, points_used, order_placement_date')->
-            where('userid', $userId)->
-            order_by("order_placement_date", "desc")->
-            get('mast_order', $limit, $offset)->
-        result();
+        $orders = $this->db
+                       ->select('order_id, order_description, payment_amount, points_earned, points_used, UNIX_TIMESTAMP(order_placement_date) as order_placement_date')
+                       ->where('userid', $userId)
+                       ->order_by('order_placement_date', 'desc')
+                       ->get('mast_order', $limit, $offset)
+                       ->result();
 
         return $orders;
 

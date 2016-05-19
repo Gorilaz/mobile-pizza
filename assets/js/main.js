@@ -2745,7 +2745,7 @@ $(document)
                                             )
                                             .append(
                                                 $('<td>')
-                                                    .append(document.createTextNode(order.payment_amount))
+                                                    .append(document.createTextNode('$' + order.payment_amount))
                                             )
                                             .append(
                                                 $('<td>')
@@ -2771,6 +2771,8 @@ $(document)
                             }
                         }
                     }
+
+                    $('#yourOrdersTable').table('refresh');
 
                     $('#page').data('count', data.count);
 

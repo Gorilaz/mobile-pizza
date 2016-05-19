@@ -907,37 +907,38 @@ class Order extends WMDS_Controller{
     /**
      * User Orders
      */
-    public function yourOrders(){
-
+    public function yourOrders()
+    {
         $logged = $this->session->userdata('logged');
-        if(!empty($logged)){
 
+        if( !empty($logged) )
+        {
             $offset = 0;
             $limit = 5;
 
             $orders = $this->order_model->getYourOrders($logged['userid'], $offset, $limit);
-            if($orders){
-
-
+// echo '<pre>'; var_dump($orders); echo '</pre>'; die;
+            if( $orders )
+            {
                 $this->twiggy->set('orders', $orders);
 
                 $total = $this->order_model->countYourOrders($logged['userid']);
-                if($total){
 
+                if( $total )
+                {
                     $this->twiggy->set('total', $total);
-
                 }
+
                 $this->twiggy->set('count', $limit);
             }
-
         }
 
         $this->twiggy->set('page', array(
-            'title'  => 'Your Orders',
-            'role'   => 'page',
-            'theme'  => 'a',
-            'id'     => 'your-orders',
-            'backButton'=> true,
+            'title' => 'Your Orders', 
+            'role' => 'page', 
+            'theme' => 'a', 
+            'id' => 'your-orders', 
+            'backButton' => true
         ));
 
         $this->twiggy->display('your_orders/yourOrders');
@@ -946,38 +947,44 @@ class Order extends WMDS_Controller{
     /**
      *  get orders (ajax)
      */
-    public function getAjaxOrders(){
-
+    public function getAjaxOrders()
+    {
         $logged = $this->session->userdata('logged');
-
 
         $offset = $this->input->post('count');
         $pageType = $this->input->post('page');
 
         $limit = 5;
 
-        if($pageType == 'next'){
-
+        if( $pageType == 'next' )
+        {
             $orders = $this->order_model->getYourOrders($logged['userid'], $offset, $limit);
-
-
-
-        } elseif($pageType == 'preview') {
-            if($offset == 5){
+        }
+        else if( $pageType == 'preview' )
+        {
+            if( $offset == 5 )
+            {
                 $offset = $offset - 5;
-            } else{
+            }
+            else
+            {
                 $offset = $offset - 10;
             }
 
             $orders = $this->order_model->getYourOrders($logged['userid'], $offset, $limit);
-//            $count = $offset;
         }
-        $count = $offset + $limit;
-        echo json_encode(array(
-            'orders'     => $orders,
-            'count'      => $count
-        ));
 
+        foreach( $orders as $key => $order )
+        {
+            $orders[$key]->order_placement_date = date('Y, F jS g:i a', (integer) $order->order_placement_date);
+        }
+
+        $count = $offset + $limit;
+
+        echo json_encode(array(
+            'orders' => $orders, 
+            'count' => $count
+        ));
     }
 
  //VV for GPRS printer - almost identical to getTextFileItemsDescription()

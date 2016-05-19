@@ -1400,3 +1400,22 @@ div#when {
 td#subtotal, td#delivery-fee, h4#total, td#min_order_fee, td#holiday_fee, td#payment_fee  {
     text-align: right;
 }
+
+@media (max-width: 35em) {
+    .mar.ovfl-hidden {
+        display: inline-block;
+    }
+
+    td > .mar.ovfl-hidden:not(:empty):not(:last-child):after {
+        display: inline-block;
+        content: '>'; /* \2794 */
+    }
+
+    .fl, .fr {
+        display: inline-block;
+    }
+}
+
+tr.tr-your-order:nth-child(odd) {
+    background-color: #ececec;
+}

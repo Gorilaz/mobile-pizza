@@ -77,7 +77,7 @@
                     {% include ('base/assetTopBar.html.twig') %}
                 {% endif %}
             {% endif %}
-
+{{ 'now'|date('Y-m-d H:i') }}
             {% block content %}{% endblock %}
 
             {% if page.backButton is defined and page.backButton %}

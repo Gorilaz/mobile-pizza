@@ -9,9 +9,6 @@ nbproject
 *.log
 application/logs/*
 application/cache/*
-templates/printer_files/*
 application/config/*
-templates/gmap/*
-templates/pdf/*
-templates/qrcode/*
+templates/*
 !.gitkeep

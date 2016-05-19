@@ -3,13 +3,13 @@
 {% block content %}
 
     <script type="text/javascript">
-        var schedule = {{ schedule.forJquery }}, 
-            time_is_over = {{ time_is_over }}, 
+        var schedule = {{ schedule.forJquery }},
+            time_is_over = {{ time_is_over }},
             {% if start_time is defined and start_time != false %}
-                start_time = '{{ start_time }}', 
+                start_time = '{{ start_time }}',
             {% endif %}
-            current_time = '{{ 'now'|date('H:i') }}', 
-            rules    = {{ rules }}, 
+            current_time = '{{ 'now'|date('H:i') }}',
+            rules    = {{ rules }},
             time     = {{ date().timestamp * 1000 }};
     </script>
 
@@ -42,12 +42,12 @@
 
                             <tr class="{% if item.points is not defined %}{{ 'order-subtotal without-border-bottom ' }}{% endif %}item-{{ item.rowid }}">
                                 <td class="order-item">
-                                    <h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2>
+                                    <h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal|number_format(2, '.', ',') }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2>
                                 </td>
                                 {% if item.points is defined %}
                                     <td class="order-price"></td>
                                 {% else %}
-                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-qty="' ~ item.qty ~ '" data-value="' ~ item.prod_price ~ '"' }}{% endif %}>${{ item.prod_price }} x {{ item.qty }}</td>
+                                    <td class="order-price"{% if half is defined and half != false %}{{ ' data-qty="' ~ item.qty ~ '" data-value="' ~ item.prod_price|number_format(2, '.', ',') ~ '"' }}{% endif %}>${{ item.prod_price|number_format(2, '.', ',') }}</td>
                                 {% endif %}
                             </tr>
 
@@ -61,7 +61,7 @@
                                 {% endif %}
                                 <tr class="{% if half is defined and half != false %}{{ 'order-subtotal without-border-bottom ' }}{% endif %}item-{{ item.rowid }}">
                                     <td class="order-item order-item-padded">{{ option.name }}</td>
-                                    <td class="order-price"{% if half is defined and half != false %}{% if half == 'first' %}{{ ' data-coupon="' ~ item.first_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% elseif half == 'second' %}{{ ' data-coupon="' ~ item.second_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% endif %}{% endif %}>{% if option.price %} ${{ option.price }} x {{ item.qty }} {% endif %}</td>
+                                    <td class="order-price"{% if half is defined and half != false %}{% if half == 'first' %}{{ ' data-coupon="' ~ item.first_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% elseif half == 'second' %}{{ ' data-coupon="' ~ item.second_half.has_coupon ~ '" data-qty="' ~ item.qty ~ '" data-value="' ~ option.price ~ '"' }}{% endif %}{% endif %}>{% if option.price %} ${{ option.price|number_format(2, '.', ',') }} {% endif %}</td>
                                 </tr>
                             {% endfor %}
 
@@ -75,10 +75,10 @@
 
                                 {% if item.points is defined %}
                                     <td class="order-item">Total points</td>
-                                    <td class="order-price">{{ item.points }} x {{ item.qty }}</td>
+                                    <td class="order-price">{{ item.points }}</td>
                                 {% else %}
                                     <td class="order-item">Total</td>
-                                    <td class="order-price"{% if half is not defined or half == false %}{{ ' data-coupon="' ~ productsWithCoupon[item.id] ~ '" data-value="' ~ item.subtotal ~ '"' }}{%endif%}>$ {{ item.subtotal }}</td>
+                                    <td class="order-price"{% if half is not defined or half == false %}{{ ' data-coupon="' ~ productsWithCoupon[item.id] ~ '" data-value="' ~ item.subtotal ~ '"' }}{%endif%}>$ {{ item.subtotal|number_format(2, '.', ',') }}</td>
                                 {% endif %}
                             </tr>
 
@@ -165,9 +165,9 @@
                             <tr class="order-total">
                                 <td class="order-item">Total inc GST</td>
                             {% if holidayFee is defined %}
-                                    <td class="order-price order-total-price" data-default="{{ total }}" data-value="{{ total+holidayFee.price }}">$ {{ total+holidayFee.price }}</td>
+                                    <td class="order-price order-total-price" data-default="{{ total|number_format(2, '.', ',') }}" data-value="{{ total+holidayFee.price }}">$ {{ total+holidayFee.price  }}</td>
                             {% else %}
-                                <td class="order-price order-total-price" data-default="{{ total }}" data-value="{{ total }}">$ {{ total }}</td>
+                                <td class="order-price order-total-price" data-default="{{ total|number_format(2, '.', ',') }}" data-value="{{ total }}">$ {{ total }}</td>
                             {% endif %}
                             </tr>
 
@@ -295,7 +295,7 @@
     {% if itemsNo != 0 %}
     <div class="footer-help-line" id="id-footer-help-line" data-position="fixed" style="display:none;">&nbsp;</div>
     <div data-role="footer" data-position="fixed" id="checkout-footer">
-        
+
         {#<a class="btn btn-blue" id="checkout" href="#" data-transition="slide">#}
             {#Checkout#}
             {#<span class="right-arrow-icon"></span>#}

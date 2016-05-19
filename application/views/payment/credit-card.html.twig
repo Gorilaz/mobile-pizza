@@ -1,7 +1,7 @@
 {% extends 'layout.html.twig' %}
 
 {% block content %}
-    {#<form id="form-credit" action="{{ base_url }}payment/Do_direct_payment" method="post">#}
+    {#<form id="form-credit" action="{{ base_url }}payment/Do-direct-payment" method="post">#}
     <form id="form-credit" >
         <div data-role="content">
             <div class="get-space">
@@ -134,7 +134,7 @@
             $('#send-card').click(function(){
                 if($('#form-credit').valid()){
                     var request = $.ajax({
-                        url: '//' + location.host + '/payment/Do_direct_payment',
+                        url: '//' + location.host + '/payment/Do-direct-payment',
                         type: "POST",
                         data: $('#form-credit').serialize(),
                         dataType: "json"

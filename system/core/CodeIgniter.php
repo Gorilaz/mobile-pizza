@@ -269,9 +269,9 @@
 		OR in_array(strtolower($method), array_map('strtolower', get_class_methods('CI_Controller')))
 		)
 	{
-		if ( ! empty($RTR->routes['404_override']))
+		if ( ! empty($RTR->routes['404-override']))
 		{
-			$x = explode('/', $RTR->routes['404_override']);
+			$x = explode('/', $RTR->routes['404-override']);
 			$class = $x[0];
 			$method = (isset($x[1]) ? $x[1] : 'index');
 			if ( ! class_exists($class))
@@ -331,9 +331,9 @@
 		if ( ! in_array(strtolower($method), array_map('strtolower', get_class_methods($CI))))
 		{
 			// Check and see if we are using a 404 override and use it.
-			if ( ! empty($RTR->routes['404_override']))
+			if ( ! empty($RTR->routes['404-override']))
 			{
-				$x = explode('/', $RTR->routes['404_override']);
+				$x = explode('/', $RTR->routes['404-override']);
 				$class = $x[0];
 				$method = (isset($x[1]) ? $x[1] : 'index');
 				if ( ! class_exists($class))

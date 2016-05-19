@@ -59,7 +59,7 @@ function checkLoginStatus(response) {
     if(response && response.status == 'connected') {
         FB.api('/me?fields=id,name,first_name,last_name,email', function(me) {
             $.ajax({
-                url: '//' + location.host + '/security/facebook_login',
+                url: '//' + location.host + '/security/facebook-login',
                 data: me,
                 type: 'POST',
                 dataType: 'json',
@@ -126,7 +126,7 @@ function googlePlusloginCallback(result)
                             { name: "email", value: email}
                            ];
             $.ajax({
-                url: '//' + location.host + '/security/googleplus_login',
+                url: '//' + location.host + '/security/googleplus-login',
                 data: formdata,
                 type: "POST",
                 dataType: 'json',

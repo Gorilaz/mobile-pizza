@@ -49,9 +49,8 @@ $route['default_controller']            = 'page';
  */
 $route['menu']                          = 'page/menu';
 $route['my-account']                    = 'page/myaccount';
-$route['about_us']                      = 'page/staticpage/about-us';
 $route['order-again/(:num)']            = 'page/orderAgain/$1';
-$route['404_override']                  = 'page/staticpage/404';
+$route['404-override']                  = 'page/staticpage/404';
 $route['(:num)']                        = 'page/index/$1';
 
 /**
@@ -77,19 +76,19 @@ $route['paypal/succes']                 = 'paypal/succes';
  * Set routes for payment controller
  */
 $route['credit-card']                   = 'payment/credit_card';
-$route['payment/Do_direct_payment']     = 'payment/Do_direct_payment';
+$route['payment/Do-direct-payment']     = 'payment/Do_direct_payment';
 
 /**
  * Set routes for order controller
  */
 $route['orders']                        = 'order/yourOrders';
-$route['order/save_order/(:any)']       = 'order/save_order/$1';
+$route['order/save-order/(:any)']       = 'order/save_order/$1';
 $route['order/getAjaxOrders']           = 'order/getAjaxOrders';
 
 /**
  * Set routes for security controller
  */
-$route['login_page']                    = 'security/login_page';
+$route['login-page']                    = 'security/login_page';
 $route['change-password/(:any)']        = 'security/changePassword/$1';
 $route['security/save']                 = 'security/save';
 $route['security-edit']                 = 'security/edit';
@@ -101,8 +100,8 @@ $route['logout/(:any)']                 = 'security/logout/$1';
 $route['security/checkValidEmail']      = 'security/checkValidEmail';
 $route['security/savePassword']         = 'security/savePassword';
 $route['reset']                         = 'security/reset';
-$route['security/googleplus_login']     = 'security/googleplus_login';
-$route['security/facebook_login']       = 'security/facebook_login';
+$route['security/googleplus-login']     = 'security/googleplus_login';
+$route['security/facebook-login']       = 'security/facebook_login';
 
 /**
  * Set routes for social controller

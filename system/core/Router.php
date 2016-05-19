@@ -286,9 +286,9 @@ class CI_Router {
 				// Does the requested controller exist in the sub-folder?
 				if ( ! file_exists(APPPATH.'controllers/'.$this->fetch_directory().$segments[0].'.php'))
 				{
-					if ( ! empty($this->routes['404_override']))
+					if ( ! empty($this->routes['404-override']))
 					{
-						$x = explode('/', $this->routes['404_override']);
+						$x = explode('/', $this->routes['404-override']);
 
 						$this->set_directory('');
 						$this->set_class($x[0]);
@@ -333,9 +333,9 @@ class CI_Router {
 
 		// If we've gotten this far it means that the URI does not correlate to a valid
 		// controller class.  We will now see if there is an override
-		if ( ! empty($this->routes['404_override']))
+		if ( ! empty($this->routes['404-override']))
 		{
-			$x = explode('/', $this->routes['404_override']);
+			$x = explode('/', $this->routes['404-override']);
 
 			$this->set_class($x[0]);
 			$this->set_method(isset($x[1]) ? $x[1] : 'index');

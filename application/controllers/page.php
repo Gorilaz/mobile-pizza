@@ -74,7 +74,7 @@ class Page extends WMDS_Controller {
                 }
                 else
                 {
-                    redirect(base_url() . '404_override');
+                    redirect(base_url() . '404-override');
                 }
             }
 

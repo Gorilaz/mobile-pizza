@@ -102,7 +102,7 @@ function saveOrder()
         var request = $.ajax({
             data: $('#form-credit').serialize(), 
             dataType: 'json', 
-            url: '//' + window.location.host + '/payment/Do_direct_payment', 
+            url: '//' + window.location.host + '/payment/Do-direct-payment', 
             type: 'POST'
         });
 
@@ -133,7 +133,7 @@ function saveOrder()
             }
             else
             {
-                window.location.href = '//' + window.location.host + '/order/save_order/credit';
+                window.location.href = '//' + window.location.host + '/order/save-order/credit';
             }
         });
 
@@ -145,11 +145,11 @@ function saveOrder()
     }
     else if( pg === 'cash' )
     {
-        window.location.href = '//' + window.location.host + '/order/save_order/cash';
+        window.location.href = '//' + window.location.host + '/order/save-order/cash';
     }
     else if( pg === 'paypal' )
     {
-        window.location.href = '//' + window.location.host + '/order/save_order/paypal';
+        window.location.href = '//' + window.location.host + '/order/save-order/paypal';
     }
 }
 // saveOrder
@@ -2674,7 +2674,7 @@ $(document)
                     });
 
                     request.done(function(data) {
-                       window.location.href = '//' + window.location.host + '/login_page';
+                       window.location.href = '//' + window.location.host + '/login-page';
                     });
 
                     request.fail(function(jqXHR, textStatus) {
@@ -2810,7 +2810,7 @@ $(document)
     .off('pageinit', '#security-login')
     /***********************************************************************************************************************
      * Your Account
-     * @url /login_page
+     * @url /login-page
      **********************************************************************************************************************/
     .on('pageinit', '#security-login', function() {
         $(document)

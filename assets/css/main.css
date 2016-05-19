@@ -560,7 +560,7 @@ form.ui-bar-c {
 
 /** Helpers ----------------------------------------------------------------------------------------------------------*/
 .get-space {
-    padding: 15px;
+    padding: 0px 10px 5px 10px;
 }
 .clear-heights {
     padding-top: 0;

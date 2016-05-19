@@ -44,11 +44,9 @@
                     </div>
                 {% endif %}
 
-                <h1>Select Category</h1>
-
                 <!-- Search products holder -->
                 <div class="menu-products get-space">
-                    <ul data-role="listview" data-inset="true" data-filter="true" data-filter-reveal="true" data-filter-placeholder="Search products and ingredients..." data-theme="b" data-content-theme="b">
+                    <ul data-role="listview" data-inset="true" data-filter="true" data-filter-reveal="true" data-filter-placeholder="Search by title or ingredient..." data-theme="b" data-content-theme="b">
                         {% for cat in products %}
 
                             {% for prod in cat.items %}

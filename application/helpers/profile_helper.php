@@ -124,9 +124,9 @@ if ( !function_exists('saveProfile') )
             {
                 return array('status' => 'error');
             }
-
-            unset($user['mobile_code']);
         }
+
+        unset($user['mobile_code']);
 
         $obj->load->model('security_model');
 

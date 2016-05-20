@@ -101,8 +101,8 @@ class Page extends WMDS_Controller {
     /**
      * Menu page - List all Categories and Products
      */
-    public function menu() {
-
+    public function menu()
+    {
         $pageContent = $this->general->getSiteText('promotion_text');
 
         $this->twiggy->set('promoText', $pageContent);
@@ -110,8 +110,10 @@ class Page extends WMDS_Controller {
         /**
          * Do we have to add an item to cart?
          */
-        if($this->input->post()) {
+        if( $this->input->post() )
+        {
             $productIngredients = array();
+
             $options = array();
 
             parse_str($this->input->post('general'), $post);
@@ -121,33 +123,37 @@ class Page extends WMDS_Controller {
             /**
              * Case: Half Pizza Order
              */
-            if(isset($post['halfPizza']) && $post['halfPizza'] > 0) {
+            if( !empty($post['halfPizza']) )
+            {
                 $product = $this->products_model->getItemByVariation($post['variation']);
-                if($ingredients && count($ingredients) > 0) {
-                    $productIngredients = $this->products_model->getIngredientsByVariation($post['variation']);
 
+                if( $ingredients && count($ingredients) > 0 )
+                {
+                    $productIngredients = $this->products_model->getIngredientsByVariation($post['variation']);
                 }
 
                 $product2 = $this->products_model->getItemByVariation($post['halfPizza']);
-                if($ingredients2 && count($ingredients2) > 0) {
+
+                if( $ingredients2 && count($ingredients2) > 0 )
+                {
                     $productIngredients2 = $this->products_model->getIngredientsByVariation($post['halfPizza']);
                 }
 
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product'       => $product,
-                        'ingredients'   => array(
-                            'all'           => $productIngredients,
-                            'selected'      => (isset($ingredients['ingredient']))?$ingredients['ingredient']:'',
-                        ),
-                        'product2'       => $product2,
-                        'ingredients2'   => array(
-                            'all'           => $productIngredients2,
-                            'selected'      => (isset($ingredients2['ingredient']))?$ingredients2['ingredient']:'',
-                        ),
-                        'details'       => $post
-                    ),
+                        'product' => $product, 
+                        'ingredients' => array(
+                            'all' => $productIngredients, 
+                            'selected' => isset($ingredients['ingredient']) ? $ingredients['ingredient'] : ''
+                        ), 
+                        'product2' => $product2, 
+                        'ingredients2' => array(
+                            'all' => $productIngredients2, 
+                            'selected' => isset($ingredients2['ingredient']) ? $ingredients2['ingredient'] : ''
+                        ), 
+                        'details' => $post
+                    ), 
                     'half'
                 ));
             }
@@ -155,24 +161,25 @@ class Page extends WMDS_Controller {
             /**
              * Case: Products With Variations
              */
-            elseif(isset($post['variation']) && !is_array($post['variation'])) {
+            else if( isset($post['variation']) && !is_array($post['variation']) )
+            {
                 $product = $this->products_model->getItemByVariation($post['variation']);
-                if($ingredients && count($ingredients) > 0) {
+
+                if( $ingredients && count($ingredients) > 0 )
+                {
                     $productIngredients = $this->products_model->getIngredientsByVariation($post['variation']);
                 }
-
-//                print_r($ingredients);
 
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product'       => $product,
-                        'ingredients'   => array(
-                            'all'           => $productIngredients,
-                            'selected'      => (isset($ingredients['ingredient']))?$ingredients['ingredient']:''
-                        ),
-                        'details'       => $post
-                    ),
+                        'product' => $product, 
+                        'ingredients' => array(
+                            'all' => $productIngredients, 
+                            'selected' => isset($ingredients['ingredient']) ? $ingredients['ingredient'] : ''
+                        ), 
+                        'details' => $post
+                    ), 
                     'single'
                 ));
             }
@@ -180,19 +187,21 @@ class Page extends WMDS_Controller {
             /**
              * Case: Deal Order
              */
-            elseif(isset($post['variation']) && is_array($post['variation'])) {
+            else if( isset($post['variation']) && is_array($post['variation']) )
+            {
                 $product = $this->products_model->getProductById($post['pid']);
 
-                foreach($post['variation'] as $key => $variation) {
+                foreach( $post['variation'] as $key => $variation )
+                {
                     $options[$key] = $this->products_model->getItemByVariation($variation);
                 }
 
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product'       => $product,
-                        'details'       => $post,
-                        'options'       => $options
-                    ),
+                        'product' => $product, 
+                        'details' => $post, 
+                        'options' => $options
+                    ), 
                     'deal'
                 ));
             }
@@ -200,27 +209,28 @@ class Page extends WMDS_Controller {
             /**
              * Case: Simple Products
              */
-            else {
+            else
+            {
                 $product = $this->products_model->getProductById($post['pid']);
 
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product'       => $product,
-                        'details'       => $post
-                    ),
+                        'product' => $product, 
+                        'details' => $post
+                    ), 
                     'single'
                 ));
             }
         }
 
-
-
         /**
          * Clear cart - came in GET from checkout page
          */
-        if($this->input->get('action') == 'clear-cart') {
+        if( $this->input->get('action') === 'clear-cart' )
+        {
             $this->cart->destroy();
+
             $this->twiggy->set('notice', 'Your cart is now empty');
         }
 
@@ -228,44 +238,50 @@ class Page extends WMDS_Controller {
 
         $products = array();
 
-        if($products_db) {
-            foreach ($products_db as $prod) {
-                if (!isset($products[$prod->category_id])) {
-                    $products[$prod->category_id]['category_name'] = $prod->category_name;
-                    $products[$prod->category_id]['withImage'] = ($prod->page_with_image == 'enable')?true:false;
-                } else {
+        if( $products_db )
+        {
+            foreach( $products_db as $prod )
+            {
+                if( isset($products[$prod->category_id]) )
+                {
                     $products[$prod->category_id]['items'][] = $prod;
+                }
+                else
+                {
+                    $products[$prod->category_id]['category_name'] = $prod->category_name;
+                    $products[$prod->category_id]['withImage'] = $prod->page_with_image === 'enable' ? true : false;
                 }
             }
         }
 
         /* Add loyalty products */
         $loyaltyProducts = $this->products_model->getLoyaltyProducts();
-        if($loyaltyProducts) {
+
+        if( $loyaltyProducts )
+        {
             $products['loyalty']['category_name'] = 'FREE';
-            $products['loyalty']['items']         = $loyaltyProducts;
+            $products['loyalty']['items'] = $loyaltyProducts;
         }
 
         $metas = $this->db->select('title, keywords, description')->where('pagename', 'menu')->get('tbl_meta_tags')->row();
 
         $this->twiggy->set('page', array(
-            'title'  => $metas->title,
-            'keywords' => $metas->keywords,
-            'description' => $metas->description,
-            'role'   => 'page',
-            'theme'  => 'a',
-            'id'     => 'page-menu'
-
+            'title' => $metas->title, 
+            'keywords' => $metas->keywords, 
+            'description' => $metas->description, 
+            'role' => 'page', 
+            'theme' => 'a', 
+            'id' => 'page-menu'
         ));
 
         $this->twiggy->set('products', $products);
+
         /* Set Cart Variables */
         $this->twiggy->set(array(
-                'itemsNo'   => $this->cart->total_items(),
-                'total'     => $this->cart->total(),
-                'minOrder'  => $this->order_model->getMinimumOrder()
-            )
-        );
+            'itemsNo' => $this->cart->total_items(), 
+            'total' => $this->cart->total(), 
+            'minOrder' => $this->order_model->getMinimumOrder()
+        ));
 
         $this->twiggy->template('page/menu')->display();
     }
@@ -682,46 +698,52 @@ class Page extends WMDS_Controller {
     /**
      * Helper - Formats data to insert into the cart object
      */
-    private function formatDataForCart($data = array(), $type) {
-
+    private function formatDataForCart($data = array(), $type)
+    {
         $order = array();
 
-        if($data['product']) {
-            switch($type) {
+        if( $data['product'] )
+        {
+            switch( $type )
+            {
                 case 'single':
                     $orderDetails = $this->formatPriceAndOptions($data);
 
                     /* deal with loyalty program - buy with points */
-                    if($data['details']['buyWithPoints'] == 1) {
+                    if( empty($data['details']['buyWithPoints']) )
+                    {
                         $order = array(
-                            'id'        => $data['product']->product_id,
-                            'name'      => $data['product']->product_name,
-                            'price'     => (float)0,
-                            'prod_price'=> (float)0,
-                            'points'    => $data['product']->product_points*$data['details']['p-quantity'],
-                            'prod_points'=>$data['product']->product_points,
-                            'qty'       => $data['details']['p-quantity'],
-                            'options'   => $orderDetails['options'],
-                            'ingredient_ids' => $orderDetails['ingredient_ids'],
-                            'instruction'    => $data['details']['textarea'],
-                            'half_pizza_group_id' => 0,
-                            'variation_id'        => $data['details']['variation'],
-                            'product_type'        => 'single'
+                            'id' => $data['product']->product_id, 
+                            'name' => $data['product']->product_name, 
+                            'price' => $orderDetails['price'], 
+                            'prod_price' => $data['product']->product_price, 
+                            'qty' => $data['details']['p-quantity'], 
+                            'options' => $orderDetails['options'], 
+                            'ingredient_ids' => $orderDetails['ingredient_ids'], 
+                            'instruction' => $data['details']['textarea'], 
+                            'half_pizza_group_id' => 0, 
+                            'product_type' => 'single'
                         );
                     } else {
                         $order = array(
-                            'id'        => $data['product']->product_id,
-                            'name'      => $data['product']->product_name,
-                            'price'     => $orderDetails['price'],
-                            'prod_price'=> $data['product']->product_price,
-                            'qty'       => $data['details']['p-quantity'],
-                            'options'   => $orderDetails['options'],
-                            'ingredient_ids' => $orderDetails['ingredient_ids'],
-                            'instruction'    => $data['details']['textarea'],
-                            'half_pizza_group_id' => 0,
-                            'variation_id'        => $data['details']['variation'],
-                            'product_type'        => 'single'
+                            'id' => $data['product']->product_id, 
+                            'name' => $data['product']->product_name, 
+                            'price' => (float) 0, 
+                            'prod_price' => (float) 0, 
+                            'points' => $data['product']->product_points * $data['details']['p-quantity'], 
+                            'prod_points' => $data['product']->product_points, 
+                            'qty' => $data['details']['p-quantity'], 
+                            'options' => $orderDetails['options'], 
+                            'ingredient_ids' => $orderDetails['ingredient_ids'], 
+                            'instruction' => $data['details']['textarea'], 
+                            'half_pizza_group_id' => 0, 
+                            'product_type' => 'single'
                         );
+                    }
+
+                    if( !empty($data['details']['variation']) )
+                    {
+                        $order['variation_id'] = $data['details']['variation'];
                     }
 
                     break;

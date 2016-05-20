@@ -237,14 +237,16 @@ function signInRequest(obj)
     request.done(function(data) {
         if( data.login === 'true' )
         {
-            if( type === 'order' )
-            {
-                window.location.href = '//' + window.location.host + '/payment';
-            }
-            else
-            {
-                window.location.href = '//' + window.location.host + '/menu';
-            }
+            // if( type === 'order' )
+            // {
+            //     window.location.href = '//' + window.location.host + '/payment';
+            // }
+            // else
+            // {
+            //     window.location.href = '//' + window.location.host + '/menu';
+            // }
+
+            window.location.reload();
         }
         else if( data.login === 'required fields' )
         {
@@ -577,7 +579,7 @@ function convertToSlug(Text)
 {
     return Text
         .toLowerCase()
-        .replace(/ /g,'_')
+        .replace(/ /g,'-')
         .replace(/[^\w-]+/g,'');
 }
 

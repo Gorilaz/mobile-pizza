@@ -1,14 +1,12 @@
 
 if( typeof SOCIALRETURNURL == 'string' )
 {
-    if( SOCIALRETURNURL == '' )
+    if( SOCIALRETURNURL != '' )
     {
-        SOCIALRETURNURL = '//' + location.host + '/menu';
-    } else {
         SOCIALRETURNURL = '//' + location.host + '/' + SOCIALRETURNURL;
     }
 } else {
-    SOCIALRETURNURL = '//' + location.host + '/menu';
+    SOCIALRETURNURL = '';
 }
 
 
@@ -74,7 +72,14 @@ function checkLoginStatus(response) {
                         if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );
                         } else {
-                            window.location.href = SOCIALRETURNURL;
+                            if( !!SOCIALRETURNURL )
+                            {
+                                window.location.href = SOCIALRETURNURL;
+                            }
+                            else
+                            {
+                                window.location.reload();
+                            }
                         }
                     }
                 },
@@ -141,7 +146,14 @@ function googlePlusloginCallback(result)
                         if( result.error != '' ) {
                             showAlert( 'Authorization', result.error );
                         } else {
-                            window.location.href = SOCIALRETURNURL;
+                            if( !!SOCIALRETURNURL )
+                            {
+                                window.location.href = SOCIALRETURNURL;
+                            }
+                            else
+                            {
+                                window.location.reload();
+                            }
                         }
                     }
                 },

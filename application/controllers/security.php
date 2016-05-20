@@ -109,7 +109,7 @@ class Security extends WMDS_Controller {
             $out = prepareProfilePage($this->twiggy);
             $out->display('account/login');
         } else {
-            redirect(base_url() . 'menu');
+            redirect(base_url() . 'my-account');
         }
     } // login_page
 

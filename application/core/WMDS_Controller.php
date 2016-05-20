@@ -14,7 +14,7 @@ class WMDS_Controller extends CI_Controller {
         /** Set Twig Global Variables */
         $this->twiggy
             ->set('base_url', $this->config->base_url())
-            ->set('current_url', uri_string())
+            ->set('current_url', current_url())
             ->set('author', 'WMD Solution Romania');
 
         if( $this->config->item('sms_service') === 'telerivet' )

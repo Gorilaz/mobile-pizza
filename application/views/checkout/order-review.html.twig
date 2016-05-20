@@ -42,7 +42,7 @@
 
                             <tr class="{% if item.points is not defined %}{{ 'order-subtotal without-border-bottom ' }}{% endif %}item-{{ item.rowid }}">
                                 <td class="order-item">
-                                    <h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal|number_format(2, '.', ',') }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.name }}</h2>
+                                    <h2><a href="#" class="remove-order-item" data-id="{{ item.rowid }}" data-value="{{ item.subtotal|number_format(2, '.', ',') }}" data-title="{{ item.name }}"><i class="icon-remove-sign"></i></a> {{ item.qty ~ ' &Cross; ' ~ item.name }}</h2>
                                 </td>
                                 {% if item.points is defined %}
                                     <td class="order-price"></td>
@@ -51,9 +51,9 @@
                                 {% endif %}
                             </tr>
 
-                            <tr class="item-{{ item.rowid }}">
+                            <!-- tr class="item-{{ item.rowid }}">
                                 <td colspan="2" class=" order-item-padded">Qty: {{ item.qty }}</td>
-                            </tr>
+                            </tr -->
 
                             {% for option in item.options %}
                                 {% if half is defined and half != false and 'second half' in option.name|lower %}

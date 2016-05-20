@@ -169,39 +169,43 @@ class Payment extends WMDS_Controller{
 //            'OrderItems' => $OrderItems
 //            'Secure3D' => $Secure3D
         );
+
         $PayPalResult = $this->paypal_pro->DoDirectPayment($PayPalRequestData);
 
-        if(!$this->paypal_pro->APICallSuccessful($PayPalResult['ACK']))
+        if( empty($PayPalResult['ACK']) )
         {
+            echo json_encode(array(
+                'error' => true, 
+                'message' => array(
+                    'Internal Server Error'
+                )
+            ));
 
-            $errors = array('Errors'=>$PayPalResult['ERRORS']);
+            return;
+        }
+
+        if( $this->paypal_pro->APICallSuccessful($PayPalResult['ACK']) )
+        {
+            echo json_encode(array('error' => false));
+        }
+        else
+        {
+            $errors = array('Errors' => $PayPalResult['ERRORS']);
+
             $message = array();
-            foreach ($errors as $e) {
-                foreach ($e as $m) {
-                    $message[] = $m['L_LONGMESSAGE'];
 
+            foreach( $errors as $e )
+            {
+                foreach( $e as $m )
+                {
+                    $message[] = $m['L_LONGMESSAGE'];
                 }
             }
 
             echo json_encode(array(
-                'error' => true,
+                'error' => true, 
                 'message' => $message
             ));
-
-//            $this->load->view('paypal_error',$errors);
         }
-        else
-        {
-
-            echo json_encode(array(
-                'error' => false
-            ));
-//            echo '<pre>';
-//                print_r($PayPalResult);
-//            echo '</pre>';
-//            die;
-            // Successful call.  Load view or whatever you need to do here.
-        }
-
     }
 }

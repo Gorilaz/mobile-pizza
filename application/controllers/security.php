@@ -280,27 +280,43 @@ class Security extends WMDS_Controller {
     public function save()
     {
         $user = $this->input->post();
+
         $this->load->helper('profile');
+
         unset($user['paypal']);
-        if( 
-            isset($user['address']) && !empty($user['address'])
-            && isset($user['suburb']) && !empty($user['suburb']) 
-            && isset($user['mobile']) && !empty($user['mobile'])
-          )
+
+        if( empty($user['address']) || 
+            empty($user['suburb']) || 
+            empty($user['mobile']) )
         {
-            saveProfile( $user );
-            $this->session->unset_userdata('backToLogin');
-            $firstPointLogin = $this->session->userdata('firstPointLogin');
-            if( $firstPointLogin )
-            {
-                $this->session->unset_userdata('firstPointLogin');
-                echo $firstPointLogin;
-            } else {
-                echo 'error';
-            }
-        } else {
             echo 'error';
+
+            return;
         }
+
+        $saveProfile = saveProfile($user);
+
+        if( $saveProfile['status'] !== 'success' )
+        {
+            echo $saveProfile['status'];
+
+            return;
+        }
+
+        $this->session->unset_userdata('backToLogin');
+
+        $firstPointLogin = $this->session->userdata('firstPointLogin');
+
+        if( empty($firstPointLogin) )
+        {
+            echo 'error';
+
+            return;
+        }
+
+        $this->session->unset_userdata('firstPointLogin');
+
+        echo $firstPointLogin;
     } // save
 
     public function checkUniqueEmail(){

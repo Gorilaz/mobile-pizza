@@ -4,6 +4,24 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
+        {% if og is defined %}
+            {% if og.title is defined %}
+                <meta name="og:title" content="{{ og.title }}" />
+            {% endif %}
+            {% if og.type is defined %}
+                <meta name="og:type" content="{{ og.type }}" />
+                {% if og.type == 'product' %}
+                    
+                {% endif %}
+            {% endif %}
+            {% if og.image is defined %}
+                <meta name="og:image" content="{{ og.image }}" />
+            {% endif %}
+            {% if og.url is defined %}
+                <meta name="og:url" content="{{ og.url }}" />
+            {% endif %}
+        {% endif %}
+
         {% if page.keywords is defined %}
             <meta name="keywords" content="{{ page.keywords }}" />
         {% endif %}
@@ -81,7 +99,7 @@
                     {% include ('base/assetTopBar.html.twig') %}
                 {% endif %}
             {% endif %}
-{{ 'now'|date('Y-m-d H:i') }}
+
             {% block content %}{% endblock %}
 
             {% if page.backButton is defined and page.backButton %}

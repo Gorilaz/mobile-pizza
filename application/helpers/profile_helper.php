@@ -41,66 +41,117 @@ if ( !function_exists('prepareProfilePage') )
 
 if ( !function_exists('saveProfile') )
 {
-    function saveProfile( $user )
+    function saveProfile($user)
     {
         $temp = time();
-        unset($user['mobile_code']);
 
         $obj =& get_instance();
-        if(
-                isset($user['conf_password']) 
-                && isset($user['password']) 
-                && ( $user['conf_password'] === $user['password'] )
-          )
+
+        if( isset($user['password']) && 
+            isset($user['conf_password']) && 
+            ( $user['password'] === $user['conf_password'] ) )
         {
             unset($user['conf_password']);
+
             $user['password'] = md5($user['password']);
         }
+
+        $obj->load->library('session');
+
         if( $obj->session->userdata('backToLogin') )
         {
             $user['password'] = md5($temp);
         }
-        if( isset($user['password']) && !isset($user['base_password']) )
+
+        if( isset($user['password']) && 
+            !isset($user['base_password']) )
         {
             $user['base_password'] = base64_encode($user['password']);
         }
-        if( isset($user['password']) && empty($user['password']) )
+
+        if( empty($user['password']) )
         {
             unset($user['password']);
             unset($user['base_password']);
         }
-        if( !isset($user['usertypeid']) )
+
+        if( empty($user['usertypeid']) )
         {
             $user['usertypeid'] = '2';
         }
-        if( !isset($user['status']) )
+
+        if( empty($user['status']) )
         {
             $user['status'] = 'active';
         }
-        if( !isset($user['delete']) )
+
+        if( empty($user['delete']) )
         {
             $user['delete'] = 0;
         }
-        if( !isset($user['signup_date']) )
+
+        if( empty($user['signup_date']) )
         {
             $user['signup_date'] = date('Y-m-d H:i:s', time());
         }
+
         $userLogged = $obj->session->userdata('logged');
-        $obj->load->model('security_model');
-        if( isset($userLogged['userid']) && intval($userLogged['userid']) > 0 )
+
+        $mobileToCheck = false;
+
+        if( empty($userLogged['mobile']) )
         {
-            $newUser = $obj->security_model->save( $user, $userLogged['userid'] );
-        } else {
+            $mobileToCheck = true;
+        }
+        else
+        {
+            if( $user['mobile'] !== (string) $userLogged['mobile'] )
+            {
+                $mobileToCheck = true;
+            }
+        }
+
+        if( $mobileToCheck )
+        {
+            $sms_code = (string) $obj->session->userdata('sms_code');
+
+            if( empty($user['mobile_code']) )
+            {
+                return array('status' => 'error');
+            }
+
+            if( $user['mobile_code'] !== $sms_code )
+            {
+                return array('status' => 'error');
+            }
+
+            unset($user['mobile_code']);
+        }
+
+        $obj->load->model('security_model');
+
+        if( empty($userLogged['userid']) )
+        {
             $obj->load->helper('cookie');
+
             $points = get_cookie('referal');
+
             delete_cookie('referal');
-            if($points)
+
+            if( $points )
             {
                 $user['order_points'] = $points;
             }
+
             $newUser = $obj->security_model->save($user, 'no_id');
         }
+        else
+        {
+            $newUser = $obj->security_model->save($user, $userLogged['userid']);
+        }
+
         $obj->session->set_userdata('logged', $newUser);
-        return true;
+
+        return array('status' => 'success');
     } // saveProfile
 }

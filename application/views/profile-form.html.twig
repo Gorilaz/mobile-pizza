@@ -61,7 +61,7 @@
                         <label for="email">Email: </label>
                     </div>
                     <div class="ui-block-b">
-                        <input type="email" name="email" class="required email" {%- if logged is defined and logged != 0 -%} readonly="readonly" {%- endif -%} id="email" value="{%- if logged.email is defined -%} {{ logged.email }}{%- endif -%}" />
+                        <input type="email" name="email" class="required email" {%- if logged is defined and logged.email is defined -%} readonly="readonly" {%- endif -%} id="email" value="{%- if logged.email is defined -%}{{ logged.email }}{%- endif -%}" />
                     </div>
                 </div>
                     
@@ -92,8 +92,7 @@
                     </div>
                     <div class="ui-block-b" >
                         <div id="mobile-div" class="inline-block vertical-align-top">
-                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}" />
-                            <a href="#" data-role="button" data-inline="true" id="changeMobileNumber"{% if logged.mobile == false %}{{ ' class="hide"' }}{% endif %}>Change Mobile<br />Number</a>
+                            <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}"{% if logged.mobile %}{{ ' readonly="readonly"' }}{% endif %} />
                         </div>
                         <div id="verify-div" class="inline-block vertical-align-top" style="display: none;">
                             <div class="inline-block vertical-align-middle">
@@ -107,11 +106,11 @@
                                 <a href="#" data-role="button" data-inline="true" id="verify-btn"{% if logged.mobile == false %}{{ ' class="ui-disabled"' }}{% endif %}>Verify</a>
                             </div>
                             <div class="inline-block vertical-align-middle">
-                                <a href="#" data-role="button" data-inline="true" id="submit-btn" class="hide">Submit</a>
-                            </div>
-                            <div class="inline-block vertical-align-middle">
                                 <label for="form_mobile_code" id="sms-error-label" class="error" style="margin-left: 10px; margin-top: 15px; display: none;">Incorect Verification code</label>
                             </div>
+                        </div>
+                        <div class="inline-block vertical-align-middle">
+                            <a href="#" data-role="button" data-inline="true" id="changeMobileNumber"{% if logged.mobile == false %}{{ ' class="hide"' }}{% endif %}>Change Mobile<br />Number</a>
                         </div>
                     </div>
                 </div>

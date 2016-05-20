@@ -311,12 +311,13 @@ function prepareProfileFormValidation()
         /*
          * Custom validate function for check mobile number
          */
-        $.validator.addMethod('smsVerification', function(value, element) {
+        /* $.validator.addMethod('smsVerification', function(value, element) {
             var sms = $('#sms').data('sms');
 
             if( sms === 'enable' )
             {
-                if( $('#form_mobile').data('current') !== $('#form_mobile').val() )
+                if( $('#form_mobile').attr('data-current') !== '' && 
+                    $('#form_mobile').val() !== $('#form_mobile').attr('data-current') && false )
                 {
                     $('#verify-div').show();
 
@@ -329,7 +330,7 @@ function prepareProfileFormValidation()
             }
 
             return true;
-        }, 'You need to verify this mobile number');
+        }, 'You need to verify this mobile number'); */
 
         /*
          * Activate validation for profile form
@@ -360,8 +361,8 @@ function prepareProfileFormValidation()
                     maxlength: 10, 
                     minlength: 10, 
                     digits: true, 
-                    remote: '//' + window.location.host + '/security/checkUniqueMobile', 
-                    smsVerification: true
+                    remote: '//' + window.location.host + '/security/checkUniqueMobile'/* , 
+                    smsVerification: true */
                 }
             }, 
             messages: {
@@ -410,7 +411,7 @@ function changeMobile()
 
         $('.help').removeClass('hide');
 
-        $('#submit-btn').removeClass('hide');
+        $('#changeMobileNumber').removeClass('hide');
 
         $('#popupDialog').popup('open');
     });
@@ -453,8 +454,6 @@ function verifyClean()
     $('#verify-btn').show();
 
     $('.help').addClass('hide');
-
-    $('#submit-btn').addClass('hide');
 
     return true;
 }
@@ -2440,10 +2439,6 @@ $(document)
             .on('click', '#verify-btn', function() {
                 verifyMobileBySMS();
             })
-            .off('click', '#submit-btn')
-            .on('click', '#submit-btn', function() {
-                verifyMobileBySMS();
-            })
             .off('change', '#form_suburb')
             /*
              * Change suburb, calculate total
@@ -2840,6 +2835,12 @@ $(document)
         
 
         $(document)
+            .off('click', '#changeMobileNumber')
+            .on('click', '#changeMobileNumber', function() {
+                $('#form_mobile').val('');
+
+                verifyClean();
+            })
             .off('click', '#verify-btn')
             /*
              * Bind click action for Verify button on profile page

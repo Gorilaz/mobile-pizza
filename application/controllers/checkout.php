@@ -462,7 +462,16 @@ class checkout extends WMDS_Controller {
         {
             $hasCoupon = true;
 
-            if( ( $check['couponName'] ===  'FIRSTORDER' ) && !empty($logged) )
+            if( empty($logged) || 
+                empty($logged['userid']) || 
+                $check['couponName'] !== 'FIRSTORDER' )
+            {
+                $this->twiggy->set('coupon', array(
+                    'name' => $check['couponName'], 
+                    'discount' => $check['couponDiscount']
+                ));
+            }
+            else
             {
                 $this->load->model('products_model');
 
@@ -487,13 +496,6 @@ class checkout extends WMDS_Controller {
                         'discount' => $check['couponDiscount']
                     ));
                 }
-            }
-            else
-            {
-                $this->twiggy->set('coupon', array(
-                    'name' => $check['couponName'], 
-                    'discount' => $check['couponDiscount']
-                ));
             }
         }
 
@@ -757,7 +759,16 @@ class checkout extends WMDS_Controller {
         /* -- */
 
         $user = $this->session->userdata('logged');
-        $user['new_mobile'] = $post['mobile'];
+
+        if( is_array($user) )
+        {
+            $user['new_mobile'] = $post['mobile'];
+        }
+        else
+        {
+            $user = array('new_mobile' => $post['mobile']);
+        }
+
         $this->session->set_userdata('logged', $user);
 
         $message = $mail_content->message;

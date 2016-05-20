@@ -651,7 +651,7 @@ h1 {
 }
 .menu-products .ui-collapsible-content {
     padding: 0;
-    margin: 0;
+    margin: -1px;
 }
 .menu-products .ui-collapsible-content ul{
     padding: 0;
@@ -1418,4 +1418,25 @@ td#subtotal, td#delivery-fee, h4#total, td#min_order_fee, td#holiday_fee, td#pay
 
 tr.tr-your-order:nth-child(odd) {
     background-color: #ececec;
+}
+
+
+a#loginButton {
+    width: 49%;
+    float: left;
+}
+
+a#googleLoginButton {
+    width: 49%;
+    float: right;
+}
+
+legend {
+    width: 50%;
+    margin: 0 auto;
+    text-align: center;
+}
+
+label.ui-input-text, label {
+    line-height: 2.9;
 }

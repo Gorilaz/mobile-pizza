@@ -55,9 +55,9 @@
                                        data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
                                         {% if cat.withImage %}
                                             {% if prod.product_image is not empty  %}
-                                                <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                                <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ prod.product_image }}" />
                                             {% else %}
-                                                <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                                <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/no_prod_image.png" />
                                             {% endif %}
                                         {% endif %}
                                         <h2>{{ prod.product_name }}</h2>
@@ -95,9 +95,9 @@
 
                                                 {% if settings.loyalty_page == 'enable' %}
                                                     {% if prod.product_image is not empty  %}
-                                                        <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                                        <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ prod.product_image }}" />
                                                     {% else %}
-                                                        <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                                        <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/no_prod_image.png" />
                                                     {% endif %}
                                                 {% endif %}
 
@@ -134,9 +134,9 @@
                                                    data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
                                                     {% if cat.withImage %}
                                                         {% if prod.product_image is not empty  %}
-                                                            <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/{{ prod.product_image }}" />
+                                                            <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ prod.product_image }}" />
                                                         {% else %}
-                                                            <img src="{{ settings.desktop_url }}templates/demotest/uploads/products/thumb/no_prod_image.png" />
+                                                            <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/no_prod_image.png" />
                                                         {% endif %}
                                                     {% endif %}
                                                 <h2>{{ prod.product_name }}</h2>

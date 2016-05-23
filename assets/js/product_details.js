@@ -306,13 +306,13 @@ $(function(){
                 $('#menu-page #full-image').html('');
                 if(product.product_image){
                     var header = '<a href="#dialog-image" data-rel="popup" data-position-to="window">' +
-                                 '<img style="margin: auto;width: 40%;" src="'+'//' + location.host + '/templates/demotest/uploads/products/thumb/' + product.product_image + '"/>' +
+                                 '<img style="margin: auto;width: 40%;" src="'+'//' + location.host + '/templates/' + templateFolder + '/uploads/products/thumb/' + product.product_image + '"/>' +
                                  '</a>' +
                                  '<span>'+product.description+'</span>';
                     $('#menu-page #img-thumb').html(header);
 
                     var full_name = product.product_image.slice(0, -4);
-                    var full_image = '<img src="'+'//' + location.host + '/templates/demotest/uploads/products/' + full_name + '"/>' +
+                    var full_image = '<img src="'+'//' + location.host + '/templates/' + templateFolder + '/uploads/products/' + full_name + '"/>' +
                                     '<span>'+product.description+'</span>';
                     $('#menu-page #full-image').html(full_image);
                 }

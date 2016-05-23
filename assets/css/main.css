@@ -34,7 +34,9 @@ form.ui-bar-c {
 .main-background-image {
     height: 100%;
     width: 100%;
+    /*
     background-image: url(../images/disposal/pizza_bg.png);
+    */
     background-repeat: no-repeat;
     background-position: top center;
     background-size: 100%;
@@ -159,12 +161,16 @@ form.ui-bar-c {
     left: 50%;
     top:0;
 }
+
 .top-bar-title > a {
     display: block;
+    /*
     background-image: url(../images/disposal/smal-circular-logo.png);
+    */
     background-position: left center;
     background-repeat: no-repeat;
     background-size: 1.5em auto;
+
     padding-left: 1.7em;
     font-size: 1.5em;
     font-weight: 500;
@@ -176,6 +182,7 @@ form.ui-bar-c {
     position: relative;
     margin-left: -50%;
 }
+
 .top-button {
     text-shadow: none;
     color: #fff !important;
@@ -1439,4 +1446,12 @@ legend {
 
 label.ui-input-text, label {
     line-height: 2.9;
+}
+
+span.ui-btn-inner {
+    line-height: 1.7;
+}
+
+.ui-btn.ui-shadow.ui-btn-corner-all.ui-mini.ui-btn-icon-right.ui-btn-up-a {
+    margin: 0px;
 }

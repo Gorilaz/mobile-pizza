@@ -11,7 +11,7 @@
             {% if og.type is defined %}
                 <meta name="og:type" content="{{ og.type }}" />
                 {% if og.type == 'product' %}
-                    
+
                 {% endif %}
             {% endif %}
             {% if og.image is defined %}
@@ -38,6 +38,8 @@
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/js/library/jquery_mobile/jquery.mobile.custom.structure.min.css" />
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/jqueryMobile/pizzaBoy.css" />
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/main.css" />
+
+
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/animate-custom.css" />
 
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.9.1.js"></script>#}
@@ -63,7 +65,7 @@
         <script type="text/javascript">
 
             var desktopUrl = '{{ settings.desktop_url }}';
-
+            var templateFolder = '{{ settings.TEMPLATEDIR|lower }}';
 
             $(function() {
                 FastClick.attach(document.body);
@@ -119,9 +121,15 @@
         </div>
 
         {% block out_datarole %}{% endblock %}
+
+
     </body>
 
+    <script type="text/javascript">
 
+        $('.main-background-image').css('background-image','url(\'' + desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/pizza_bg.png\')');
 
+        $('.top-bar-title > a ').css('background-image','url(\'' + desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/smal-circular-logo.png\')');
+    </script>
 
 </html>

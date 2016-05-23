@@ -5,7 +5,7 @@
 
 /*
  * Show fancy alert
- * 
+ *
  * @param {string} title Title of popup.
  * @param {string} description Description of popup.
  * @returns none
@@ -37,7 +37,7 @@ function showAlert( title, description )
 
 /*
  * Show fancy confirm
- * 
+ *
  * @param {string} title Title of popup.
  * @param {string} description Description of popup.
  * @param {function} ok Ok callback.
@@ -89,30 +89,30 @@ function showConfirm( title, description, ok, cancel )
 
 /*
  * Select payment method and pay
- * 
+ *
  * @returns none
  */
 function saveOrder()
 {
     var pg = $('#pg').data('pg');
 
-    if( pg === 'credit-card' && 
+    if( pg === 'credit-card' &&
         $('#form-credit').valid() )
     {
         var request = $.ajax({
-            data: $('#form-credit').serialize(), 
-            dataType: 'json', 
-            url: '//' + window.location.host + '/payment/Do-direct-payment', 
+            data: $('#form-credit').serialize(),
+            dataType: 'json',
+            url: '//' + window.location.host + '/payment/Do-direct-payment',
             type: 'POST'
         });
 
         request.done(function(data) {
-            /* 
+            /*
              * TODO: Need to review this strange code
              */
             if( !!data.error )
             {
-                var message, messageIndex, 
+                var message, messageIndex,
                     errors = '';
 
                 for( messageIndex in data.message )
@@ -156,7 +156,7 @@ function saveOrder()
 
 /*
  * Ajax submit profile form and route
- * 
+ *
  * @returns none
  */
 function saveForm(action)
@@ -164,15 +164,15 @@ function saveForm(action)
     action = action || '';
 
     $.mobile.loading('show', {
-        textVisible: false, 
-        theme: 'a', 
-        textonly: false, 
+        textVisible: false,
+        theme: 'a',
+        textonly: false,
         html: ''
     });
 
     var request = $.ajax({
-        data: $('#register_form').serialize(), 
-        type: 'POST', 
+        data: $('#register_form').serialize(),
+        type: 'POST',
         url: '//' + window.location.host + '/security/save'
     });
 
@@ -208,29 +208,29 @@ function saveForm(action)
 
 /*
  * Sign In process by standart login form
- * 
+ *
  * @param object obj
  * @returns none
  */
 function signInRequest(obj)
 {
     $.mobile.loading('show', {
-        textVisible: false, 
-        theme: 'a', 
-        textonly: false, 
+        textVisible: false,
+        theme: 'a',
+        textonly: false,
         html: ''
     });
 
-    var user = $('#user').val(), 
-        pass = $('#pass').val(), 
-        type = $(obj).attr('data-position'), 
+    var user = $('#user').val(),
+        pass = $('#pass').val(),
+        type = $(obj).attr('data-position'),
         request = $.ajax({
             data: {
-                user: user, 
+                user: user,
                 pass: pass
-            }, 
-            dataType: 'json', 
-            type: 'POST', 
+            },
+            dataType: 'json',
+            type: 'POST',
             url: '//' + window.location.host + '/security/login'
         });
 
@@ -272,7 +272,7 @@ function signInRequest(obj)
 
 /*
  * Apply for login form validation schem
- * 
+ *
  * @returns bool
  */
 function prepareLoginFormValidation()
@@ -282,11 +282,11 @@ function prepareLoginFormValidation()
         $('#form-singin').validate({
             rules: {
                 user: {
-                    required: true, 
+                    required: true,
                     email: true
-                }, 
+                },
                 pass: {
-                    required: true, 
+                    required: true,
                     minlength: 5
                 }
             }
@@ -301,7 +301,7 @@ function prepareLoginFormValidation()
 
 /*
  * Apply for profile form validation schem
- * 
+ *
  * @returns bool
  */
 function prepareProfileFormValidation()
@@ -316,7 +316,7 @@ function prepareProfileFormValidation()
 
             if( sms === 'enable' )
             {
-                if( $('#form_mobile').attr('data-current') !== '' && 
+                if( $('#form_mobile').attr('data-current') !== '' &&
                     $('#form_mobile').val() !== $('#form_mobile').attr('data-current') && false )
                 {
                     $('#verify-div').show();
@@ -337,34 +337,34 @@ function prepareProfileFormValidation()
          */
         $('#register_form').validate({
             rules: {
-                first_name: 'required', 
-                last_name: 'required', 
-                address: 'required', 
+                first_name: 'required',
+                last_name: 'required',
+                address: 'required',
                 email: {
-                    required: true, 
-                    email: true, 
+                    required: true,
+                    email: true,
                     remote: '//' + window.location.host + '/security/checkUniqueEmail'
-                }, 
+                },
                 password: {
-                    required: true, 
+                    required: true,
                     minlength: 5
-                }, 
+                },
                 conf_password: {
-                    required: true, 
-                    equalTo: '#form_password', 
+                    required: true,
+                    equalTo: '#form_password',
                     minlength: 5
-                }, 
-                suburb: 'required', 
-                state: 'required', 
+                },
+                suburb: 'required',
+                state: 'required',
                 mobile: {
-                    required: true, 
-                    maxlength: 10, 
-                    minlength: 10, 
-                    digits: true, 
-                    remote: '//' + window.location.host + '/security/checkUniqueMobile'/* , 
+                    required: true,
+                    maxlength: 10,
+                    minlength: 10,
+                    digits: true,
+                    remote: '//' + window.location.host + '/security/checkUniqueMobile'/* ,
                     smsVerification: true */
                 }
-            }, 
+            },
             messages: {
                 mobile: {
                     remote: 'The mobile number already used'
@@ -385,18 +385,18 @@ function prepareProfileFormValidation()
  */
 function changeMobile()
 {
-    var fname   = $('#form_firstname').val(), 
-        lname   = $('#form_lastname').val(), 
-        email   = $('#email').val(), 
-        mobile  = $('#form_mobile').val(), 
+    var fname   = $('#form_firstname').val(),
+        lname   = $('#form_lastname').val(),
+        email   = $('#email').val(),
+        mobile  = $('#form_mobile').val(),
         request = $.ajax({
             data: {
-                mobile : mobile, 
-                email : email, 
-                fname : fname, 
+                mobile : mobile,
+                email : email,
+                fname : fname,
                 lname : lname
-            }, 
-            type: 'POST', 
+            },
+            type: 'POST',
             url: '//' + window.location.host + '/checkout/verifyMobile'
         });
 
@@ -424,7 +424,7 @@ function changeMobile()
 
 /*
  * Clear profile template to default point
- * 
+ *
  * @returns true
  */
 function verifyClean()
@@ -435,7 +435,7 @@ function verifyClean()
 
     $('#sms-code').hide().val('');
 
-    if( $('#form_mobile').attr('data-current') === '' || 
+    if( $('#form_mobile').attr('data-current') === '' ||
         $('#form_mobile').val() !== $('#form_mobile').attr('data-current') )
     {
         $('#verify-div').show();
@@ -461,9 +461,9 @@ function verifyClean()
 
 /*
  * Two ways
- * - one for get sms code, 
+ * - one for get sms code,
  * - two for validate mobile number
- * 
+ *
  * @returns none
  */
 function verifyMobileBySMS()
@@ -486,9 +486,9 @@ function verifyMobileBySMS()
             var request = $.ajax({
                 data: {
                     code: code
-                }, 
-                dataType: 'json', 
-                type: 'POST', 
+                },
+                dataType: 'json',
+                type: 'POST',
                 url: '//' + window.location.host + '/checkout/verifyCode'
             });
 
@@ -523,7 +523,7 @@ helpIntervalForFooterLine = null;
 
 /*
  * Show / Hide help box for footer buttons
- * 
+ *
  * @param jquery obj lineObj
  * @returns true - show or false - hide
  */
@@ -604,7 +604,7 @@ $(document)
     .on('pageinit', '#page-product', function() {
         /**
          * Resize ingredients panels
-         * 
+         *
          * @param string id
          * @returns none
          */
@@ -613,8 +613,8 @@ $(document)
             id = id || 'ingredients';
 
             $('#' + id + ' .ingredients-list:not(.fixed)')
-                .outerHeight($(window).outerHeight() - 
-                    $('#' + id + ' .ingredients-list.fixed').outerHeight() - 
+                .outerHeight($(window).outerHeight() -
+                    $('#' + id + ' .ingredients-list.fixed').outerHeight() -
                     $('#' + id).find('[id*="doneBtnForRightPanelingredients"]').find('.side-close-button').height());
         }
         // resizeIngredients
@@ -632,7 +632,7 @@ $(document)
                     resizeIngredients('ingredients2');
                 }
 
-                if( ( $(window).height() > window.before_resize ) && 
+                if( ( $(window).height() > window.before_resize ) &&
                     $(document.activeElement).is('.searchIngredientsId') )
                 {
                     var event; // The custom event that will be created
@@ -668,8 +668,8 @@ $(document)
          **/
         function initHalfOrder()
         {
-            var sizeOption = $('select[data-type="Size"]').find('option').filter(':selected'), 
-                halfGroup = sizeOption.data('half-group'), 
+            var sizeOption = $('select[data-type="Size"]').find('option').filter(':selected'),
+                halfGroup = sizeOption.data('half-group'),
                 halfPrice = sizeOption.data('half-fee');
 
             if( typeof(halfGroup) === 'undefined' )
@@ -711,7 +711,7 @@ $(document)
 
                         if( typeof(halfs[halfGroup]) !== 'undefined' )
                         {
-                            var halfItem, halfItemIndex, halfItems = halfs[halfGroup], 
+                            var halfItem, halfItemIndex, halfItems = halfs[halfGroup],
                                 halfItemPrice;
 
                             for( halfItemIndex in halfItems )
@@ -726,7 +726,7 @@ $(document)
                                         $('<option>')
                                             .append(document.createTextNode(halfItem.product_name + ' - ($' + ( halfItemPrice / 2 ) + ')'))
                                             .attr({
-                                                'data-price': halfItemPrice, 
+                                                'data-price': halfItemPrice,
                                                 'value': halfItem.variation_id
                                             })
                                     );
@@ -737,10 +737,10 @@ $(document)
                         return options;
                     })())
                     .attr({
-                        'data-mini': 'true', 
-                        'data-type': 'halfoption', 
-                        'data-variation': halfGroup, 
-                        'id': 'halfPizzaSelector', 
+                        'data-mini': 'true',
+                        'data-type': 'halfoption',
+                        'data-variation': halfGroup,
+                        'id': 'halfPizzaSelector',
                         'name': 'halfPizza'
                     });
 
@@ -762,8 +762,8 @@ $(document)
             if( parseFloat($('#buyWithPoints').val()) === 1 )
             {
                 /* Payment via loyalty points */
-                var initialPrice = parseFloat($('#p-footer').data('price')), 
-                    quantity = parseFloat($('#p-quantity').val()), 
+                var initialPrice = parseFloat($('#p-footer').data('price')),
+                    quantity = parseFloat($('#p-quantity').val()),
                     total = ( initialPrice * quantity );
 
                 $('#p-total')
@@ -773,9 +773,9 @@ $(document)
             else
             {
                 /* Normal Payment */
-                var initialPrice = parseFloat($('#p-footer').data('price')), 
-                    quantity = parseFloat($('#p-quantity').val()), 
-                    calculate, calculateIndex, calculates = $('.calculate').get(), 
+                var initialPrice = parseFloat($('#p-footer').data('price')),
+                    quantity = parseFloat($('#p-quantity').val()),
+                    calculate, calculateIndex, calculates = $('.calculate').get(),
                     p_ingredient, p_ingredientIndex, p_ingredients = $('.p-ingredient').get();
 
                 for( calculateIndex in calculates )
@@ -803,7 +803,7 @@ $(document)
 
                         if( parseFloat($(p_ingredient).data('default')) === 1 )
                         {
-                            // 
+                            //
                         }
                         else
                         {
@@ -859,7 +859,7 @@ $(document)
                 variationId = $('select[name="variation"]:last').val();
             }
 
-            if( typeof(pizzaNo) === 'undefined' || 
+            if( typeof(pizzaNo) === 'undefined' ||
                 parseFloat(pizzaNo) === 1 )
             {
                 pizzaNo = 1;
@@ -872,7 +872,7 @@ $(document)
             }
 
             $.ajax({
-                context: document.body, 
+                context: document.body,
                 url: '/get/ingredients/' + variationId
             })
             .complete(function() {
@@ -954,8 +954,8 @@ $(document)
                         $('<ul>')
                             .addClass('ingredients-list fixed')
                             .attr({
-                                'data-divider-theme': 'c', 
-                                'data-inset': 'true', 
+                                'data-divider-theme': 'c',
+                                'data-inset': 'true',
                                 'data-role': 'listview'
                             })
                     )
@@ -963,15 +963,15 @@ $(document)
                         $('<ul>')
                             .addClass('ingredients-list')
                             .attr({
-                                'data-divider-theme': 'c', 
-                                'data-inset': 'true', 
+                                'data-divider-theme': 'c',
+                                'data-inset': 'true',
                                 'data-role': 'listview'
                             })
                     )
                     .attr({
                         'data-pizza': pizzaNo
-                    }), 
-                    contentFixed = new Array, 
+                    }),
+                    contentFixed = new Array,
                     contentExtra = new Array;
 
                 if( !!data )
@@ -981,7 +981,7 @@ $(document)
                         /**
                          * Included items comes as a single array
                          */
-                        var items = data['included'], 
+                        var items = data['included'],
                             type = 'included';
 
                         contentFixed.push(
@@ -1003,7 +1003,7 @@ $(document)
                                         })
                                         .append(
                                             (function() {
-                                                var item, key, 
+                                                var item, key,
                                                     returnedBy = new Array;
 
                                                 for( key in items )
@@ -1016,13 +1016,13 @@ $(document)
                                                             $('<input>')
                                                                 .addClass('p-ingredient')
                                                                 .attr({
-                                                                    'checked': 'checked', 
-                                                                    'data-default': '1', 
-                                                                    'data-price': item.price, 
-                                                                    'data-theme': 'a', 
-                                                                    'id': 'ingredient-' + item.ingredient_id, 
-                                                                    'name': 'ingredient[]', 
-                                                                    'type': 'checkbox', 
+                                                                    'checked': 'checked',
+                                                                    'data-default': '1',
+                                                                    'data-price': item.price,
+                                                                    'data-theme': 'a',
+                                                                    'id': 'ingredient-' + item.ingredient_id,
+                                                                    'name': 'ingredient[]',
+                                                                    'type': 'checkbox',
                                                                     'value': item.ingredient_id
                                                                 })
                                                         );
@@ -1051,8 +1051,8 @@ $(document)
                         /**
                          * Extra ingredients comes grouped by subcategory
                          */
-                        var items = data['extra'], 
-                            type = 'extra', 
+                        var items = data['extra'],
+                            type = 'extra',
                             ecategory, ingredients;
 
                         contentFixed.push(
@@ -1069,10 +1069,10 @@ $(document)
                                     $('<input>')
                                         .addClass('searchIngredientsId')
                                         .attr({
-                                            'data-mini': 'true', 
-                                            'data-theme': 'a', 
-                                            'name': 'searchIngredients', 
-                                            'type': 'search', 
+                                            'data-mini': 'true',
+                                            'data-theme': 'a',
+                                            'name': 'searchIngredients',
+                                            'type': 'search',
                                             'value': '',
                                             'autocomplete': 'off'
                                         })
@@ -1095,7 +1095,7 @@ $(document)
                                             $('<fieldset>')
                                                 .append(
                                                     (function() {
-                                                        var item, key, 
+                                                        var item, key,
                                                             returnedBy = new Array;
 
                                                         for( key in ingredients )
@@ -1108,15 +1108,15 @@ $(document)
                                                                     $('<input>')
                                                                         .addClass('p-ingredient')
                                                                         .attr({
-                                                                            'data-default': '0', 
-                                                                            'data-price': item.price, 
-                                                                            'data-theme': 'a', 
-                                                                            'data-value': item.ingredient_name.replace(/"/gi, '\"'), 
-                                                                            'id': 'ingredient-' + item.ingredient_id, 
-                                                                            'name': 'ingredient[]', 
-                                                                            'type': 'checkbox', 
+                                                                            'data-default': '0',
+                                                                            'data-price': item.price,
+                                                                            'data-theme': 'a',
+                                                                            'data-value': item.ingredient_name.replace(/"/gi, '\"'),
+                                                                            'id': 'ingredient-' + item.ingredient_id,
+                                                                            'name': 'ingredient[]',
+                                                                            'type': 'checkbox',
                                                                             'value': item.ingredient_id
-                                                                        }), 
+                                                                        }),
                                                                     $('<label>')
                                                                         .append(
                                                                             (function() {
@@ -1211,10 +1211,10 @@ $(document)
                                                 document.createTextNode('Done')
                                             )
                                             .attr({
-                                                'data-inline': 'true', 
-                                                'data-mini': 'true', 
-                                                'data-rel': 'close', 
-                                                'data-role': 'button', 
+                                                'data-inline': 'true',
+                                                'data-mini': 'true',
+                                                'data-rel': 'close',
+                                                'data-role': 'button',
                                                 'href': targetBlock
                                             })
                                     )
@@ -1226,14 +1226,14 @@ $(document)
 
                     content
                         .find('.ingredients-list:not(.fixed)')
-                        .outerHeight($(window).outerHeight() - 
-                            content.find('.ingredients-list.fixed').outerHeight() - 
+                        .outerHeight($(window).outerHeight() -
+                            content.find('.ingredients-list.fixed').outerHeight() -
                             $('#doneBtnForRightPanelingredients' + pizzaNo + ' .side-close-button').height());
 
                 if( data )
                 {
-                    var holder = $('.ingredientsHolder'), 
-                        link = $(holder).find('a'), 
+                    var holder = $('.ingredientsHolder'),
+                        link = $(holder).find('a'),
                         href = $(link).attr('data-href');
 
                     if( !!href )
@@ -1256,7 +1256,7 @@ $(document)
 
         /**
          * Hide or show list elements for search string
-         * 
+         *
          * @param string searchString
          * @returns true
          */
@@ -1264,7 +1264,7 @@ $(document)
         {
             $('.ui-checkbox').show();
 
-            if( typeof(searchString) !== 'undefined' && 
+            if( typeof(searchString) !== 'undefined' &&
                 !!searchString )
             {
                 $('.order-ingredients input[type=checkbox]').each(function() {
@@ -1274,7 +1274,7 @@ $(document)
                     {
                         var checked = $(this).parent().find('.ui-icon-checkbox-on');
 
-                        if( ( contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0 ) && 
+                        if( ( contentString.toLowerCase().indexOf(searchString.toLowerCase()) < 0 ) &&
                             $(checked).length == 0 )
                         {
                             $(this).parent().hide();
@@ -1305,9 +1305,9 @@ $(document)
              * Populates ingredients for half pizza
              */
             .on('change', '#halfPizzaSelector', function() {
-                var self = this, 
-                    half_pizza_group_id = parseFloat($(self).data('variation')), 
-                    variation_id = parseFloat($(self).val()), 
+                var self = this,
+                    half_pizza_group_id = parseFloat($(self).data('variation')),
+                    variation_id = parseFloat($(self).val()),
                     halfPizza = halfs[half_pizza_group_id][variation_id];
 
                 if( !!halfPizza )
@@ -1333,11 +1333,11 @@ $(document)
 
                                 if( halfPizza.product_image !== '' )
                                 {
-                                    attributes.style = 'background-image: url(\'' + desktopUrl + 'templates/demotest/uploads/products/thumb/' + halfPizza.product_image + '\')';
+                                    attributes.style = 'background-image: url(\'' + desktopUrl + 'templates/'+ templateFolder + '/uploads/products/thumb/' + halfPizza.product_image + '\')';
                                 }
 
                                 return attributes;
-                            })()), 
+                            })()),
                         $('<div>')
                             .addClass('single-options get-space clear-heights')
                             .append(
@@ -1387,8 +1387,8 @@ $(document)
                 /* In case is a loyalty add to cart, check if user is logged in and that he
                  * has enough points
                  */
-                if( parseFloat($('#buyWithPoints').val()) === 1 && 
-                    ( parseFloat($('#buyWithPoints').data('user')) !== 1 || 
+                if( parseFloat($('#buyWithPoints').val()) === 1 &&
+                    ( parseFloat($('#buyWithPoints').data('user')) !== 1 ||
                         parseFloat($('#buyWithPoints').data('points')) < parseFloat($('#p-total').html()) ) )
                 {
                     showAlert('', 'You have to be logged in and have enough points to buy this item!');
@@ -1401,29 +1401,29 @@ $(document)
                         .append(
                             $('<input>')
                                 .attr({
-                                    'name': 'general', 
-                                    'type': 'hidden', 
+                                    'name': 'general',
+                                    'type': 'hidden',
                                     'value': $('form#order-form').serialize()
                                 })
                         )
                         .append(
                             $('<input>')
                                 .attr({
-                                    'name': 'ingredients', 
-                                    'type': 'hidden', 
+                                    'name': 'ingredients',
+                                    'type': 'hidden',
                                     'value': $('#ingredients form.order-ingredients').serialize()
                                 })
                         )
                         .append(
                             $('<input>')
                                 .attr({
-                                    'name': 'ingredients2', 
-                                    'type': 'hidden', 
+                                    'name': 'ingredients2',
+                                    'type': 'hidden',
                                     'value': $('#ingredients2 form.order-ingredients').serialize()
                                 })
                         )
                         .attr({
-                            'action': '/menu', 
+                            'action': '/menu',
                             'method': 'post'
                         });
 
@@ -1477,7 +1477,7 @@ $(document)
         function checkHash() {
             if( !!window.location.hash )
             {
-                var hash = window.location.hash.substr(1), 
+                var hash = window.location.hash.substr(1),
                     anchorElement = $('[data-anchor="' + hash + '"]');
 
                 if( !!$(anchorElement).length )
@@ -1497,7 +1497,7 @@ $(document)
         };
 
         $(document).ready(function() {
-            var collapsible, collapsibleIndex, collapsibles = $('[data-role="collapsible"]').get(), 
+            var collapsible, collapsibleIndex, collapsibles = $('[data-role="collapsible"]').get(),
                 collapsibleSlug, collapsibleText;
 
             for( collapsibleIndex in collapsibles )
@@ -1541,9 +1541,9 @@ $(document)
             })
             .off('change', '.footer-change')
             .on('change', '.footer-change', function() {
-                var self = this, 
-                    elem = $(self).closest('.checkout-footer'), 
-                    next = elem.next(), 
+                var self = this,
+                    elem = $(self).closest('.checkout-footer'),
+                    next = elem.next(),
                     totalAmount = parseFloat($('.order-total-price').data('value'));
 
                 if( $(self).attr('name') === 'payment' )
@@ -1552,7 +1552,7 @@ $(document)
                      * Payment Tab
                      * Based on selected payment processor, check if minimum amount is meet
                      */
-                    if( parseFloat($(self).val()) === 3 || 
+                    if( parseFloat($(self).val()) === 3 ||
                         parseFloat($(self).val()) === 2 )
                     {
                         // in case its online payment
@@ -1608,8 +1608,8 @@ $(document)
                     /**
                      * Home / Pickup Delivery
                      */
-                    var a_process_for_preparing = $(self).val(), 
-                        date = $('#date').val(), 
+                    var a_process_for_preparing = $(self).val(),
+                        date = $('#date').val(),
                         time, timeIndex;
 
                     $('#time')
@@ -1618,7 +1618,7 @@ $(document)
                             $('<option>')
                                 .append(document.createTextNode('Select Time'))
                                 .attr({
-                                    'selected': 'selected', 
+                                    'selected': 'selected',
                                     'value': ''
                                 })
                         );
@@ -1737,9 +1737,9 @@ $(document)
                     }
                     else if( a_process_for_preparing === 'P' )
                     {
-                        var current_date = $('#date').val(), 
-                            first_time = start_time, 
-                            first_datetime = new Date(current_date + ' ' + first_time), 
+                        var current_date = $('#date').val(),
+                            first_time = start_time,
+                            first_datetime = new Date(current_date + ' ' + first_time),
                             current_datetime = new Date(current_date + ' ' + current_time);
 
                         if( current_datetime.getTime() < first_datetime.getTime() )
@@ -1819,7 +1819,7 @@ $(document)
             })
             .off('click tap', '.checkout-footer a')
             .on('click tap', '.checkout-footer a', function() {
-                var self = this, 
+                var self = this,
                     prev = $(self).closest('.checkout-footer').hide().prev();
 
                 manageHelpFooterLine(prev);
@@ -1876,7 +1876,7 @@ $(document)
             .off('change', '.choose-coupon')
             /**  Coupon  */
             .on('change', '.choose-coupon', function() {
-                var self = this, 
+                var self = this,
                     discountpercet = $(self).data('discount');
 
                 if( discountpercet === 'other' )
@@ -1928,13 +1928,13 @@ $(document)
             .off('click', '#voucher')
             /** other coupon */
             .on('click', '#voucher', function() {
-                var coupon = $('#coupon').val(), 
+                var coupon = $('#coupon').val(),
                     request = $.ajax({
                         data: {
                             coupon: coupon
-                        }, 
-                        dataType: 'json', 
-                        type: 'POST', 
+                        },
+                        dataType: 'json',
+                        type: 'POST',
                         url: '//' + window.location.host + '/checkout/getCoupons'
                     });
 
@@ -1961,7 +1961,7 @@ $(document)
                         $('#icon-remove-coupon').removeClass('hide');
 
                         $('#coupon-row').removeClass('hide');
-                        
+
                         $('#tr-coupon').addClass('hide');
 
                         $('#other').val(data.id);
@@ -1978,7 +1978,7 @@ $(document)
                 showConfirm('', 'Remove voucher?', function() {
                     if( !!$('[to-applying="to-applying"]').length )
                     {
-                        var self = $('[to-applying="to-applying"]'), 
+                        var self = $('[to-applying="to-applying"]'),
                             discountpercet = $(self).data('discount');
 
                         $(self).removeAttr('to-applying');
@@ -2037,15 +2037,15 @@ $(document)
                 var self = this;
 
                 showConfirm('', 'Remove ' + $(self).data('title') + ' from your order?', function() {
-                    var hideItems = $(self).data('id'), 
-                        totalItem = $('.order-total-price'), 
+                    var hideItems = $(self).data('id'),
+                        totalItem = $('.order-total-price'),
                         newTotal = ( parseFloat(totalItem.data('default')) - parseFloat($(self).data('value')) );
 
                     $('.item-' + hideItems).hide();
 
                     totalItem
                         .data({
-                            'default': newTotal, 
+                            'default': newTotal,
                             'value': newTotal
                         })
                         .empty()
@@ -2077,11 +2077,11 @@ $(document)
                     }
 
                     /**
-                     * Ajax call to remove 
+                     * Ajax call to remove
                      * the item from session
                      */
                     var request = $.ajax({
-                        context: document.body, 
+                        context: document.body,
                         url: '/remove/' + hideItems
                     });
 
@@ -2102,7 +2102,7 @@ $(document)
 
         /**
          * Apply percent
-         * 
+         *
          * @param integer amountPercent
          * @param float price
          * @returns string
@@ -2127,7 +2127,7 @@ $(document)
 
             if( $('#holiday-fee').data('fee') !== 'no' )
             {
-                var feeDiscount = parseFloat($('#holiday-fee').data('fee')), 
+                var feeDiscount = parseFloat($('#holiday-fee').data('fee')),
                     feePrice = ( ( total / 100 ) * feeDiscount );
 
                 total = ( total + feePrice );
@@ -2154,7 +2154,7 @@ $(document)
 
         /**
          * Apply discounts for price
-         * 
+         *
          * @param integer discountpercet
          * @param string type
          * @returns none
@@ -2165,9 +2165,9 @@ $(document)
 
             $('#has_discount').attr('data-discountper', discountpercet);
 
-            var defaultTotal = parseFloat($('.order-total-price').data('default')), 
-                total = 0, totalDiscount = 0, 
-                orderPrice, orderPriceIndex, 
+            var defaultTotal = parseFloat($('.order-total-price').data('default')),
+                total = 0, totalDiscount = 0,
+                orderPrice, orderPriceIndex,
                 orderPrices = $('.order-subtotal').find('.order-price').get();
 
             for( orderPriceIndex in orderPrices )
@@ -2178,7 +2178,7 @@ $(document)
 
                     if( $(orderPrice).is(':visible') )
                     {
-                        var subTotal = parseFloat($(orderPrice).data('value')), 
+                        var subTotal = parseFloat($(orderPrice).data('value')),
                             qty = parseInt($(orderPrice).data('qty'), 10);
 
                         if( !isNaN(qty) )
@@ -2219,7 +2219,7 @@ $(document)
                 $('#fee-prince').html('+$' + feePrice.toFixed(2));
             }
 
-            if( type == 'low_amount' || 
+            if( type == 'low_amount' ||
                 type == 'online_low_amount' )
             {
                 total = parseFloat(prepareMathFloatValues(total, rules.order_less));
@@ -2229,7 +2229,7 @@ $(document)
                 $('#low_order').removeClass('hide');
             }
 
-            if( type == 'online' || 
+            if( type == 'online' ||
                 type == 'online_low_amount' )
             {
                 $('#icon-remove-coupon').removeClass('hide');
@@ -2249,7 +2249,7 @@ $(document)
 
         /**
          * Sum two values
-         * 
+         *
          * @param float operandOne
          * @param float operandTwo
          * @param string operation
@@ -2277,7 +2277,7 @@ $(document)
         {
             if( $('.later').is(':checked') )
             {
-                if( !$('#date').val() || 
+                if( !$('#date').val() ||
                     !$('#time').val() )
                 {
                     $('#date-error').removeClass('hide');
@@ -2295,15 +2295,15 @@ $(document)
                 }
                 else
                 {
-                    if( !$('#date').val() || 
+                    if( !$('#date').val() ||
                         !$('#time').val() )
                     {
                         return false;
                     }
                     else
                     {
-                        var date = $('#date').val(), 
-                            last_time = $('#time').find('option:last').attr('value'), 
+                        var date = $('#date').val(),
+                            last_time = $('#time').find('option:last').attr('value'),
                             current_datetime = new Date(date + ' ' + current_time);
 
                         if( current_datetime.getTime() > (new Date(date + ' ' + last_time)).getTime() )
@@ -2374,19 +2374,19 @@ $(document)
         /* use after for Facebook App ID - FBAppID */
 
         // $('#social-loker').sociallocker({
-        //     buttons: { order: [ 'twitter-tweet', 'facebook-share' ] }, 
+        //     buttons: { order: [ 'twitter-tweet', 'facebook-share' ] },
         //     // a theme name that will be used
-        //     theme: 'secrets', 
+        //     theme: 'secrets',
         //     // text that appears above the social buttons
-        //     text: { header: ' ', message: 'Free coke? Like us and it\'s yours!' }, 
+        //     text: { header: ' ', message: 'Free coke? Like us and it\'s yours!' },
         //     facebook: {
-        //         appId: FBAppID, 
+        //         appId: FBAppID,
         //         share: { title: 'share it', url: 'http://m.pizzaboy.bywmds.us/' }
-        //     }, 
+        //     },
         //     twitter: {
         //         tweet: {
-        //             title: 'tweet me', 
-        //             text: 'Tweet this message', 
+        //             title: 'tweet me',
+        //             text: 'Tweet this message',
         //             url: 'http://m.pizzaboy.bywmds.us/'
         //         }
         //     }
@@ -2444,12 +2444,12 @@ $(document)
              * Change suburb, calculate total
              */
             .on('change', '#form_suburb', function() {
-                if( typeof(has_delivery) !== 'undefined' && 
+                if( typeof(has_delivery) !== 'undefined' &&
                     has_delivery === '1' )
                 {
-                    var subtotal = parseFloat($('#subtotal').text().replace('$', '')), 
-                        discount = parseFloat($('#discount').val()), 
-                        fee = parseFloat($('#form_suburb').find('option').filter(':selected').data('fee')), 
+                    var subtotal = parseFloat($('#subtotal').text().replace('$', '')),
+                        discount = parseFloat($('#discount').val()),
+                        fee = parseFloat($('#form_suburb').find('option').filter(':selected').data('fee')),
                         payment = parseFloat($('#cc').data('cc'));
 
                     if( !!discount )
@@ -2492,7 +2492,7 @@ $(document)
              * Check if number and limit by 4 digit
              */
             .on('keydown', '.card-number', function(event) {
-                var self = this, 
+                var self = this,
                     lengthStr = $(self).val().length;
 
                 if( lengthStr <= parseFloat($(self).attr('data-length')) )
@@ -2566,9 +2566,9 @@ $(document)
                     var request = $.ajax({
                         data: {
                             email: email
-                        }, 
-                        dataType: 'json', 
-                        type: 'POST', 
+                        },
+                        dataType: 'json',
+                        type: 'POST',
                         url: '//' + window.location.host + '/security/checkValidEmail'
                     });
 
@@ -2610,9 +2610,9 @@ $(document)
                     var request = $.ajax({
                         data: {
                             mobile: mobile
-                        }, 
-                        dataType: 'json', 
-                        type: 'POST', 
+                        },
+                        dataType: 'json',
+                        type: 'POST',
                         url: '//' + window.location.host + '/security/checkValidEmail'
                     });
 
@@ -2655,18 +2655,18 @@ $(document)
             .on('click', '#save', function() {
                 $('#error-valid').empty();
 
-                var pass = $('#pass').val(), 
-                    conf = $('#conf').val(), 
+                var pass = $('#pass').val(),
+                    conf = $('#conf').val(),
                     code = $('#code').attr('data-code');
 
                 if( pass === conf )
                 {
                     var request = $.ajax({
                         data: {
-                            code: code, 
+                            code: code,
                             pass: pass
-                        }, 
-                        type: 'POST', 
+                        },
+                        type: 'POST',
                         url: '//' + window.location.host + '/security/savePassword'
                     });
 
@@ -2701,23 +2701,23 @@ $(document)
             })
             .off('click', '.change-page')
             .on('click', '.change-page', function() {
-                var self = this, 
-                    count = $('#page').data('count'), 
-                    page = $(self).data('change'), 
+                var self = this,
+                    count = $('#page').data('count'),
+                    page = $(self).data('change'),
                     request = $.ajax({
                         data: {
-                            count: count, 
+                            count: count,
                             page: page
-                        }, 
-                        dataType: 'json', 
-                        type: 'POST', 
+                        },
+                        dataType: 'json',
+                        type: 'POST',
                         url: '//' + window.location.host + '/order/getAjaxOrders'
                     });
 
                 request.done(function(data) {
                     $('#tbody-orders').empty();
 
-                    var order, orderIndex, 
+                    var order, orderIndex,
                         orders = data.orders;
 
                     for( orderIndex in orders )
@@ -2758,8 +2758,8 @@ $(document)
                                                         $('<a>')
                                                             .append(document.createTextNode('Order This Again'))
                                                             .attr({
-                                                                'data-inline': 'true', 
-                                                                'data-role': 'button', 
+                                                                'data-inline': 'true',
+                                                                'data-role': 'button',
                                                                 'href': base_url + 'order-again/' + order.order_id
                                                             })
                                                     )
@@ -2775,7 +2775,7 @@ $(document)
 
                     var total = $('#total').attr('data-total');
 
-                    if( data.count === 0 || 
+                    if( data.count === 0 ||
                         data.count === 5 )
                     {
                         $('#div-both').addClass('hide');
@@ -2832,7 +2832,7 @@ $(document)
      * @url /security-edit
      **********************************************************************************************************************/
     .on('pageshow', '#page-edit', function() {
-        
+
 
         $(document)
             .off('click', '#changeMobileNumber')

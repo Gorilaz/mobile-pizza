@@ -4,13 +4,11 @@
         <div class="value">${{ minOrder }}</div>
     </div>
     <div class="cart-center">
-    {% if sitemode_online %}
-        <a class="cart-button" href="#" id="click-checkout" data-transition="none">
+        <a class="cart-button" href="#" id="click-checkout" data-transition="none" data-sitemode="{% if sitemode_online %}{{ 'online' }}{% else %}{{ 'offline' }}{% endif %}"{% if sitemode_online == false %}{{ ' data-offlinecontent="' ~ offlinecontent|escape  ~ '"' }}{% endif %}>
             <i class="icon-shopping-cart"></i>
             <em>Checkout</em>
             <span>{{ itemsNo }}</span>
         </a>
-    {% endif %}
     </div>
     <div class="cart-side cart-right after">
         <div class="text text-total">Total:</div>

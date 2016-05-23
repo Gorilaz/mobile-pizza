@@ -1485,7 +1485,14 @@ $(document)
         $(document)
             .off('click', '#click-checkout')
             .on('click', '#click-checkout', function() {
-                window.location.href = '//' + window.location.host + '/checkout';
+                if( $('#click-checkout').data('sitemode') === 'online' )
+                {
+                    window.location.href = '//' + window.location.host + '/checkout';
+                }
+                else
+                {
+                    showAlert('', $($('#click-checkout').data('offlinecontent')).text());
+                }
             });
 
         function checkHash() {

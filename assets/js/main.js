@@ -192,6 +192,12 @@ function saveForm(action)
                 window.location.href = '//' + window.location.host + '/checkout';
             }
         }
+        else if( data.indexOf('error: ') !== -1 )
+        {
+            $.mobile.loading('hide');
+
+            showAlert('', data.replace('error: ', ''));
+        }
         else
         {
             window.location.href = '//' + window.location.host + '/security-edit'
@@ -409,6 +415,8 @@ function changeMobile()
 
         $('#verify-btn').hide();
 
+        $('.help_form_mobile').addClass('hide');
+
         $('.help').removeClass('hide');
 
         $('#changeMobileNumber').removeClass('hide');
@@ -429,7 +437,13 @@ function changeMobile()
  */
 function verifyClean()
 {
-    $('#form_mobile').removeAttr('readonly');
+    if( $('#form_mobile').attr('data-current') === '' || 
+        $('#form_mobile').val() !== $('#form_mobile').attr('data-current') )
+    {
+        $('#form_mobile').removeAttr('readonly');
+
+        $('.help_form_mobile').removeClass('hide');
+    }
 
     $('#sms-code').data('final', 'no');
 
@@ -2478,41 +2492,40 @@ $(document)
                         .append(document.createTextNode(total.toFixed(2)));
                 }
             })
-            .off('click', '.card-number')
-            /*
-             * Card number inputs
-             */
-            .on('click', '.card-number', function() {
-                var self = this;
+            .off('input', '.card-number, #cvv')
+            .on('input', '.card-number, #cvv', function(event) {
+                var self = this, 
+                    value = $(self).val().replace(/[^\d]/gi, '');
 
-                $(self).val('');
-            })
-            .off('keydown', '.card-number')
-            /*
-             * Check if number and limit by 4 digit
-             */
-            .on('keydown', '.card-number', function(event) {
-                var self = this,
-                    lengthStr = $(self).val().length;
-
-                if( lengthStr <= parseFloat($(self).attr('data-length')) )
+                if( $(self).val() !== value )
                 {
-                    if( $.inArray(event.keyCode, [ 48, 49, 50, 51, 52, 53, 54, 55, 56, 57 ]) !== -1 )
-                    {
-                        if( lengthStr === parseFloat($(self).attr('data-length')) )
-                        {
-                            var id = $(self).data('id');
-
-                            $('#' + id).focus();
-                        }
-
-                        return true;
-                    }
+                    $(self).val(value);
                 }
 
-                event.preventDefault();
+                if( $(self).val().length === 0 )
+                {
+                    var currentId = $(self).attr('id'), 
+                        element = $('[data-id="' + currentId + '"]');
 
-                return false;
+                    $(element).focus().val($(element).val());
+                }
+                else if( $(self).val().length === parseInt($(self).attr('data-length'), 10) )
+                {
+                    var elementId = $(self).attr('data-id'), 
+                        element = $('#' + elementId);
+
+                    $(element).focus();
+                }
+                else if( $(self).val().length > parseInt($(self).attr('data-length'), 10) )
+                {
+                    var elementId = $(self).attr('data-id'), 
+                        element = $('#' + elementId), 
+                        value = $(self).val().substr(0, parseInt($(self).attr('data-length'), 10));
+
+                    $(self).val(value);
+
+                    $(element).focus();
+                }
             })
             .off('click', '#send-order')
             /*

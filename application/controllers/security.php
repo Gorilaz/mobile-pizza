@@ -298,7 +298,7 @@ class Security extends WMDS_Controller {
 
         if( $saveProfile['status'] !== 'success' )
         {
-            echo $saveProfile['status'];
+            echo $saveProfile['status'] . ': ' . $saveProfile['message'];
 
             return;
         }

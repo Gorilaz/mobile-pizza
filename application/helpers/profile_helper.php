@@ -117,12 +117,12 @@ if ( !function_exists('saveProfile') )
 
             if( empty($user['mobile_code']) )
             {
-                return array('status' => 'error');
+                return array('status' => 'error', 'message' => 'Verification code should not be empty.');
             }
 
             if( $user['mobile_code'] !== $sms_code )
             {
-                return array('status' => 'error');
+                return array('status' => 'error', 'message' => 'Verification code not valid.');
             }
         }
 

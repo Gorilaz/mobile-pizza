@@ -31,10 +31,10 @@
             <label>Credit Card Number: </label>
         </div>
         <div class="ui-block-b">
-            <input type="text" class="card-number" name="card_number[1]" data-id="item-2" id="item-1" data-length="4" maxlength="4" />
-            <input type="text" class="card-number" name="card_number[2]" data-id="item-3" id="item-2" data-length="4" maxlength="4" />
-            <input type="text" class="card-number" name="card_number[3]" data-id="item-4" id="item-3" data-length="4" maxlength="4" />
-            <input type="text" class="card-number" name="card_number[4]" data-id="cvv" id="item-4" data-length="4" maxlength="4" />
+            <input type="number" class="card-number" name="card_number[1]" data-id="item-2" id="item-1" data-length="4" min="0" max="9999" />
+            <input type="number" class="card-number" name="card_number[2]" data-id="item-3" id="item-2" data-length="4" min="0" max="9999" />
+            <input type="number" class="card-number" name="card_number[3]" data-id="item-4" id="item-3" data-length="4" min="0" max="9999" />
+            <input type="number" class="card-number" name="card_number[4]" data-id="cvv" id="item-4" data-length="4" min="0" max="9999" />
         </div>
     </div>
     <div class="ui-grid-a">
@@ -70,7 +70,7 @@
         </div>
         <div class="ui-block-b">
             <div class="left" id="div-cvv">
-                <input type="text" name="security"  maxlength="3" id="cvv"/>
+                <input type="number" name="security" id="cvv" data-length="3" min="0" max="999" />
             </div>
             <div class="left" style="width: 50%">
                 <div>

@@ -61,6 +61,12 @@ class WMDS_Controller extends CI_Controller {
          */
         $this->twiggy->set('settings', $this->session->userdata('siteSetting'));
 
+        $this->load->model('general');
+
+        $schedule = $this->general->getScheduleForSchema();
+
+        $this->twiggy->set('schedule_for_schema', $schedule);
+
         /**
          * Set if store is open or not - Refresh it once at 5min (300s)
          */
@@ -79,8 +85,6 @@ class WMDS_Controller extends CI_Controller {
 
         if( !$storeOpen || ( ( $storeOpen['checkTime'] + 300 ) < time() ) )
         {
-            $this->load->model('general');
-
             $isOpenNow = $this->general->isOpenNow();
 
             $storeOpen = array(

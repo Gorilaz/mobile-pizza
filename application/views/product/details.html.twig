@@ -12,9 +12,11 @@
         </div>
     {% endif %}
 
-    <div data-role="content" class="product-single" id="productContent">
+    <div data-role="content" class="product-single" id="productContent" itemscope itemtype="http://schema.org/ItemPage">
         <form method="post" action="" id="order-form">
 
+            <img class="hide" src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}" alt="{{ product.product_name }}" itemprop="primaryImageOfPage" />
+            <link class="hide" href="{{ current_url }}" alt="{{ product.product_name }}" itemprop="url" />
 
             <div class="single-top {% if image %}with-image{% endif %}" {% if image %} style="background-image: url('{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}')" {% endif %}>
 
@@ -27,8 +29,8 @@
                 {% endif %}
 
                 <div class="single-content get-space">
-                    <h1>{{ product.product_name }}</h1>
-                    <div class="single-description">
+                    <h1 itemprop="name">{{ product.product_name }}</h1>
+                    <div class="single-description" itemprop="description">
                         {{ product.description|striptags }}
                     </div>
                 </div>

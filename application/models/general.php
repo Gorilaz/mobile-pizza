@@ -36,6 +36,84 @@ class General extends CI_Model {
         return $row > 0;
     }
 
+    public function getScheduleForSchema()
+    {
+        $schedule = array();
+
+        $weekdays = array('Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa');
+
+        $entries = $this->db->get('tbl_shop_timings')->result();
+
+        foreach( $entries as $entry )
+        {
+            $weekday = date('w', strtotime($entry->day));
+
+            if( $entry->first_half_fr != NULL && 
+                $entry->first_half_t != NULL && 
+                $entry->second_half_fr != NULL && 
+                $entry->second_half_t != NULL )
+            {
+                if( isset($schedule[$weekdays[$weekday]]['from']) )
+                {
+                    if( strtotime($entry->first_half_fr) <= strtotime($entry->second_half_fr) )
+                    {
+                        $from = $entry->first_half_fr;
+                    }
+                    else
+                    {
+                        $from = $entry->second_half_fr;
+                    }
+
+                    if( strtotime($from) < strtotime($schedule[$weekdays[$weekday]]['from']) )
+                    {
+                        $schedule[$weekdays[$weekday]]['from'] = $from;
+                    }
+                }
+                else
+                {
+                    if( strtotime($entry->first_half_fr) <= strtotime($entry->second_half_fr) )
+                    {
+                        $schedule[$weekdays[$weekday]]['from'] = $entry->first_half_fr;
+                    }
+                    else
+                    {
+                        $schedule[$weekdays[$weekday]]['from'] = $entry->second_half_fr;
+                    }
+                }
+
+                if( isset($schedule[$weekdays[$weekday]]['to']) )
+                {
+                    if( strtotime($entry->first_half_t) >= strtotime($entry->second_half_t) )
+                    {
+                        $to = $entry->first_half_t;
+                    }
+                    else
+                    {
+                        $to = $entry->second_half_t;
+                    }
+
+                    if( strtotime($to) > strtotime($schedule[$weekdays[$weekday]]['to']) )
+                    {
+                        $schedule[$weekdays[$weekday]]['to'] = $to;
+                    }
+                }
+                else
+                {
+                    if( strtotime($entry->first_half_t) >= strtotime($entry->second_half_t) )
+                    {
+                        $schedule[$weekdays[$weekday]]['to'] = $entry->first_half_t;
+                    }
+                    else
+                    {
+                        $schedule[$weekdays[$weekday]]['to'] = $entry->second_half_t;
+                    }
+                }
+            }
+        }
+
+        return $schedule;
+    }
+
     public function weWillOpen()
     {
         $schedule = array();

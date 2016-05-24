@@ -43,6 +43,18 @@ class Products_model extends CI_Model{
             ->row();
     }
 
+    public function getCategoryById($id)
+    {
+        return $this->db
+            ->get_where('tbl_product_categories', array('category_id' => $id))
+            ->row();
+    }
+
+    public function getVariationsById($id)
+    {
+        return $this->db->get_where('tbl_variations', array('product_id' => $id, 'available' => 'Y'))->result();
+    }
+
     /**
      * Get product types (available in veriation_group table)
      * Returns Sizes, Deals, grouped by array key

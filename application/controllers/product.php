@@ -25,6 +25,8 @@ class product extends WMDS_Controller {
             $id = empty($ref) ? $id : $ref->value;
         }
 
+        $siteSetting = $this->session->userdata('siteSetting');
+
         /**
          * Get product from database
          * redirect to 404 if not found
@@ -37,6 +39,50 @@ class product extends WMDS_Controller {
 
             $this->page->staticpage($id, $points);
         }
+
+        $category = $this->products_model->getCategoryById($product->category_id);
+
+        $og = array(
+            'title' => $product->product_name, 
+            'description' => $product->description, 
+            'type' => 'product.item', 
+            'image' => $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/uploads/products/thumb/' . ( empty($product->product_image) ? 'no_prod_image_thumb.png' : $product->product_image ), 
+            'url' => current_url(), 
+            'product' => array(
+                'brand' => $siteSetting->restaurant_name, 
+                'category' => $category->category_name, 
+                'price:amount' => $product->product_price, 
+                'price:currency' => '$'
+            )
+        );
+
+        $available_sizes = array('Medium', 'Large', 'Family');
+
+        $variations = $this->products_model->getVariationsById($id);
+
+        $size = false;
+
+        foreach( $variations as $variation )
+        {
+            $variation_price = (float) $variation->variation_price;
+
+            if( empty($variation_price) )
+            {
+                if( in_array($variation->variation_name, $available_sizes) )
+                {
+                    $size = $variation->variation_name;
+
+                    break;
+                }
+            }
+        }
+
+        if( $size !== false )
+        {
+            $og['product']['size'] = $size;
+        }
+
+        $this->twiggy->set('og', $og);
 
         /**
          * Calculate left points

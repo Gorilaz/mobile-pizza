@@ -8,10 +8,15 @@
             {% if og.title is defined %}
                 <meta name="og:title" content="{{ og.title }}" />
             {% endif %}
+            {% if og.description is defined %}
+                <meta name="og:description" content="{{ og.description|striptags }}"
+            {% endif %}
             {% if og.type is defined %}
                 <meta name="og:type" content="{{ og.type }}" />
-                {% if og.type == 'product' %}
-
+                {% if og.type == 'product.item' and og.product is defined %}
+                    {% for index, value in og.product %}
+                        <meta name="product:{{ index }}" content="{{ value }}" />
+                    {% endfor %}
                 {% endif %}
             {% endif %}
             {% if og.image is defined %}
@@ -87,6 +92,28 @@
         <!-- END Social Locker -->
     </head>
     <body>
+        <div class="hide" itemscope itemtype="https://schema.org/Restaurant">
+            <span itemprop="name">{{ settings.restaurant_name }}</span>
+            <span itemprop="address">{{ settings.shop_address }}</span>
+            <span itemprop="telephone"></span>
+            <span itemprop="currenciesAccepted">USD</span>
+            {% set openingHours = '' %}
+            {% for weekday, times in schedule_for_schema %}
+                {% if openingHours == '' %}
+                    {% set openingHours = weekday ~ ' ' ~ times.from ~ '-' ~ times.to %}
+                {% else %}
+                    {% set openingHours = openingHours ~ ',' ~ weekday ~ ' ' ~ times.from ~ '-' ~ times.to %}
+                {% endif %}
+            {% endfor %}
+            {% if openingHours != '' %}
+                <span itemprop="openingHours" content="{{ openingHours }}"></span>
+            {% endif %}
+            <span itemprop="paymentAccepted">Cash, credit card, etc.</span>
+            <span itemprop="email">{{ settings.SITE_EMAIL }}</span>
+{# desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/smal-circular-logo.png #}
+            <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/images/smal-circular-logo.png" itemprop="logo" />
+            <link href="{{ base_url }}menu" itemprop="menu" />
+        </div>
         <div{% if page.id is defined %} id="{{ page.id }}"{% endif %}{% if page.role is defined %} data-role="{{ page.role }}"{% endif %}{% if page.theme is defined %} data-theme="{{ page.theme }}"{% endif %}{% if page.url is defined %} data-url="{{ page.url }}"{% endif %}>
             {% include 'page/popups/alertDialog.html.twig' %}
 

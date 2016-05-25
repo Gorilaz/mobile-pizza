@@ -95,8 +95,10 @@ class product extends WMDS_Controller {
 
         $userdPoints = 0;
 
-        foreach($cart as $item){
-            if(isset($item['points']) && !empty($item['points'])){
+        foreach( $cart as $item )
+        {
+            if( !empty($item['points']) )
+            {
                 $userdPoints += $item['points'];
             }
         }
@@ -104,36 +106,33 @@ class product extends WMDS_Controller {
         $user = $this->session->userdata('logged');
 
         $pointsLeft = $user['order_points'] - $userdPoints;
+
         $this->twiggy->set('pointsLeft', $pointsLeft);
 
         /**
          * Get and format product images
          */
         $image = false;
-        if (!empty($product->product_image)) {
-            $image['full']      = $product->product_image;
-            $image_extension    = substr($product->product_image, -4, 4);
-            $image_name         = substr($product->product_image, 0, -4);
-            $image['thumb']     = $image_name . '_thumb' . $image_extension;
+
+        if( !empty($product->product_image) )
+        {
+            $image['full'] = $product->product_image;
+
+            $image_extension = substr($product->product_image, -4, 4);
+            $image_name = substr($product->product_image, 0, -4);
+
+            $image['thumb'] = $image_name . '_thumb' . $image_extension;
         }
 
         /**
          * Deal with variations
          */
 
-        $variationsGroups   = $this->products_model->getProductVariations($product->product_id);
+        $variationsGroups = $this->products_model->getProductVariations($product->product_id);
 
-        $productType        = $this->products_model->getProductType($variationsGroups['variations']);
+        $productType = $this->products_model->getProductType($variationsGroups['variations']);
 
-        $withPoints         = ($product->product_points > 0 && $points == 'points')?true:false;
-
-        /*echo '<pre>';
-        print_r($product);
-        echo '<hr />';
-        print_r($productType);
-        echo '<hr />';
-        print_r($variationsGroups);
-        die;*/
+        $withPoints = $product->product_points > 0 && $points === 'points';
 
         $this->twiggy
             ->set('product',$product)

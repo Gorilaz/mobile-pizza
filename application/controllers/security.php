@@ -309,7 +309,7 @@ class Security extends WMDS_Controller {
 
         if( empty($firstPointLogin) )
         {
-            echo 'error';
+            echo 'order';
 
             return;
         }

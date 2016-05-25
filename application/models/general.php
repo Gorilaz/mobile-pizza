@@ -117,10 +117,9 @@ class General extends CI_Model {
     public function weWillOpen()
     {
         $schedule = array();
+        $time_is_over = array();
 
         $entries = $this->db->get('tbl_shop_timings')->result();
-
-        $time_is_over = array();
 
         foreach( $entries as $entry )
         {
@@ -137,6 +136,15 @@ class General extends CI_Model {
                 }
 
                 unset($schedule[$entry->day][$entry->timing_for]['time_is_over']);
+            }
+            else
+            {
+                $schedule[$entry->day][$entry->timing_for] = array();
+
+                if( date('w') === $weekday )
+                {
+                    $time_is_over[$entry->timing_for] = true;
+                }
             }
         }
 
@@ -273,6 +281,15 @@ class General extends CI_Model {
                 $time_is_over[$entry->timing_for] = $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['time_is_over'];
 
                 unset($forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for]['time_is_over']);
+            }
+            else
+            {
+                $forJquery[date('Y-m-d', strtotime($entry->day))][$entry->timing_for] = array();
+
+                if( date('w') === $weekday )
+                {
+                    $time_is_over[$entry->timing_for] = true;
+                }
             }
         }
 

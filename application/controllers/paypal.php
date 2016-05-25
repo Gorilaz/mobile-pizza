@@ -34,20 +34,20 @@ class paypal extends WMDS_Controller {
         $this->twiggy->template('payment/paypal')->display();
     }
 
-    public function cancel(){
-
-
+    public function cancel()
+    {
         $this->session->unset_userdata('paypal');
         $this->cart->destroy();
-        redirect(base_url().'order-failed');
+
+        redirect(base_url() . 'order-failed');
     }
 
-    public function succes(){
-
+    public function succes()
+    {
         $this->session->unset_userdata('paypal');
         $this->cart->destroy();
-        redirect(base_url().'order-success');
 
+        redirect(base_url() . 'order-success');
     }
 
     public function ipn(){

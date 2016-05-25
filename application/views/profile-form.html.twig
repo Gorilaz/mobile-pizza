@@ -91,29 +91,23 @@
                         <label for="form_mobile">Mobile: </label>
                     </div>
                     <div class="ui-block-b" >
-                        <div id="mobile-div" class="inline-block vertical-align-top">
+                        <div id="mobile-div" class="inline-block vertical-align-top margin-right-15px">
                             <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}"{%- if  logged is defined and logged.mobile is defined -%}{{ ' readonly="readonly"' }}{%- endif -%} />
-                        </div>
-                        <div id="verify-div" class="inline-block vertical-align-top" style="display: none;">
-                            <div class="inline-block vertical-align-middle help_form_mobile hide">
-                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle" />
+                        </div><div id="verify-div" class="inline-block vertical-align-top margin-right-15px" style="display: none;">
+                            <div class="inline-block vertical-align-middle margin-right-15px help_form_mobile hide">
+                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle margin-right-15px" />
                                 <span class="inline-block vertical-align-middle">Please fill in…</span>
-                            </div>
-                            <div class="inline-block vertical-align-middle" style="padding-left: 10px;">
-                                <a href="#" data-role="button" data-inline="true" id="verify-btn"{% if logged.mobile == false %}{{ ' class="ui-disabled"' }}{% endif %}>Verify</a>
-                            </div>
-                            <div class="inline-block vertical-align-middle">
+                            </div><div class="inline-block vertical-align-middle">
+                                <a href="#" data-role="button" data-inline="true" id="verify-btn" class="margin-right-15px{% if logged.mobile == false %}{{ ' ui-disabled' }}{% endif %}">Verify</a>
+                            </div><div class="inline-block vertical-align-middle margin-right-15px">
                                 <input type="text" name="mobile_code" id="sms-code" data-final="no" maxlength="4" style="width:40px; margin-top: 15px;" />
-                            </div>
-                            <div class="inline-block vertical-align-middle help hide">
-                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle" />
+                            </div><div class="inline-block vertical-align-middle margin-right-15px help hide">
+                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle margin-right-15px" />
                                 <span class="inline-block vertical-align-middle">Please enter the SMS verification code here!</span>
-                            </div>
-                            <div class="inline-block vertical-align-middle">
+                            </div><div class="inline-block vertical-align-middle">
                                 <label for="form_mobile_code" id="sms-error-label" class="error" style="margin-left: 10px; margin-top: 15px; display: none;">Incorect Verification code</label>
                             </div>
-                        </div>
-                        <div class="inline-block vertical-align-middle">
+                        </div><div class="inline-block vertical-align-middle">
                             <a href="#" data-role="button" data-inline="true" id="changeMobileNumber"{% if logged.mobile == false %}{{ ' class="hide"' }}{% endif %}>Change Mobile<br />Number</a>
                         </div>
                     </div>

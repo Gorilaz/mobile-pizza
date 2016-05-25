@@ -133,7 +133,7 @@ function saveOrder()
             }
             else
             {
-                window.location.href = '//' + window.location.host + '/order/save-order/credit';
+                // window.location.href = '//' + window.location.host + '/order/save-order/credit';
             }
         });
 
@@ -442,7 +442,10 @@ function verifyClean()
     {
         $('#form_mobile').removeAttr('readonly');
 
-        $('.help_form_mobile').removeClass('hide');
+        if( $('#form_mobile').attr('data-current') !== '' )
+        {
+            $('.help_form_mobile').removeClass('hide');
+        }
     }
 
     $('#sms-code').data('final', 'no');

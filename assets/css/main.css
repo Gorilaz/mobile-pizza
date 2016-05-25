@@ -1149,6 +1149,7 @@ h1 {
 #popup-sms-text, #popup-alert-text, #popup-confirm-text {
     width: 80%;
     margin: auto;
+    text-align: center;
 }
 
 #popup-sms-btn, #popup-alert-btn, #popup-confirm-btn {
@@ -1264,10 +1265,6 @@ h1 {
     width: 50px;
 }
 
-#verify-div{
-    margin-left: 15px;
-}
-
 .inline-block {
     display: inline-block;
 }
@@ -1280,13 +1277,12 @@ h1 {
     vertical-align: middle;
 }
 
-.help {
-    margin-left: 15px;
+.margin-right-15px {
+    margin-right: 15px;
 }
 
 .help span {
-    margin-left: 15px;
-    max-width: 200px;
+    max-width: 130px;
 
     color: #4f7928;
     font-size: 0.9em;

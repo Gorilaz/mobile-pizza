@@ -38,6 +38,8 @@ class product extends WMDS_Controller {
             $this->load->library('../controllers/page');
 
             $this->page->staticpage($id, $points);
+
+            die;
         }
 
         $category = $this->products_model->getCategoryById($product->category_id);

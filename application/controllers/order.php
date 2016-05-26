@@ -874,6 +874,8 @@ class Order extends WMDS_Controller{
 
         $this->load->library('email');
 
+        $this->email->initialize(array('mailtype' => 'html'));
+
         $this->email->subject($subject);
 
         $this->email->from($siteSetting->FROM_EMAIL, $siteSetting->SITETITLE);

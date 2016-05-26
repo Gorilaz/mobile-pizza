@@ -872,8 +872,6 @@ class Order extends WMDS_Controller{
         $email_template = str_replace('[[EMAIL_HEADING]]', $subject, $email_template);
         $email_template = str_replace('[[EMAIL_CONTENT]]', $html, $email_template);
 
-        // echo '<pre>'; echo $email_template; echo '</pre>'; die();
-
         $this->load->library('email');
 
         $this->email->subject($subject);
@@ -886,7 +884,7 @@ class Order extends WMDS_Controller{
             $this->email->bcc($siteSetting->confirm_email_to);
         }
 
-        $this->email->message($html);
+        $this->email->message($email_template);
 
         $send = $this->email->send();
     }

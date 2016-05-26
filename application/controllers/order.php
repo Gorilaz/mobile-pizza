@@ -567,6 +567,7 @@ class Order extends WMDS_Controller{
                 <thead>
                 </thead>
                 <tbody>';
+
         /** header 1 */
         $html .='<tr>
                     <td colspan="2"><b>Order no.'. $order['real_id'] .', '.$sitetitle.'</b>, Date Ordered:' . $datePlacementOrder . '</td>
@@ -574,7 +575,9 @@ class Order extends WMDS_Controller{
                 <tr>
                     <td colspan="2">' . $user['first_name'] . ', ' . $user['last_name'] . ', ' . $user['company_name'] . ', ' . $user['address'] . ', ' . $subUrb . ', Mobile #:' . $user['mobile'] . '</td>
                 </tr>';
+
         $html .= $space;
+
         /** header 2 */
         $html .='<tr>
                     <td></td>
@@ -582,7 +585,7 @@ class Order extends WMDS_Controller{
                 </tr>
                 <tr>
                     <td></td>
-                    <td style="border-bottom: 1px solid #000000;"><b>Payment Details:'. $checkout['payment'] . '</b></td>
+                    <td style="border-bottom: 1px solid #000000;"><b>Payment Details: '. $data['payment_method'] . '</b></td>
                 </tr>
                 <tr>
                     <td></td>
@@ -720,6 +723,8 @@ class Order extends WMDS_Controller{
 
         $html .= $space;
 
+        $html_email = $html;
+
         $html .= '<tr >
                     <td colspan="2" rowsan="3" style="border: 1px solid #cccccc;width: 500px;">
                         <table>
@@ -763,6 +768,38 @@ class Order extends WMDS_Controller{
                     <td>
                 </tr>';
 
+        $html_email .= '<tr >
+                    <td colspan="2" rowsan="3">
+                        <table>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <table>
+                                            <tbody>
+                                                <tr>
+                                                    <td><b>' . $user['first_name'] . ', ' . $user['last_name'] . '</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>' . $user['company_name'] . '</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>' . $user['address'] . '</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>' . $subUrb . '</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td><b>' . $user['mobile'] . '</b></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                 </tr>';
+
         $html .='';
 
 
@@ -780,11 +817,29 @@ class Order extends WMDS_Controller{
         $filename= $pdf_path.$name;
         file_put_contents($filename, $output);
 
+        $this->_sendPdfMail($html_email);
+
         $this->gprs_printer($data);
 
         return $name;
 
 
+    }
+
+    function _sendPdfMail($html)
+    {
+        $this->load->library('email');
+
+        $this->email->from('dapperkop@yandex.ru');
+        $this->email->to('michael.kopus2015@yandex.ru');
+
+        $this->email->subject('Test email...');
+
+        $this->email->message($html);
+
+        $this->email->send();
+
+        echo '<pre>'; echo $html; echo '</pre>'; die;
     }
 
     //VV GPRS PRINTER

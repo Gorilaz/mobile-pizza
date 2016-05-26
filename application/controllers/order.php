@@ -837,9 +837,9 @@ class Order extends WMDS_Controller{
 
         $this->email->message($html);
 
-        $this->email->send();
+        $send = $this->email->send();
 
-        echo '<pre>'; echo $html; echo '</pre>'; die;
+        echo '<pre>'; var_dump($send); echo '</pre>'; die;
     }
 
     //VV GPRS PRINTER

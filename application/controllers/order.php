@@ -566,11 +566,11 @@ class Order extends WMDS_Controller{
         $html = '<table style="width: 700px;">
                 <thead>
                 </thead>
-                <tbody>';
+                <tbody>[[INTRO]]';
 
         /** header 1 */
         $html .='<tr>
-                    <td colspan="2"><b>Order no.'. $order['real_id'] .', '.$sitetitle.'</b>, Date Ordered:' . $datePlacementOrder . '</td>
+                    <td colspan="2"><b>Order no.'. $order['real_id'] .', '.$sitetitle.'</b>, Date Ordered: ' . $datePlacementOrder . '</td>
                 </tr>
                 <tr>
                     <td colspan="2">' . $user['first_name'] . ', ' . $user['last_name'] . ', ' . $user['company_name'] . ', ' . $user['address'] . ', ' . $subUrb . ', Mobile #:' . $user['mobile'] . '</td>
@@ -762,6 +762,7 @@ class Order extends WMDS_Controller{
                         </table>
                     </td>
                  </tr>';
+
         $html .='<tr>
                     <td colspan="2">
                         ' . $directions . '
@@ -798,7 +799,22 @@ class Order extends WMDS_Controller{
                             </tbody>
                         </table>
                     </td>
-                 </tr>';
+                </tr>
+                <tr>
+                    <td style="height:30px;" colspan="2"> </td>
+                </tr>
+                <tr>
+                    <td>
+                        <p>
+                            <strong>Jailhouse Rock Pizza &amp; Pasta Restaurant</strong>
+                        </p>
+                        <p>
+                            <strong>
+                                <a href="http://mobile.bluestarpizza.com.au/">mobile.bluestarpizza.com.au</a>
+                            </strong>
+                        </p>
+                    </td>
+                </tr>';
 
         $html .='';
 
@@ -807,6 +823,8 @@ class Order extends WMDS_Controller{
 
         $html .='</tbody>
                </table>';
+
+        $html = str_replace('[[INTRO]]', '', $html);
 
         $dompdf = new DOMPDF();
         $dompdf->load_html($html);
@@ -817,7 +835,7 @@ class Order extends WMDS_Controller{
         $filename= $pdf_path.$name;
         file_put_contents($filename, $output);
 
-        $this->_sendPdfMail($html_email);
+        $this->_sendPdfMail($html_email, $order['real_id']);
 
         $this->gprs_printer($data);
 
@@ -826,20 +844,51 @@ class Order extends WMDS_Controller{
 
     }
 
-    function _sendPdfMail($html)
+    function _sendPdfMail($html, $order_id)
     {
+        $logged = $this->session->userdata('logged');
+
+        $siteSetting = $this->session->userdata('siteSetting');
+
+        $email_template = file_get_contents($this->config->item('base_abs_path') . 'templates/' . $siteSetting->TEMPLATEDIR . '/email/customer_order_mail.html');
+
+        $subject = 'Thank You for your Order';
+
+        $html = str_replace('[[INTRO]]', '
+                <tr>
+                    <td colspan="2"><b>Subject: ' . $subject . ' (no.' . $order_id . ')</b></td>
+                </tr>
+                <tr>
+                    <td style="height:30px;" colspan="2"> </td>
+                </tr>
+                <tr>
+                    <td colspan="2"><b>Thank you very much for yoru order. Please allow about ' . $siteSetting->delivery_time . ' minutes for delivery. If you have any questions you can contact us at 09599 0333</b></td>
+                </tr>
+                <tr>
+                    <td style="height:30px;" colspan="2"> </td>
+                </tr>', $html);
+
+        $email_template = str_replace('[[LOGO]]', $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/images/smal-circular-logo.png', $email_template);
+        $email_template = str_replace('[[EMAIL_HEADING]]', $subject, $email_template);
+        $email_template = str_replace('[[EMAIL_CONTENT]]', (utf8_encode($html)), $email_template);
+
+        // echo '<pre>'; echo $email_template; echo '</pre>'; die();
+
         $this->load->library('email');
 
-        $this->email->from('dapperkop@yandex.ru');
-        $this->email->to('michael.kopus2015@yandex.ru');
+        $this->email->subject($subject);
 
-        $this->email->subject('Test email...');
+        $this->email->from($siteSetting->FROM_EMAIL, $siteSetting->SITETITLE);
+        $this->email->to($logged['email']);
 
-        $this->email->message($html);
+        if( $siteSetting->order_by_email === 'Y' )
+        {
+            $this->email->bcc($siteSetting->confirm_email_to);
+        }
+
+        $this->email->message(htmlspecialchars_decode($html));
 
         $send = $this->email->send();
-
-        echo '<pre>'; var_dump($send); echo '</pre>'; die;
     }
 
     //VV GPRS PRINTER

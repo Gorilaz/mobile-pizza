@@ -1488,14 +1488,21 @@ $(document)
         $(document)
             .off('click', '#click-checkout')
             .on('click', '#click-checkout', function() {
-                if( $('#click-checkout').data('sitemode') === 'online' )
-                {
-                    window.location.href = '//' + window.location.host + '/checkout';
-                }
-                else
+                if( $('#click-checkout').data('sitemode') !== 'online' )
                 {
                     showAlert('', $($('#click-checkout').data('offlinecontent')).text());
+
+                    return false;
                 }
+
+                if( $('#click-checkout').data('is-day-off') === 'yes' )
+                {
+                    showAlert('', 'Today is a day off. We\'re closed today.');
+
+                    return false;
+                }
+
+                window.location.href = '//' + window.location.host + '/checkout';
             });
 
         function checkHash() {

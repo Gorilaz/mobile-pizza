@@ -4,7 +4,7 @@
         <div class="value">${{ minOrder }}</div>
     </div>
     <div class="cart-center">
-        <a class="cart-button" href="#" id="click-checkout" data-transition="none" data-sitemode="{% if sitemode_online %}{{ 'online' }}{% else %}{{ 'offline' }}{% endif %}"{% if sitemode_online == false %}{{ ' data-offlinecontent="' ~ offlinecontent|escape  ~ '"' }}{% endif %}>
+        <a class="cart-button" href="#" id="click-checkout" data-transition="none" data-sitemode="{% if sitemode_online %}{{ 'online' }}{% else %}{{ 'offline' }}{% endif %}"{% if sitemode_online == false %}{{ ' data-offlinecontent="' ~ offlinecontent|escape  ~ '"' }}{% endif %} data-is-day-off="{% if isopen.isDayOff %}{{ 'yes' }}{% else %}{{ 'no' }}{% endif %}">
             <i class="icon-shopping-cart"></i>
             <em>Checkout</em>
             <span>{{ itemsNo }}</span>

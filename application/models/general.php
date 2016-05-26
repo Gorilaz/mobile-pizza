@@ -14,18 +14,40 @@ class General extends CI_Model {
     const PAGE_404              = 5;
 
     /**
+     * Check if day off
+     * @return bool
+     */
+    public function isDayOff()
+    {
+        $timings = $this->db->where(array('day' => strtolower(date('l'))))->get('tbl_shop_timings')->result();
+
+        $isDayOff = true;
+
+        foreach( $timings as $timing )
+        {
+            if( $timing->first_half_from != NULL && 
+                $timing->first_half_to != NULL && 
+                $timing->second_half_from != NULL && 
+                $timing->second_half_to != NULL )
+            {
+                $off = false;
+            }
+            else
+            {
+                $off = true;
+            }
+
+            $isDayOff = $isDayOff && $off;
+        }
+
+        return $isDayOff;
+    }
+
+    /**
      * Check if the restaurant is open now
      * @return bool
      */
     public function isOpenNow() {
-
-        /* $time = date('h:iA');
-
-        if (strstr($time, 'PM'))
-            $time = date("H:i", strtotime($time));
-        else if (strstr($time, 'AM'))
-            $time = date("h:i", strtotime($time)); */
-
         $day = strtolower(date('l'));
         $time = date('H:i');
 

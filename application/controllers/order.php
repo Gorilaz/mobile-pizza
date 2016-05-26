@@ -870,7 +870,7 @@ class Order extends WMDS_Controller{
 
         $email_template = str_replace('[[LOGO]]', $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/images/smal-circular-logo.png', $email_template);
         $email_template = str_replace('[[EMAIL_HEADING]]', $subject, $email_template);
-        $email_template = str_replace('[[EMAIL_CONTENT]]', (utf8_encode($html)), $email_template);
+        $email_template = str_replace('[[EMAIL_CONTENT]]', $html, $email_template);
 
         // echo '<pre>'; echo $email_template; echo '</pre>'; die();
 
@@ -886,7 +886,7 @@ class Order extends WMDS_Controller{
             $this->email->bcc($siteSetting->confirm_email_to);
         }
 
-        $this->email->message(htmlspecialchars_decode($html));
+        $this->email->message($html);
 
         $send = $this->email->send();
     }

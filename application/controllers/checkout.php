@@ -19,9 +19,12 @@ class checkout extends WMDS_Controller {
     public function index() {
 
         $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
-        $isDayOff = $this->general->isDayOff();
 
-        if( $sitemode !== 'online' || $isDayOff )
+        $storeOpen = $this->session->userdata('storeOpen');
+
+        if( $sitemode !== 'online' || 
+            $storeOpen['isDayOff'] || 
+            $storeOpen['timeIsOver'] )
         {
             redirect(base_url() . 'menu');
         }
@@ -271,9 +274,12 @@ class checkout extends WMDS_Controller {
     {
 
         $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
-        $isDayOff = $this->general->isDayOff();
 
-        if( $sitemode !== 'online' || $isDayOff )
+        $storeOpen = $this->session->userdata('storeOpen');
+
+        if( $sitemode !== 'online' || 
+            $storeOpen['isDayOff'] || 
+            $storeOpen['timeIsOver'] )
         {
             redirect(base_url() . 'menu');
         }

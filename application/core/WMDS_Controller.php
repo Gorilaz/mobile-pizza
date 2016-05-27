@@ -89,9 +89,12 @@ class WMDS_Controller extends CI_Controller {
 
             $isDayOff = $this->general->isDayOff();
 
+            $shopSchedule = $this->general->shopSchedule();
+
             $storeOpen = array(
                 'isOpen' => $isOpenNow, 
                 'isDayOff' => $isDayOff, 
+                'timeIsOver' => ( $shopSchedule['time_is_over']['D'] && $shopSchedule['time_is_over']['P'] ), 
                 'checkTime' => time()
             );
 

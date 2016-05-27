@@ -1502,6 +1502,13 @@ $(document)
                     return false;
                 }
 
+                if( $('#click-checkout').data('time-is-over') === 'yes' )
+                {
+                    showAlert('', 'Sorry, the shop is closed for today.');
+
+                    return false;
+                }
+
                 window.location.href = '//' + window.location.host + '/checkout';
             });
 

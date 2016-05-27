@@ -423,7 +423,6 @@ class Order_model extends CI_Model{
                     'order_id'              => $order_id,
                     'product_flag'          => 'S',
                     'product_id'            => $item['id'],
-                    'variation_id'          => $item['variation_id'],
                     'extra_ingredient_id'   => $extIng,
                     'default_ingredient_id' => $defIng,
                     'quantity'              => $item['qty'],
@@ -431,6 +430,11 @@ class Order_model extends CI_Model{
                     'half_pizza_group_id'   => $item['half_pizza_group_id']
 
                 );
+
+                if( isset($item['variation_id']) )
+                {
+                    $product['variation_id'] = $item['variation_id'];
+                }
                 $this->db->insert('tbl_shopping_cart', $product);
 
 

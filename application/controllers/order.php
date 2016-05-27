@@ -256,15 +256,17 @@ class Order extends WMDS_Controller{
             $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'pending');
 
             $paypalFields = array(
-                'total'   => $newTotal,
+                'total'   => $newTotal, 
                 'orderId' => $order_id
             );
 
             $this->session->set_userdata('paypal', $paypalFields);
 
-            redirect(base_url().'paypal');
-        } else {
-            $order_id    = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'save');
+            redirect(base_url() . 'paypal');
+        }
+        else
+        {
+            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'save');
 
             /** sms confirmation */
             $this->confirmationSms($order_id);
@@ -493,23 +495,19 @@ class Order extends WMDS_Controller{
 
         $credit_card_fee = 0;
 
-        if( $payment_method == 'Paypal' OR $payment_method == 'Credit Card Online' OR $payment_method == 'Credit Card Over Phone' )
+        if( $payment_method == 'Paypal' || 
+            $payment_method == 'Credit Card' )
         {
             $data['paid_or_not'] = 'PAID';
 
-            if( $payment_method == 'Credit Card Over Phone' )
+            if( $payment_method == 'Credit Card' )
             {
-                $data['paid_or_not'] = 'NOT PAID'; // VV setting CC over phone as NOT PAID
-            }
-
-            if( $payment_method == 'Credit Card Online' OR $payment_method == 'Credit Card Over Phone' )
-            {
-                $credit_card_fee = number_format($this->_getPayMethodFee('Credit Card Online'), 2);
+                $credit_card_fee = number_format($this->_getPayMethodFee('Credit Card'), 2);
                 $data['all_extra_fees'] = $data['all_extra_fees'] + $credit_card_fee; //VV for gprs printer
             }
             else if( $payment_method == 'Paypal' )
             {
-                $credit_card_fee = $this->_getPayMethodFee('Paypal');
+                $credit_card_fee = number_format($this->_getPayMethodFee('Paypal'), 2);
                 $data['all_extra_fees'] = $data['all_extra_fees'] + $credit_card_fee; //VV for gprs printer
             }
         }
@@ -1318,35 +1316,47 @@ class Order extends WMDS_Controller{
     function _getPayMethodFee($data)
     {
         $res = $this->C_Model->getMinimumOrderFee();
-        if (!empty($res)) {
 
+        if( !empty($res) )
+        {
             $cart_total = 0;
-            if ($this->cart->contents()) {
-                foreach ($this->cart->contents() as $items) {
-                    if ($items['options']['loyalty'] != 'lp') {
+
+            if( $this->cart->contents() )
+            {
+                foreach( $this->cart->contents() as $items )
+                {
+                    if( empty($items['prod_points']) )
+                    {
                         $cart_total += $items['subtotal'];
                     }
                 }
             }
 
-            if ($data == 'Credit Card Online') {
-                if ($res->ccamt_flag == 'A') {
-                    return ($res->ccamt == 0) ? 0 : $res->ccamt;
+            if( $data == 'Credit Card' )
+            {
+                if( $res->ccamt_flag == 'A' )
+                {
+                    return empty($res->ccamt) ? 0 : $res->ccamt;
                 }
-                elseif ($res->ccamt_flag == 'P') {
-                    return ($res->ccamt == 0) ? 0 : $cart_total / 100 * $res->ccamt;
+                else if( $res->ccamt_flag == 'P' )
+                {
+                    return empty($res->ccamt) ? 0 : ( $cart_total / 100 ) * $res->ccamt;
                 }
             }
-            elseif ($data == 'Paypal') {
-                if ($res->palamt_flag == 'A') {
-                    return ($res->palamt == 0) ? 0 : $res->palamt;
+            else if( $data == 'Paypal' )
+            {
+                if( $res->palamt_flag == 'A' )
+                {
+                    return empty($res->palamt) ? 0 : $res->palamt;
                 }
-                elseif ($res->palamt_flag == 'P') {
-                    return ($res->palamt == 0) ? 0 : $cart_total / 100 * $res->palamt;
+                else if( $res->palamt_flag == 'P' )
+                {
+                    return empty($res->palamt) ? 0 : ( $cart_total / 100 ) * $res->palamt;
                 }
             }
         }
-        else {
+        else
+        {
             return 0;
         }
     }

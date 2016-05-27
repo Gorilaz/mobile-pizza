@@ -378,7 +378,8 @@ class checkout extends WMDS_Controller {
             );
 
             /** save checkout on cart*/
-            if( is_numeric($post['coupon']) )
+            if( !empty($post['coupon']) && 
+                is_numeric($post['coupon']) )
             {
                 $coupon = $this->general->getCoupon($post['coupon']);
 

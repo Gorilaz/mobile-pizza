@@ -133,7 +133,7 @@ function saveOrder()
             }
             else
             {
-                // window.location.href = '//' + window.location.host + '/order/save-order/credit';
+                window.location.href = '//' + window.location.host + '/order/save-order/credit';
             }
         });
 

@@ -132,7 +132,7 @@ class Payment extends WMDS_Controller{
             'desc'         => 'Pizza Web Order', 							// Description of the order the customer is purchasing.  127 char max.
 //            'custom' => '', 						// Free-form field for your own use.  256 char max.
 //            'invnum' => '', 						// Your own invoice or tracking number
-            'notifyurl'    => base_url().'paypal-result'						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
+            'notifyurl'    => base_url() . 'paypal-result'						// URL for receiving Instant Payment Notifications.  This overrides what your profile is set to use.
         );
 
 

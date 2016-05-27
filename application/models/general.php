@@ -848,7 +848,6 @@ class General extends CI_Model {
         return $text->value;
     }
 
-
     /**
      * Get session from the outher site
      * @param $orderHash
@@ -856,8 +855,10 @@ class General extends CI_Model {
      * @param $browser
      * @return mixed
      */
-    public function getSession($orderHash, $ip, $browser){
+    public function getSession( $orderHash, $ip, $browser )
+    {
         $time = time() + 61;
+
         $session = $this->db->select('user_data')
             ->where('session_id', $orderHash)
             ->where('ip_address', $ip)
@@ -865,12 +866,14 @@ class General extends CI_Model {
             ->where('last_activity <', $time)
             ->get('mobile_sessions')
             ->row();
-        if($session){
+
+        if( $session )
+        {
             return $session->user_data;
-        } else {
+        }
+        else
+        {
             return false;
         }
-
     }
-
 }

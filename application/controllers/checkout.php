@@ -98,7 +98,7 @@ class checkout extends WMDS_Controller {
             /**
              * Coupons
              */
-            if( $logged )
+            if( is_array($logged) && isset($logged['userid']) )
             {
                 $coupons = $this->products_model->getCoupons($logged['userid']);
             }
@@ -309,128 +309,163 @@ class checkout extends WMDS_Controller {
         {
             $post = $this->input->post();
 
-            if($post['orderHash'] != $this->session->userdata('session_id')) {
+            if( $post['orderHash'] !== $this->session->userdata('session_id') )
+            {
                 $ip = $this->get_client_ip();
+
                 $browser = $_SERVER['HTTP_USER_AGENT'];
+
+                $this->session->unset_userdata('logged');
+                $this->session->unset_userdata('storeOpen');
+                $this->session->unset_userdata('siteSetting');
+                $this->session->unset_userdata('user_data');
 
                 $session = unserialize($this->general->getSession($post['orderHash'], $ip, $browser));
 
                 /** if user was logged */
-                if(isset($session['logged']) && !empty($session['logged'])){
-                    $this->session->unset_userdata('logged');
+                if( !empty($session['logged']) )
+                {
                     $this->session->set_userdata('logged', $session['logged']);
-                }else {
-                    $this->session->unset_userdata('logged');
                 }
 
                 /** if session storeOpen */
-                if(isset($session['storeOpen']) && !empty($session['storeOpen'])){
-                    $this->session->unset_userdata('storeOpen');
+                if( !empty($session['storeOpen']) )
+                {
                     $this->session->userdata('storeOpen', $session['storeOpen']);
                 }
 
                 /** if session siteSetting */
-                if(isset($session['siteSetting']) && !empty($session['siteSetting'])){
-                    $this->session->unset_userdata('storeOpen');
+                if( !empty($session['siteSetting']) )
+                {
                     $this->session->userdata('siteSetting', $session['siteSetting']);
                 }
 
                 /** if session user_data */
-                if(isset($session['user_data']) && !empty($session['user_data'])){
-                    $this->session->unset_userdata('user_data');
+                if( !empty($session['user_data']) )
+                {
                     $this->session->userdata('user_data', $session['user_data']);
                 }
 
                 /** create cart */
-                $oldCart = $session['cart_contents'];
-                $this->cartInsert($oldCart);
+                if( !empty($session['cart_contents']) )
+                {
+                    $this->cartInsert($session['cart_contents']);
+                }
 
                 /** command is from outher site (yes/no) */
-
                 $backSite = 'yes';
-                $this->session->set_userdata('backUrl',$backSite);
-            } else {
 
+                $this->session->set_userdata('backUrl', $backSite);
+            }
+            else
+            {
                 /** command is from outher site (yes/no) */
                 $backSite = 'no';
-                $this->session->set_userdata('backUrl',$backSite);
+
+                $this->session->set_userdata('backUrl', $backSite);
             }
 
-            if(!isset($post['when']) || $post['when'] == null){
+            if( empty($post['when']) )
+            {
                 $post['when'] = 'Later';
             }
 
             $check = array(
-                'payment'   => $post['payment'],
-                'delivery'  => $post['delivery'],
-                'when'      => $post['when'],
-                'comment'   => $post['comment']
+                'payment' => $post['payment'], 
+                'delivery' => $post['delivery'], 
+                'when' => $post['when'], 
+                'comment' => $post['comment']
             );
 
             /** save checkout on cart*/
-            if(!empty($post['coupon']) && is_numeric($post['coupon'])){
-                $coupon                  = $this->general->getCoupon($post['coupon']);
-                $check['couponName']     = $coupon['couponcode'];
-                $check['couponDiscount'] = $coupon['discountper'];
+            if( is_numeric($post['coupon']) )
+            {
+                $coupon = $this->general->getCoupon($post['coupon']);
 
-            } else if(!empty($post['coupon']) && isset($post['outher-coupon'])){
-                $check['couponName']     = $post['outher-coupon'];
+                if( !empty($coupon) )
+                {
+                    $check['couponName'] = $coupon['couponcode'];
+                    $check['couponDiscount'] = $coupon['discountper'];
+                }
+            }
+            else if( !empty($post['coupon']) && 
+                isset($post['outher-coupon']) )
+            {
+                $check['couponName'] = $post['outher-coupon'];
                 $check['couponDiscount'] = '';
             }
 
-            if(!empty($post['date'])){
+            if( !empty($post['date']) )
+            {
                 $check['date'] = $post['date'];
             }
 
-            if(!empty($post['time'])){
+            if( !empty($post['time']) )
+            {
                 $check['time'] = $post['time'];
             }
 
             $this->load->library('cart');
+
             $this->session->set_userdata('checkout', $check);
             /** end cart */
 
             $paymentFee = array();
+
             /** payment type */
-            if($post['payment'] == 3){
-                if($surcharge->ccamt_flag == 'A'){
+            if( $post['payment'] == 3 )
+            {
+                if( $surcharge->ccamt_flag == 'A' )
+                {
                     $paymentFee = array(
-                        'name'  => 'Credit Card',
-                        'value' => $surcharge->ccamt,
-                    );
-                } else {
-                    $ccFee = number_format(($total/100)* $surcharge->ccamt, 1, '.', '');;
-                    $paymentFee = array(
-                        'name'  => 'Credit Card',
-                        'value' => $ccFee,
+                        'name'  => 'Credit Card', 
+                        'value' => $surcharge->ccamt
                     );
                 }
+                else
+                {
+                    $ccFee = number_format(( ( $total / 100 ) * $surcharge->ccamt ), 1, '.', '');
+
+                    $paymentFee = array(
+                        'name'  => 'Credit Card', 
+                        'value' => $ccFee
+                    );
+                }
+
                 $pg = 'credit-card';
-            } elseif($post['payment'] == 1){
+            }
+            else if( $post['payment'] == 1 )
+            {
                 $paymentFee = '';
+
                 $pg = 'cash';
-            } elseif($post['payment'] == 4) {
-                if($surcharge->palamt_flag == 'A'){
+            }
+            else if( $post['payment'] == 4 )
+            {
+                if( $surcharge->palamt_flag == 'A' )
+                {
                     $paymentFee = array(
-                        'name'  => 'Pay Pal',
-                        'value' => $surcharge->palamt,
-                    );
-                } else {
-                    $paypalFee = number_format(($total/100)* $surcharge->palamt, 1, '.', '');;
-                    $paymentFee = array(
-                        'name'  => 'Pay Pal',
-                        'value' => $paypalFee,
+                        'name'  => 'Pay Pal', 
+                        'value' => $surcharge->palamt
                     );
                 }
+                else
+                {
+                    $paypalFee = number_format(( ( $total / 100 ) * $surcharge->palamt ), 1, '.', '');
+
+                    $paymentFee = array(
+                        'name'  => 'Pay Pal', 
+                        'value' => $paypalFee
+                    );
+                }
+
                 $pg = 'paypal';
             }
 
             /** save in session credit-card or paypal fee */
             $this->session->set_userdata('surchange', $paymentFee);
-            /** end */
-
-
             $this->session->set_userdata('pg', $pg);
+            /** end */
         }
         else
         {

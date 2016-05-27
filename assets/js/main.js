@@ -2440,36 +2440,51 @@ $(document)
     .on('pageinit', "#page-payment", function() {
         verifyClean();
 
-        $(document)
-            .off('click', '#sign-in')
+        var focusInputHandler = function() {
+                $('select').selectmenu('disable');
+            }, 
+            blurInputHandler = function() {
+                $('select').selectmenu('enable');
+            }, 
             /*
              * Bind click action for standart login form
              */
-            .on('click', '#sign-in', function() {
+            clickSignInHandler = function() {
                 var self = this;
 
                 if( $('#form-singin').valid() )
                 {
                     signInRequest(self);
                 }
-            })
-            .off('click', '#log-out')
+            }, 
             /*
              * Bind click action for log out
              */
-            .on('click', '#log-out', function() {
+            clickLogOutHandler = function() {
                 window.location.href = '//' + window.location.host + '/logout/payment';
-            })
-            .off('input', '#form_mobile')
-            .on('input', '#form_mobile', function() {
+            }, 
+            inputFormMobileHandler = function() {
                 $('#verify-btn')[( $('#form_mobile').val().length < 10 ? 'addClass' : 'removeClass' )]('ui-disabled');
-            })
-            .off('click', '#changeMobileNumber')
-            .on('click', '#changeMobileNumber', function() {
+            }, 
+            clickChangeMobileNumberHandler = function() {
                 $('#form_mobile').val('');
 
                 verifyClean();
-            })
+            };
+
+        $(document)
+            .off('focus', 'input', focusInputHandler)
+            .on('focus', 'input', focusInputHandler)
+            .off('blur', 'input', blurInputHandler)
+            .on('blur', 'input', blurInputHandler)
+            .off('click', '#sign-in', clickSignInHandler)
+            .on('click', '#sign-in', clickSignInHandler)
+            .off('click', '#log-out', clickLogOutHandler)
+            .on('click', '#log-out', clickLogOutHandler)
+            .off('input', '#form_mobile', inputFormMobileHandler)
+            .on('input', '#form_mobile', inputFormMobileHandler)
+            .off('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
+            .on('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
             .off('click', '#verify-btn')
             /*
              * Bind click action for Verify button on profile page
@@ -2578,12 +2593,14 @@ $(document)
         prepareProfileFormValidation();
         prepareLoginFormValidation();
 
-        $(window).on('load', function() {
-            if( !!firstOrderDeleted )
-            {
-                showAlert('', 'Sorry, but it seems this is not your first oder. The First Order Discount has been removed.');
-            }
-        });
+        $(window)
+            // .off('load')
+            .on('load', function() {
+                if( !!firstOrderDeleted )
+                {
+                    showAlert('', 'Sorry, but it seems this is not your first oder. The First Order Discount has been removed.');
+                }
+            });
     })
     .off('pageinit', '#page-recover')
     /***********************************************************************************************************************

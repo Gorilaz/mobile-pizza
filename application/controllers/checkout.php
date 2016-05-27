@@ -246,13 +246,11 @@ class checkout extends WMDS_Controller {
         return $out;
     }
 
-
     /**
      * Get Coupons (ajax)
      */
-    public function getCoupons() {
-        $this->load->model('general');
-
+    public function getCoupons()
+    {
         $coupon = $this->input->post('coupon');
 
         $coupons = $this->general->getCoupons($coupon);
@@ -263,16 +261,15 @@ class checkout extends WMDS_Controller {
         }
         else
         {
-            echo json_encode('false');
+            echo 'false';
         }
     }
 
     /**
      * Payment page / Auth page
      */
-    public function payment($socialLogin = '')
+    public function payment( $socialLogin = '' )
     {
-
         $sitemode = $this->db->select('value')->where('type', 'SITEMODE')->get('sitesetting')->row()->value;
 
         $storeOpen = $this->session->userdata('storeOpen');
@@ -289,20 +286,21 @@ class checkout extends WMDS_Controller {
         $this->twiggy->set('socialLogin', $socialLogin);
 
         $this->load->library('session');
-        $this->load->model('general');
+
         $this->load->model('order_model');
 
-        //$firstPointLogin = $this->session->userdata('firstPointLogin');
-        //if( !$firstPointLogin )
-        //{
+        // $firstPointLogin = $this->session->userdata('firstPointLogin');
+        // if( !$firstPointLogin )
+        // {
             $this->session->set_userdata('firstPointLogin', 'order');
-        //}
+        // }
 
         $surcharge = $this->order_model->getMinOrder();
 
         $total = $this->cart->total();
 
-        if( empty($total) ) {
+        if( empty($total) )
+        {
             // Back to menu when Hardware back button press
             redirect(base_url() . 'menu');
         }
@@ -466,7 +464,8 @@ class checkout extends WMDS_Controller {
 
         $logged = $this->session->userdata('logged');
 
-        if(isset($check['couponName']) && isset($check['couponDiscount']))
+        if( isset($check['couponName']) && 
+            isset($check['couponDiscount']) )
         {
             $hasCoupon = true;
 
@@ -485,7 +484,7 @@ class checkout extends WMDS_Controller {
 
                 $coupons = $this->products_model->getCoupons($logged['userid']);
 
-                if( !isset($coupons['firstOrder']) || empty($coupons['firstOrder']) )
+                if( empty($coupons['firstOrder']) )
                 {
                     unset($check['couponName']);
                     unset($check['couponDiscount']);
@@ -508,16 +507,9 @@ class checkout extends WMDS_Controller {
         }
 
         /** delivery fee */
-        if( $check['delivery'] === 'P' )
-        {
-            $this->twiggy->set('hasDeliveryFee', 0);
-        }
-        else
-        {
-            $this->twiggy->set('hasDeliveryFee', 1);
-        }
-        /** verify if is logged */
+        $this->twiggy->set('hasDeliveryFee', $check['delivery'] === 'P' ? 0 : 1);
 
+        /** verify if is logged */
         if( !empty($logged) )
         {
             /** delivery fee */
@@ -547,7 +539,9 @@ class checkout extends WMDS_Controller {
             {
                 $ids_parts = explode('_', $cart_item['id']);
 
-                if( is_array($ids_parts) && isset($ids_parts[0]) && isset($ids_parts[1]) )
+                if( is_array($ids_parts) && 
+                    isset($ids_parts[0]) && 
+                    isset($ids_parts[1]) )
                 {
                     $cart_items[$key]['first_half'] = $this->products_model->getProductById($ids_parts[0]);
                     $cart_items[$key]['second_half'] = $this->products_model->getProductById($ids_parts[1]);
@@ -567,7 +561,7 @@ class checkout extends WMDS_Controller {
         {
             foreach( $cart_items as $key => $cart_item )
             {
-                if( isset($half) && $half !== false )
+                if( !empty($half) )
                 {
                     $half = false;
                 }
@@ -584,12 +578,7 @@ class checkout extends WMDS_Controller {
                             $half = 'second';
                         }
 
-                        if( $half == 'first' && $cart_item['first_half']->has_coupon == 1 )
-                        {
-                            $totalDiscount += ( ( ( (double) $option['price'] * (integer) $cart_item['qty'] ) / 100 ) * (integer) $check['couponDiscount'] );
-                        }
-
-                        if( $half == 'second' && $cart_item['second_half']->has_coupon == 1 )
+                        if( $cart_item[$half . '_half']->has_coupon == 1 )
                         {
                             $totalDiscount += ( ( ( (double) $option['price'] * (integer) $cart_item['qty'] ) / 100 ) * (integer) $check['couponDiscount'] );
                         }
@@ -684,14 +673,18 @@ class checkout extends WMDS_Controller {
      * Create new cart
      * @param $oldCart
      */
-    private function cartInsert($oldCart){
-
+    private function cartInsert( $oldCart = array() )
+    {
         /** reset cart */
         $this->cart->destroy();
 
-        /** insert products */
-        foreach($oldCart as $item){
-            $this->cart->insert($item);
+        if( is_array($oldCart) )
+        {
+            /** insert products */
+            foreach( $oldCart as $item )
+            {
+                $this->cart->insert($item);
+            }
         }
     }
 

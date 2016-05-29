@@ -1460,8 +1460,27 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-input[type="number"]::-webkit-outer-spin-button, 
+input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
     margin: 0;
+}
+
+a#changeMobileNumber span.ui-btn-inner {
+    line-height: 1;
+    padding: 2px 20px 2px 20px;
+}
+
+div#changeMobileNumberWrapper {
+    width: 50%;
+}
+
+a#welcome-page {
+    text-decoration: none;
+}
+
+#verify-btn span.ui-btn-inner {
+    line-height: 1;
+    padding: 8px 20px 8px 20px;
+    margin: 0px;
 }

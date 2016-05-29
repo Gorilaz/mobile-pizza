@@ -1,4 +1,4 @@
-            
+
         <div class="get-space single-options">
             <!-- Start Register  -->
             <form id="register_form" class="single-options">
@@ -64,9 +64,9 @@
                         <input type="email" name="email" class="required email" {%- if logged is defined and logged.email is defined -%} readonly="readonly" {%- endif -%} id="email" value="{%- if logged.email is defined -%}{{ logged.email }}{%- endif -%}" />
                     </div>
                 </div>
-                    
+
                 {% if logged is not defined or logged == 0 %}
-                    
+
                 <div class="ui-grid-a">
                     <div class="ui-block-a">
                             <label for="form_password">Password: </label>
@@ -94,20 +94,16 @@
                         <div id="mobile-div" class="inline-block vertical-align-top margin-right-15px">
                             <input type="text" name="mobile" id="form_mobile" maxlength="10" data-current="{{ logged.mobile }}" value="{{ logged.mobile }}"{%- if  logged is defined and logged.mobile is defined -%}{{ ' readonly="readonly"' }}{%- endif -%} />
                         </div><div id="verify-div" class="inline-block vertical-align-top margin-right-15px" style="display: none;">
-                            <div class="inline-block vertical-align-middle margin-right-15px help_form_mobile hide">
-                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle margin-right-15px" />
-                                <span class="inline-block vertical-align-middle">Please fill in…</span>
-                            </div><div class="inline-block vertical-align-middle">
+                            <div class="inline-block vertical-align-middle">
                                 <a href="#" data-role="button" data-inline="true" id="verify-btn" class="margin-right-15px{% if logged.mobile == false %}{{ ' ui-disabled' }}{% endif %}">Verify</a>
                             </div><div class="inline-block vertical-align-middle margin-right-15px">
                                 <input type="text" name="mobile_code" id="sms-code" data-final="no" maxlength="4" style="width: 40px;" />
                             </div><div class="inline-block vertical-align-middle margin-right-15px help hide">
-                                <img src="{{ base_url }}assets/images/green-arrow.png" class="inline-block vertical-align-middle margin-right-15px" />
                                 <span class="inline-block vertical-align-middle">Please enter the SMS verification code here!</span>
                             </div><div class="inline-block vertical-align-middle">
                                 <label for="form_mobile_code" id="sms-error-label" class="error" style="margin-left: 10px; margin-top: 15px; display: none;">Incorect Verification code</label>
                             </div>
-                        </div><div class="inline-block vertical-align-middle">
+                        </div><div id="changeMobileNumberWrapper" class="inline-block vertical-align-middle">
                             <a href="#" data-role="button" data-inline="true" id="changeMobileNumber"{% if logged.mobile == false %}{{ ' class="hide"' }}{% endif %}>Change Mobile<br />Number</a>
                         </div>
                     </div>
@@ -119,17 +115,17 @@
                         </div>
                     {% endif %}
 
-                    
+
                 {% if pg is defined and pg == 'paypal' %}
                     <input type="hidden" name="paypal" value="yes">
                 {% else %}
                     <input type="hidden" name="paypal" value="no">
                 {% endif %}
-                
+
                 {% if pg is defined %}
                     <input type="hidden" id="pg" data-pg="{{ pg }}">
                 {% endif %}
-                
+
                 {% if saveBtn is defined %}
                     <button data-theme="a" id="save-edit" type="button">Save</button>
                 {% endif %}

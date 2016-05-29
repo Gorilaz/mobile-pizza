@@ -152,7 +152,7 @@ class Order extends WMDS_Controller{
 
                     foreach( $cart_item['options'] as $option )
                     {
-                        if( $half !== 'second' && 
+                        if( $half !== 'second' &&
                             strpos(strtolower($option['name']), 'second half') !== false )
                         {
                             $half = 'second';
@@ -196,8 +196,8 @@ class Order extends WMDS_Controller{
         }
 
         /** total + suburb delivery fee */
-        if( isset($check['delivery']) && 
-            $check['delivery'] === 'D' && 
+        if( isset($check['delivery']) &&
+            $check['delivery'] === 'D' &&
             isset($user['suburb']) )
         {
             $delivery_fee = $this->order_model->getDeliveryFee($user['suburb']);
@@ -256,7 +256,7 @@ class Order extends WMDS_Controller{
             $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'pending');
 
             $paypalFields = array(
-                'total'   => $newTotal, 
+                'total'   => $newTotal,
                 'orderId' => $order_id
             );
 
@@ -279,9 +279,10 @@ class Order extends WMDS_Controller{
 
             $this->order_model->save_order_again($order_again, $order_id, $user['userid']);
 
-            $name = $this->order_pdf($order_id);
+            //$name = $this->order_pdf($order_id);
+            $this->order_pdf($order_id);
 
-            $this->order_model->updatePdf($order_id, $name);
+            //$this->order_model->updatePdf($order_id, $name);
 
             /** conmmand is from outher site*/
             $back_url = $this->session->userdata('backUrl');
@@ -321,7 +322,7 @@ class Order extends WMDS_Controller{
                 $content_message = strip_tags(str_replace("<br />", "\n", $content_message));
 
                 $this->Telerivet_Project->sendMessage(array(
-                    'content' => $content_message, 
+                    'content' => $content_message,
                     'to_number' => $sms['mob_number']
                 ));
             }
@@ -368,8 +369,8 @@ class Order extends WMDS_Controller{
      * @param $orderId
      */
     public function order_pdf($orderId){
-        require_once(FCPATH."application/helpers/dompdf/dompdf_config.inc.php");
-        require_once(FCPATH. 'application/libraries/phpqrcode/phpqrcode.php');
+        //require_once(FCPATH."application/helpers/dompdf/dompdf_config.inc.php");
+        //require_once(FCPATH. 'application/libraries/phpqrcode/phpqrcode.php');
 
         $user = $this->session->userdata('logged');
         $subUrb = $this->order_model->getSubUrb($user['suburb']);
@@ -435,14 +436,14 @@ class Order extends WMDS_Controller{
 
         $VoucherDiscount = $this->order_model->checkValidVoucher2($order['voucher_code']);  //VV
 
-        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) &&
             $data['coupon_type'] == 'discount' && $VoucherDiscount != 'old' )
         {
             $vdiscrptn = str_replace(array('\n', '\r'), '', htmlspecialchars_decode($vdisc, ENT_NOQUOTES));
             $data['p_discount'] = strtoupper($data['voucher_code']) . '-' . $vdiscrptn . '  -$' . $data['discount']; //VV for gprs printer
         }
 
-        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) &&
             $data['coupon_type'] == 'freeproduct' && $VoucherDiscount != 'old' )
         {
             $free_product = $this->order_model->getFreeProductDescription($data['voucher_code']);
@@ -455,7 +456,7 @@ class Order extends WMDS_Controller{
             }
         }
 
-        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) && 
+        if( !empty($data['voucher_code']) && !empty($data['coupon_type']) &&
             $data['coupon_type'] == 'invalid' && (bool) $data['voucher_code'] !== false )
         {
             $data['p_discount'] = strtoupper($data['voucher_code']); //VV for gprs printer
@@ -495,7 +496,7 @@ class Order extends WMDS_Controller{
 
         $credit_card_fee = 0;
 
-        if( $payment_method == 'Paypal' || 
+        if( $payment_method == 'Paypal' ||
             $payment_method == 'Credit Card' )
         {
             $data['paid_or_not'] = 'PAID';
@@ -522,6 +523,10 @@ class Order extends WMDS_Controller{
 
         $data['restaurant_name'] = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
 
+
+        $this->gprs_printer($data);
+
+
         if(empty($order['order_date']))
         {
             $when = 'Delivery Time: ASAP';
@@ -536,24 +541,26 @@ class Order extends WMDS_Controller{
         $datePlacementOrder = DateTime::createFromFormat('Y-m-d H:i:s', $order['order_placement_date'])->format('d-m-Y H:i');
 
         /** QRCODE */
-
+        /*
         $searchAddress = $user['address'] . ',' . $subUrb . ',' . $user['zipcode'];
         $url = 'http://maps.google.com.au/maps?q=' . urlencode($searchAddress); // VV
         $googleUrl = $this->shortUrl($url);
         $qrUrl = FCPATH . 'templates/qrcode/' . $order['order_id'] . '.png';
         QRcode::png($googleUrl, $qrUrl, QR_ECLEVEL_L, 3, 0); //3 is size
-
+        */
         /** END QRCODE */
 
         //TODO: printer_files
 
         $sitetitle = $this->order_model->getSiteTitle();
         /** MAP */
+        /*
         $shopAddress = $this->order_model->getShopAddress();
         include_once(APPPATH.'helpers/create_map.php');
 
         $map = $new_img;
         $directions = $tbl;
+        */
         /** END MAP*/
 
         $space = '<tr >
@@ -723,49 +730,10 @@ class Order extends WMDS_Controller{
 
         $html_email = $html;
 
-        $html .= '<tr >
-                    <td colspan="2" rowsan="3" style="border: 1px solid #cccccc;width: 500px;">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <td style="width:245px" margin-right:5px;>
-                                        <table>
-                                            <tbody>
-                                                <tr>
-                                                    <td>' . $user['first_name'] . ', ' . $user['last_name'] . '</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>' . $user['company_name'] . '</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>' . $user['address'] . '</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>' . $subUrb . '</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>' . $user['mobile'] . '</td>
-                                                </tr>
-                                                 <tr>
-                                                    <td><img src="' . $qrUrl . '"/></td>
-                                                </tr>
+        $siteSetting = $this->session->userdata('siteSetting');
+        $mobile_url =  $siteSetting->subdomain_url;
+        $parsed_url = parse_url($mobile_url);
 
-                                            </tbody>
-                                        </table>
-                                    </td>
-
-                                    <td style="width:350px;"><img src="' . $map . '" /> </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </td>
-                 </tr>';
-
-        $html .='<tr>
-                    <td colspan="2">
-                        ' . $directions . '
-                    <td>
-                </tr>';
 
         $html_email .= '<tr >
                     <td colspan="2" rowsan="3">
@@ -800,15 +768,16 @@ class Order extends WMDS_Controller{
                 </tr>
                 <tr>
                     <td style="height:30px;" colspan="2"> </td>
+                <td style="height:30px;" colspan="2"> </td>
                 </tr>
                 <tr>
                     <td>
                         <p>
-                            <strong>Jailhouse Rock Pizza &amp; Pasta Restaurant</strong>
+                            <strong>' . $data['restaurant_name'] . '</strong>
                         </p>
                         <p>
                             <strong>
-                                <a href="http://mobile.bluestarpizza.com.au/">mobile.bluestarpizza.com.au</a>
+                                <a href=' . $mobile_url . '>'  . $parsed_url['host'] . ' </a>
                             </strong>
                         </p>
                     </td>
@@ -824,18 +793,21 @@ class Order extends WMDS_Controller{
 
         $html = str_replace('[[INTRO]]', '', $html);
 
-        $dompdf = new DOMPDF();
-        $dompdf->load_html($html);
-        $dompdf->render();
-        $output = $dompdf->output();
-        $pdf_path = FCPATH.'templates/pdf/';
-        $name = 'DEMOTEST_'.$order['real_id'].'.pdf';
-        $filename= $pdf_path.$name;
-        file_put_contents($filename, $output);
+        // don't need pdf anymore
+        //$dompdf = new DOMPDF();
+        //$dompdf->load_html($html);
+        //$dompdf->render();
+        //$output = $dompdf->output();
+        //$pdf_path = FCPATH.'templates/pdf/';
+        //$name = 'DEMOTEST_'.$order['real_id'].'.pdf';
+        //$filename= $pdf_path.$name;
+        //file_put_contents($filename, $output);
+
+
 
         $this->_sendPdfMail($html_email, $order['real_id']);
 
-        $this->gprs_printer($data);
+
 
         return $name;
 
@@ -848,8 +820,11 @@ class Order extends WMDS_Controller{
 
         $siteSetting = $this->session->userdata('siteSetting');
 
-        $email_template = file_get_contents($this->config->item('base_abs_path') . 'templates/' . $siteSetting->TEMPLATEDIR . '/email/customer_order_mail.html');
+        //var_dump($siteSetting); die;
 
+        $email_template = file_get_contents($siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html');
+        //$email_template = $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html';
+        //echo " email_template is $email_template"; die;
         $subject = 'Thank You for your Order';
 
         $html = str_replace('[[INTRO]]', '
@@ -866,7 +841,7 @@ class Order extends WMDS_Controller{
                     <td style="height:30px;" colspan="2"> </td>
                 </tr>', $html);
 
-        $email_template = str_replace('[[LOGO]]', $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/images/smal-circular-logo.png', $email_template);
+        $email_template = str_replace('[[LOGO]]', $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default', $email_template);
         $email_template = str_replace('[[EMAIL_HEADING]]', $subject, $email_template);
         $email_template = str_replace('[[EMAIL_CONTENT]]', $html, $email_template);
 
@@ -968,12 +943,19 @@ class Order extends WMDS_Controller{
 
         $this->order_model->recordPrinterData($data['order_number'],$p_printer_data, $p_status);
 
-        $text_file_path = FCPATH.'templates/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
 
+        /*
+        $sitesetting = $this->session->userdata('siteSetting');
+
+        //CAN"T USE file_put_contents to a remote server, so saving in on mobile server for now
+        // $text_file_path = $sitesetting->desktop_url . 'templates/' . $sitesetting->TEMPLATEDIR . '/upload/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
+
+        $text_file_path = FCPATH . 'templates/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
         if ( file_put_contents($text_file_path, $p_printer_data) === false )
         {
             // echo 'Unable to write the file'; die;
         }
+        */
     } //VV end function gprs printer
 
     /**
@@ -1036,10 +1018,10 @@ class Order extends WMDS_Controller{
         }
 
         $this->twiggy->set('page', array(
-            'title' => 'Your Orders', 
-            'role' => 'page', 
-            'theme' => 'a', 
-            'id' => 'your-orders', 
+            'title' => 'Your Orders',
+            'role' => 'page',
+            'theme' => 'a',
+            'id' => 'your-orders',
             'backButton' => true
         ));
 
@@ -1084,7 +1066,7 @@ class Order extends WMDS_Controller{
         $count = $offset + $limit;
 
         echo json_encode(array(
-            'orders' => $orders, 
+            'orders' => $orders,
             'count' => $count
         ));
     }
@@ -1115,7 +1097,7 @@ class Order extends WMDS_Controller{
                             $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
                             $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value);
@@ -1129,7 +1111,7 @@ class Order extends WMDS_Controller{
                             $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
                             $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $current .= '>NO: ' . ucwords($value);
@@ -1145,7 +1127,7 @@ class Order extends WMDS_Controller{
 
                             $price = isset($option['price']) ? trim($option['price']) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $extra .= '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
@@ -1178,7 +1160,7 @@ class Order extends WMDS_Controller{
 
                     foreach( $items['options'] as $option )
                     {
-                        if( $half === false && 
+                        if( $half === false &&
                             strpos(strtolower($option['name']), 'first half') !== false )
                         {
                             $half = 'first';
@@ -1188,7 +1170,7 @@ class Order extends WMDS_Controller{
                             $first_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
                         }
 
-                        if( $half === 'first' && 
+                        if( $half === 'first' &&
                             strpos(strtolower($option['name']), 'second half') !== false )
                         {
                             $half = 'second';
@@ -1205,7 +1187,7 @@ class Order extends WMDS_Controller{
                             $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
                             $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $product_variation_group = '>' . strtoupper($name) . ': ' . strtoupper($value);
@@ -1229,7 +1211,7 @@ class Order extends WMDS_Controller{
                             $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
                             $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $product_current_options = '>NO: ' . ucwords($value);
@@ -1255,7 +1237,7 @@ class Order extends WMDS_Controller{
 
                             $price = isset($option['price']) ? trim($option['price']) : '';
 
-                            if( !empty($name) && 
+                            if( !empty($name) &&
                                 !empty($value) )
                             {
                                 $product_extra_options = '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );

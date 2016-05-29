@@ -96,7 +96,7 @@
             <span itemprop="name">{{ settings.restaurant_name }}</span>
             <span itemprop="address">{{ settings.shop_address }}</span>
             <span itemprop="telephone"></span>
-            <span itemprop="currenciesAccepted">USD</span>
+            <span itemprop="currenciesAccepted">AUD</span>
             {% set openingHours = '' %}
             {% for weekday, times in schedule_for_schema %}
                 {% if openingHours == '' %}
@@ -113,6 +113,7 @@
 {# desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/smal-circular-logo.png #}
             <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/images/smal-circular-logo.png" itemprop="logo" />
             <link href="{{ base_url }}menu" itemprop="menu" />
+            <link href="{{ base_url }}" itemprop="url" />
         </div>
         <div{% if page.id is defined %} id="{{ page.id }}"{% endif %}{% if page.role is defined %} data-role="{{ page.role }}"{% endif %}{% if page.theme is defined %} data-theme="{{ page.theme }}"{% endif %}{% if page.url is defined %} data-url="{{ page.url }}"{% endif %}>
             {% include 'page/popups/alertDialog.html.twig' %}

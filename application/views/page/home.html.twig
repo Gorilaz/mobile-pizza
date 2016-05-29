@@ -11,34 +11,34 @@
         };
 
     </script>
-
-    <div data-role="content">
-        <div class="main-background-image" id="main-content">
-            <div class="main-top-title">
-                <h1>{{ pageContent.top_h1|striptags }}</h1>
-                <h2>{{ pageContent.top_h2|striptags }}<br>
-                {{ pageContent.top_h3|striptags }}<br>
-                {{ pageContent.top_h4|striptags }}</h2>
+    <a id="welcome-page" href="{{ base_url }}menu">
+        <div data-role="content">
+            <div class="main-background-image" id="main-content">
+                <div class="main-top-title">
+                    <h1>{{ pageContent.top_h1|striptags }}</h1>
+                    <h2>{{ pageContent.top_h2|striptags }}<br>
+                    {{ pageContent.top_h3|striptags }}<br>
+                    {{ pageContent.top_h4|striptags }}</h2>
+                </div>
+                <div class="logo-overlay">
+                    <div>
+                    </div>
+                </div>
+                {% if isopen.isOpen %}
+                    <div class="status-container">
+                        <i class="icon-ok"></i> We are open
+                    </div>
+                {% else %}
+                    <div class="status-container status-container-closed">
+                        <i class="icon-ban-circle"></i> We are closed
+                    </div>
+                {% endif %}
             </div>
-            <div class="logo-overlay">
-                <div>
-                </div>
-            </div>
-            {% if isopen.isOpen %}
-                <div class="status-container">
-                    <i class="icon-ok"></i> We are open
-                </div>
-            {% else %}
-                <div class="status-container status-container-closed">
-                    <i class="icon-ban-circle"></i> We are closed
-                </div>
-            {% endif %}
-        </div>
-        <!-- Reffer a friend popup -->
-        {% include ('page/popups/referal.html.twig') %}
-        <!-- END Reffer a friend popup -->
-    </div><!-- /content -->
-
+            <!-- Reffer a friend popup -->
+            {% include ('page/popups/referal.html.twig') %}
+            <!-- END Reffer a friend popup -->
+        </div><!-- /content -->
+    </a>
     <div data-role="footer" data-theme="pizza" data-position="fixed">
         <a class="btn btn-blue btn-big" href="{{ base_url }}menu" data-transition="none" data-ajax="false">
             Order Now

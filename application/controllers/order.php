@@ -846,17 +846,21 @@ class Order extends WMDS_Controller{
 
         $this->load->library('email');
 
-        $this->email->initialize(array('mailtype' => 'html'));
+        $this->email->initialize(array(
+            'mailtype' => 'html', 
+            'bcc_batch_mode' => true
+        ));
 
         $this->email->subject($subject);
 
         $this->email->from($siteSetting->FROM_EMAIL, $siteSetting->SITETITLE);
-        $this->email->to($logged['email']);
 
         if( $siteSetting->order_by_email === 'Y' )
         {
             $this->email->bcc($siteSetting->confirm_email_to);
         }
+
+        $this->email->to($logged['email']);
 
         $this->email->message($email_template);
 

@@ -36,6 +36,9 @@
 
         <title>{% if page.title is defined %}{{ page.title }}{% endif %} | {% if settings.SITETITLE is defined %}{{ settings.SITETITLE }}{% endif %}</title>
 
+        <link type="text/css" rel="stylesheet" href="{{ base_url }}/assets/3rdparty/feedback_me-master/css/jquery.feedback_me.css"/>
+
+
         <link type="text/css" rel="stylesheet" href="http://fonts.googleapis.com/css?family=Abel|News+Cycle:400,700" />
 
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/font-awesome/css/font-awesome.min.css" />
@@ -46,6 +49,7 @@
 
 
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/animate-custom.css" />
+
 
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.9.1.js"></script>#}
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.10.2.min.js"></script>#}
@@ -153,11 +157,45 @@
 
     </body>
 
+    <script type="text/javascript" src="{{ base_url }}assets/3rdparty/feedback_me-master/js/jquery.feedback_me.js"></script>
+
     <script type="text/javascript">
 
         $('.main-background-image').css('background-image','url(\'' + desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/pizza_bg.png\')');
 
         $('.top-bar-title > a ').css('background-image','url(\'' + desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/smal-circular-logo.png\')');
+
+
+
+            $(document).ready(function(){
+                //set up some basic options for the feedback_me plugin
+                fm_options = {
+                    feedback_url: "{{ base_url }}feedback/",
+                    position: "right-top",
+                    name_required: true,
+                    message_placeholder: "Go ahead, type your feedback here...",
+                    message_required: true,
+                    show_asterisk_for_required: true,
+                    //feedback_url: "send_feedback_clean",
+                    custom_params: {
+                        csrf: "my_secret_token",
+                        user_id: "john_doe",
+                        feedback_type: "clean"
+                    },
+                    delayed_options: {
+                        send_fail : "Sending failed :(.",
+                        send_success : "Sent successfully :) , wow! even this message is customizable!!!"
+                    }
+                };
+                //init feedback_me plugin
+                fm.init(fm_options);
+
+                //SyntaxHighlighter.all();
+            });
+
+
+
+
     </script>
 
 </html>

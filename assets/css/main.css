@@ -1484,3 +1484,36 @@ a#welcome-page {
     padding: 8px 20px 8px 20px;
     margin: 0px;
 }
+
+.feedback_trigger.left-bottom.fm_clean.feedback_trigger_closed {
+    color: white;
+    text-shadow: none;
+    border-radius: 0px;
+    background: #5d5c5c;
+}
+
+
+.fm_clean button {
+    padding: 6px 162px;
+    border-radius: 0px;
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    text-shadow: none;
+    font-size: 15px;
+    position: relative;
+    top: -18px;
+}
+
+.feedback_content.fm_clean.left-top, .feedback_content.fm_clean.left-bottom {
+    margin-left: 0px;
+    -webkit-border-bottom-right-radius: 0px;
+    -moz-border-bottom-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    -webkit-border-top-right-radius: 0px;
+    -moz-border-top-right-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.feedback_trigger.left-top, .feedback_trigger.left-bottom, .feedback_trigger.right-top, .feedback_trigger.right-bottom {
+    width: 25px;
+}

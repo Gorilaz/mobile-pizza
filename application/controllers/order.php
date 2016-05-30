@@ -819,12 +819,13 @@ class Order extends WMDS_Controller{
 
         $siteSetting = $this->session->userdata('siteSetting');
 
-        //var_dump($siteSetting); die;
-
         $email_template = file_get_contents($siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html');
-        //$email_template = $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html';
-        //echo " email_template is $email_template"; die;
-        $subject = 'Thank You for your Order';
+
+        $subject = $siteSetting->order_mail_title;
+        $description = $siteSetting->order_mail_descr;
+
+        $description = str_replace('[[DELIVERY_TIME]]', $siteSetting->delivery_tim, $description);
+        $description = str_replace('[[RESTAURANT_PHONE]]', $siteSetting->restaurant_phone, $description);
 
         $html = str_replace('[[INTRO]]', '
                 <tr>
@@ -834,7 +835,7 @@ class Order extends WMDS_Controller{
                     <td style="height:30px;" colspan="2"> </td>
                 </tr>
                 <tr>
-                    <td colspan="2"><b>Thank you very much for your order. Please allow about ' . $siteSetting->delivery_time . ' minutes for delivery. If you have any questions you can contact us at 09599 0333</b></td>
+                    <td colspan="2"><b>' . $description . '</b></td>
                 </tr>
                 <tr>
                     <td style="height:30px;" colspan="2"> </td>

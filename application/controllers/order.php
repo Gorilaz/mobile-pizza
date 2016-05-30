@@ -374,7 +374,7 @@ class Order extends WMDS_Controller{
 
         $user = $this->session->userdata('logged');
         $subUrb = $this->order_model->getSubUrb($user['suburb']);
-        $order = $this->order_model->getOrder($orderId);
+        $order = $this->order_model->getOrder($orderId); // echo '<pre>'; var_dump($order); echo '</pre>'; die;
         $checkout = $this->session->userdata('checkout');
 
         if( $checkout['payment'] == 1 )
@@ -604,6 +604,7 @@ class Order extends WMDS_Controller{
         $html .= '<tr>
                     <td colspan="2">Item(s) ordered:</td>
                 </tr>';
+
         $cart = $this->cart->contents();
         $total = $this->cart->total();
 
@@ -650,15 +651,15 @@ class Order extends WMDS_Controller{
                      </tr>';
         }
 
-        $newTotal = $total;
+        // $newTotal = $total;
         if(!empty( $checkout['couponName']) && !empty($checkout['couponDiscount'])){
 
-            $discountPrice = number_format((($total/100)*$checkout['couponDiscount']), 2, '.', '');
-            $newTotal = $total - $discountPrice;
+            // $discountPrice = number_format((($total/100)*$checkout['couponDiscount']), 2, '.', '');
+            // $newTotal = $total - $discountPrice;
 
             $html .= '<tr>
                         <td><b>Coupon: ' . $checkout['couponName'] . ' ('. $checkout['couponDiscount'] .'%)</b></td>
-                        <td><b>-$'. $discountPrice .'</b></td>
+                        <td><b>-$'. $order['discount'] .'</b></td>
                      </tr>';
 
         } else if(!empty( $checkout['couponName'])) {
@@ -672,8 +673,7 @@ class Order extends WMDS_Controller{
         $holidayDiscount = $this->session->userdata('holiday_fee');
         if($holidayDiscount){
             $holidayPrice = number_format((($total/100)*$holidayDiscount), 2, '.', '');
-            $newTotal = $newTotal + $holidayPrice;
-
+            // $newTotal = $newTotal + $holidayPrice;
             $html .= '<tr>
                         <td><b>Public Holiday Fee (' . $holidayDiscount . '%)</b></td>
                         <td><b>+$'. $holidayPrice .'</b></td>
@@ -682,8 +682,7 @@ class Order extends WMDS_Controller{
 
         $paymentFee = $this->session->userdata('surchange');
         if(!empty($paymentFee)){
-            $newTotal += $paymentFee['value'];
-
+            // $newTotal += $paymentFee['value'];
             $html .= '<tr>
                         <td><b>'. $paymentFee['name']  .'</b></td>
                         <td><b>+$'. $paymentFee['value'] .'</b></td>
@@ -693,7 +692,7 @@ class Order extends WMDS_Controller{
 
         $subUrbFee = $this->order_model->getSubUrbFee($user['suburb']);
         if($subUrbFee){
-            $newTotal = $newTotal + $subUrbFee;
+            // $newTotal = $newTotal + $subUrbFee;
             $html .= '<tr>
                         <td><b>Delyvery fee</b></td>
                         <td><b>+$'. $subUrbFee .'</b></td>
@@ -702,7 +701,7 @@ class Order extends WMDS_Controller{
         /** low order */
         $lowOrder = $this->session->userdata('low_order');
         if($lowOrder > 0){
-            $newTotal += $lowOrder;
+            // $newTotal += $lowOrder;
             $html .= '<tr>
                         <td><b>Minimum order fee</b></td>
                         <td><b>+$'. $lowOrder .'</b></td>
@@ -711,10 +710,10 @@ class Order extends WMDS_Controller{
 
         /**end*/
 
-        $newTotal = number_format($newTotal, 2, '.', '');
+        // $newTotal = number_format($newTotal, 2, '.', '');
         $html .= '<tr>
                     <td><b>Total</b></td>
-                    <td><b>$' . $newTotal .'</b></td>
+                    <td><b>$' . $order['payment_amount'] .'</b></td>
                  </tr>';
 
         $html .= $space;

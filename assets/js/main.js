@@ -3,6 +3,22 @@
  * @url none
  **********************************************************************************************************************/
 
+(function( func ) {
+    $.fn.addClass = function() { // replace the existing function on $.fn
+        func.apply( this, arguments ); // invoke the original function
+        this.trigger('classChanged'); // trigger the custom event
+        return this; // retain jQuery chainability
+    }
+})($.fn.addClass); // pass the original function as an argument
+
+(function( func ) {
+    $.fn.removeClass = function() {
+        func.apply( this, arguments );
+        this.trigger('classChanged');
+        return this;
+    }
+})($.fn.removeClass);
+
 /*
  * Show fancy alert
  *
@@ -2466,6 +2482,9 @@ $(document)
             inputFormMobileHandler = function() {
                 $('#verify-btn')[( $('#form_mobile').val().length < 10 ? 'addClass' : 'removeClass' )]('ui-disabled');
             }, 
+            classChangedFormMobileHandler = function() {
+                $('#verify-btn')[( $('#form_mobile').hasClass('error') ? 'addClass' : 'removeClass' )]('ui-disabled');
+            }, 
             clickChangeMobileNumberHandler = function() {
                 $('#form_mobile').val('');
 
@@ -2483,6 +2502,8 @@ $(document)
             .on('click', '#log-out', clickLogOutHandler)
             .off('input', '#form_mobile', inputFormMobileHandler)
             .on('input', '#form_mobile', inputFormMobileHandler)
+            .off('classChanged', '#form_mobile', classChangedFormMobileHandler)
+            .on('classChanged', '#form_mobile', classChangedFormMobileHandler)
             .off('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
             .on('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
             .off('click', '#verify-btn')

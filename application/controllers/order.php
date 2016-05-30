@@ -834,7 +834,7 @@ class Order extends WMDS_Controller{
                     <td style="height:30px;" colspan="2"> </td>
                 </tr>
                 <tr>
-                    <td colspan="2"><b>Thank you very much for yoru order. Please allow about ' . $siteSetting->delivery_time . ' minutes for delivery. If you have any questions you can contact us at 09599 0333</b></td>
+                    <td colspan="2"><b>Thank you very much for your order. Please allow about ' . $siteSetting->delivery_time . ' minutes for delivery. If you have any questions you can contact us at 09599 0333</b></td>
                 </tr>
                 <tr>
                     <td style="height:30px;" colspan="2"> </td>

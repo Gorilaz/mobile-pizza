@@ -62,10 +62,12 @@ class Payment extends WMDS_Controller {
         // $city = $this->menu_model->getCityName($user['city']);
         // $state = $this->menu_model->getStateName($user['state']);
 
+        $siteSetting = $this->session->userdata('siteSetting');
+
         $DPFields = array(
-            'paymentaction'     => 'Sale',                      // How you want to obtain payment.  Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture.  Sale indicates that this is a final sale for which you are requesting payment.  Default is Sale.
-            'ipaddress'         => $_SERVER['REMOTE_ADDR'],     // Required.  IP address of the payer's browser.
-            'returnfmfdetails'  => '1'                          // Flag to determine whether you want the results returned by FMF.  1 or 0.  Default is 0.
+            'paymentaction'     => $siteSetting->paymentaction,     // How you want to obtain payment. Authorization indidicates the payment is a basic auth subject to settlement with Auth & Capture. Sale indicates that this is a final sale for which you are requesting payment. Default is Sale.
+            'ipaddress'         => $_SERVER['REMOTE_ADDR'],         // Required. IP address of the payer's browser.
+            'returnfmfdetails'  => $siteSetting->returnfmfdetails   // Flag to determine whether you want the results returned by FMF. 1 or 0. Default is 0.
         );
 
         $CCDetails = array(
@@ -122,13 +124,13 @@ class Payment extends WMDS_Controller {
 
         $PaymentDetails = array(
             'amt'               =>  $credit['total'],           // Required. Total amount of order, including shipping, handling, and tax.
-            'currencycode'      => 'USD',                       // Required. Three-letter currency code. Default is USD.
+            'currencycode'      => $siteSetting->currencycode,  // Required. Three-letter currency code. Default is USD.
             // 'itemamt'        => $credit['total'],            // Required if you include itemized cart details. (L_AMTn, etc.) Subtotal of items not including S&H, or tax.
             // 'shippingamt'    => '',                          // Total shipping costs for the order. If you specify shippingamt, you must also specify itemamt.
             // 'shipdiscamt'    => '',                          // Shipping discount for the order, specified as a negative number.
             // 'handlingamt'    => '',                          // Total handling costs for the order. If you specify handlingamt, you must also specify itemamt.
             // 'taxamt'         => '',                          // Required if you specify itemized cart tax details. Sum of tax for all items on the order. Total sales tax.
-            'desc'              => 'Pizza Web Order',           // Description of the order the customer is purchasing. 127 char max.
+            'desc'              => $siteSetting->paymentdesc,   // Description of the order the customer is purchasing. 127 char max.
             // 'custom'         => '',                          // Free-form field for your own use. 256 char max.
             // 'invnum'         => '',                          // Your own invoice or tracking number
             'notifyurl'         => base_url() . 'paypal-result' // URL for receiving Instant Payment Notifications. This overrides what your profile is set to use.

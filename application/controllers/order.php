@@ -818,13 +818,13 @@ class Order extends WMDS_Controller{
         $logged = $this->session->userdata('logged');
 
         $siteSetting = $this->session->userdata('siteSetting');
-
+echo '<pre>'; var_dump($siteSetting); echo '</pre>'; die;
         $email_template = file_get_contents($siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html');
 
         $subject = $siteSetting->order_mail_title;
         $description = $siteSetting->order_mail_descr;
 
-        $description = str_replace('[[DELIVERY_TIME]]', $siteSetting->delivery_tim, $description);
+        $description = str_replace('[[DELIVERY_TIME]]', $siteSetting->delivery_time, $description);
         $description = str_replace('[[RESTAURANT_PHONE]]', $siteSetting->restaurant_phone, $description);
 
         $html = str_replace('[[INTRO]]', '

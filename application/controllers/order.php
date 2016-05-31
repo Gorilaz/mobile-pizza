@@ -691,7 +691,7 @@ class Order extends WMDS_Controller{
 
 
         $subUrbFee = $this->order_model->getSubUrbFee($user['suburb']);
-        if($subUrbFee){
+        if($subUrbFee && $checkout['delivery'] == 'D'){
             // $newTotal = $newTotal + $subUrbFee;
             $html .= '<tr>
                         <td><b>Delyvery fee</b></td>

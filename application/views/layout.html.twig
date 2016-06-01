@@ -99,8 +99,8 @@
         <div class="hide" itemscope itemtype="https://schema.org/Restaurant">
             <span itemprop="name">{{ settings.restaurant_name }}</span>
             <span itemprop="address">{{ settings.shop_address }}</span>
-            <span itemprop="telephone"></span>
-            <span itemprop="currenciesAccepted">AUD</span>
+            <span itemprop="telephone">{{ settings.restaurant_phone }}</span>
+            <span itemprop="currenciesAccepted">{{ settings.currencycode }}</span>
             {% set openingHours = '' %}
             {% for weekday, times in schedule_for_schema %}
                 {% if openingHours == '' %}

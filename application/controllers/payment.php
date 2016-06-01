@@ -113,9 +113,9 @@ class Payment extends WMDS_Controller{
 
         $PayerName = array(
             // 'salutation' => 'Mr.',                           // Payer's salutation. 20 char max.
-            'firstname'     => $credit['card_holder'], //this includes both first & last name          // Payer's first name. 25 char max.
+            'firstname'     => $user['first_name'], //this includes both first & last name          // Payer's first name. 25 char max.
             // 'middlename' => ''                               // Payer's middle name. 25 char max.
-            //'lastname'   => $credit['last_name']             // Payer's last name. 25 char max.
+            'lastname'   => $user['last_name']             // Payer's last name. 25 char max.
             // 'suffix'     => ''                               // Payer's suffix. 12 char max.
         );
 

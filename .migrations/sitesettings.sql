@@ -9,3 +9,5 @@ insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'paymentaction','Sal
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'returnfmfdetails','1');
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'currencycode','USD');
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'paymentdesc','Pizza Web Order');
+
+insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'countrycode','');

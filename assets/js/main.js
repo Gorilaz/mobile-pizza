@@ -383,7 +383,12 @@ function prepareProfileFormValidation()
                     maxlength: 10,
                     minlength: 10,
                     digits: true,
-                    remote: '//' + window.location.host + '/security/checkUniqueMobile'/* ,
+                    remote: function() {
+                        return {
+                            url: '//' + window.location.host + '/security/checkUniqueMobile'
+                        };
+                    }
+                    /* remote: '//' + window.location.host + '/security/checkUniqueMobile',
                     smsVerification: true */
                 }
             },
@@ -2456,6 +2461,8 @@ $(document)
     .on('pageinit', "#page-payment", function() {
         verifyClean();
 
+        var oldClass = $('#form_mobile').attr('class');
+
         var focusInputHandler = function() {
                 $('select').selectmenu('disable');
             }, 
@@ -2480,13 +2487,32 @@ $(document)
                 window.location.href = '//' + window.location.host + '/logout/payment';
             }, 
             inputFormMobileHandler = function() {
-                $('#verify-btn')[( $('#form_mobile').val().length < 10 ? 'addClass' : 'removeClass' )]('ui-disabled');
+                $('#form_mobile').removeData('previousValue');
+
+                var valid = $('#form_mobile').valid();
+
+                $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
             }, 
             classChangedFormMobileHandler = function() {
-                $('#verify-btn')[( $('#form_mobile').hasClass('error') ? 'addClass' : 'removeClass' )]('ui-disabled');
+                var newClass = $('#form_mobile').attr('class');
+
+                if( newClass !== oldClass )
+                {
+                    oldClass = newClass;
+
+                    var timeout = setTimeout(function() {
+                        var valid = $('#form_mobile').valid();
+
+                        $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
+
+                        clearTimeout(timeout);
+                    }, 100);
+                }
             }, 
             clickChangeMobileNumberHandler = function() {
                 $('#form_mobile').val('');
+
+                $('#verify-btn').addClass('ui-disabled');
 
                 verifyClean();
             };
@@ -2907,12 +2933,38 @@ $(document)
      * @url /security-edit
      **********************************************************************************************************************/
     .on('pageshow', '#page-edit', function() {
+        var oldClass = $('#form_mobile').attr('class');
 
+        var inputFormMobileHandler = function() {
+                $('#form_mobile').removeData('previousValue');
+
+                var valid = $('#form_mobile').valid();
+
+                $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
+            }, 
+            classChangedFormMobileHandler = function() {
+                var newClass = $('#form_mobile').attr('class');
+
+                if( newClass !== oldClass )
+                {
+                    oldClass = newClass;
+
+                    var timeout = setTimeout(function() {
+                        var valid = $('#form_mobile').valid();
+
+                        $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
+
+                        clearTimeout(timeout);
+                    }, 100);
+                }
+            };
 
         $(document)
             .off('click', '#changeMobileNumber')
             .on('click', '#changeMobileNumber', function() {
                 $('#form_mobile').val('');
+
+                $('#verify-btn').addClass('ui-disabled');
 
                 verifyClean();
             })
@@ -2932,7 +2984,11 @@ $(document)
                 {
                     saveForm();
                 }
-            });
+            })
+            .off('input', '#form_mobile', inputFormMobileHandler)
+            .on('input', '#form_mobile', inputFormMobileHandler)
+            .off('classChanged', '#form_mobile', classChangedFormMobileHandler)
+            .on('classChanged', '#form_mobile', classChangedFormMobileHandler);
 
         verifyClean();
 

@@ -7,13 +7,14 @@ class Products_model extends CI_Model{
      * @return mixed
      */
     public function getProductsAndCategories(){
-        $products = $this->db->select('c.category_id, c.category_name, c.page_with_image, p.*, r.type as friendly_url')->
+        $products = $this->db->select('c.category_id, c.category_name, c.page_with_image, p.*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) AS friendly_url', FALSE)->
             join('tbl_product as p', 'p.category_id = c.category_id')->
-            join('tbl_ref_friend as r', 'r.value = p.product_id', 'left')->
             order_by('c.category_id')->
             get('tbl_product_categories as c')->result();
 
         return $products;
+
+        // $products = $this->db->query('SELECT `c`.`category_id`, `c`.`category_name`, `c`.`page_with_image`, REPLACE(`p`.)');
     }
 
     /**
@@ -21,9 +22,8 @@ class Products_model extends CI_Model{
      * @return mixed
      */
     public function getLoyaltyProducts() {
-        $products = $this->
-            db->
-            select('p.*, r.type as friendly_url')->
+        $products = $this->db->
+            select('p.*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) AS friendly_url', FALSE)->
             where('p.product_points > 0')->
             join('tbl_ref_friend as r', 'r.value = p.product_id', 'left')->
             get('tbl_product as p')->

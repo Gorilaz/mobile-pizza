@@ -20,18 +20,14 @@ class product extends WMDS_Controller {
 
         if( !is_numeric($id) )
         {
-            $ref = $this->db->select('value')->where('type', $id)->get('tbl_ref_friend')->row();
-
-            $id = empty($ref) ? $id : $ref->value;
+            $product = $this->db->select('*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) as friendly_url', FALSE)->having('friendly_url', $id)->get('tbl_product as p')->row();
+        }
+        else
+        {
+            $product = $this->products_model->getProductById($id);
         }
 
         $siteSetting = $this->session->userdata('siteSetting');
-
-        /**
-         * Get product from database
-         * redirect to 404 if not found
-         */
-        $product = $this->products_model->getProductById($id);
 
         if( !$product )
         {

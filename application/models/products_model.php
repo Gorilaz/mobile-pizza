@@ -9,6 +9,8 @@ class Products_model extends CI_Model{
     public function getProductsAndCategories(){
         $products = $this->db->select('c.category_id, c.category_name, c.page_with_image, p.*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) AS friendly_url', FALSE)->
             join('tbl_product as p', 'p.category_id = c.category_id')->
+            where('p.product_status','A')->
+            where('c.category_status','A')->
             order_by('c.category_id')->
             get('tbl_product_categories as c')->result();
 
@@ -25,8 +27,10 @@ class Products_model extends CI_Model{
         $products = $this->db->
             select('p.*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) AS friendly_url', FALSE)->
             where('p.product_points > 0')->
+            where('p.product_status','A')->
             join('tbl_ref_friend as r', 'r.value = p.product_id', 'left')->
             get('tbl_product as p')->
+
             result();
 
         return $products;
@@ -329,7 +333,7 @@ class Products_model extends CI_Model{
         {
             foreach( $all_coupons as $coupon )
             {
-                if( $need_coupon_for_first_order && 
+                if( $need_coupon_for_first_order &&
                     $coupon->coupontype === 'firstorder' )
                 {
                     $coupons['firstOrder'] = $coupon;
@@ -340,10 +344,10 @@ class Products_model extends CI_Model{
                     $coupons['allOrder'] = $coupon;
                 }
 
-                if( ( $need_coupon_for_first_order && 
-                        isset($coupons['firstOrder']) && 
-                        isset($coupons['allOrder']) ) || 
-                    ( !$need_coupon_for_first_order && 
+                if( ( $need_coupon_for_first_order &&
+                        isset($coupons['firstOrder']) &&
+                        isset($coupons['allOrder']) ) ||
+                    ( !$need_coupon_for_first_order &&
                         isset($coupons['allOrder']) ) )
                 {
                     break;

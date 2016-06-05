@@ -71,7 +71,9 @@ form.ui-bar-c {
 .logo-overlay > div {
     width: 100%;
     padding-top: 100%;
+    /*
     background-image: url(../images/disposal/logo.png);
+    */
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 70%;

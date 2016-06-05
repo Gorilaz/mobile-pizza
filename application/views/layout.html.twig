@@ -50,6 +50,9 @@
 
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/animate-custom.css" />
 
+          <link type="text/css" rel="stylesheet" href="{{ settings.desktop_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/css/mobile.css" />
+
+
 
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.9.1.js"></script>#}
         {#<script type="text/javascript" src="{{ base_url }}assets/js/library/jquery/jquery-1.10.2.min.js"></script>#}
@@ -161,7 +164,7 @@
 
     <script type="text/javascript">
 
-        $('.main-background-image').css('background-image','url(\'' + desktopUrl + '/templates/'+ templateFolder+ '/templates/default/images/mobile_background.png\')');
+       // $('.main-background-image').css('background-image','url(\'' + desktopUrl + '/templates/'+ templateFolder+ '/templates/default/images/mobile_background.jpg\')');
         $('.top-bar-title > a, .logo-overlay > div').css('background-image','url(\'' + desktopUrl + '/templates/'+ templateFolder+ '/templates/default/images/logo.png\')');
 
             $(document).ready(function(){

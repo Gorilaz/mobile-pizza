@@ -47,33 +47,34 @@
                 <div class="menu-products get-space">
                     <ul data-role="listview" data-inset="true" data-filter="true" data-filter-reveal="true" data-filter-placeholder="Search by title or ingredient..." data-theme="b" data-content-theme="b">
                         {% for cat in products %}
+                            {% if cat.category_name != 'FREE' %}
+                                {% for prod in cat.items %}
+                                    <li data-filtertext="{{ prod.product_name }} {{ prod.description|striptags }}">
 
-                            {% for prod in cat.items %}
-                                <li data-filtertext="{{ prod.product_name }} {{ prod.description|striptags }}">
-
-                                    <a href="{{ base_url }}{% if prod.friendly_url is empty %}product/{{ prod.product_id }}{% else %}{{ prod.friendly_url }}{% endif %}{% if cat.category_name == 'FREE' %}/points{% endif %}"
-                                       data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
-                                        {% if cat.withImage %}
-                                            {% if prod.product_image is not empty  %}
-                                                <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ prod.product_image }}" />
-                                            {% else %}
-                                                <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/no_prod_image.png" />
+                                        <a href="{{ base_url }}{% if prod.friendly_url is empty %}product/{{ prod.product_id }}{% else %}{{ prod.friendly_url }}{% endif %}{% if cat.category_name == 'FREE' %}/points{% endif %}"
+                                           data-transition="none" {% if not cat.withImage %} class="no-image-product" {% endif %}>
+                                            {% if cat.withImage %}
+                                                {% if prod.product_image is not empty  %}
+                                                    <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ prod.product_image }}" />
+                                                {% else %}
+                                                    <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/no_prod_image.png" />
+                                                {% endif %}
                                             {% endif %}
-                                        {% endif %}
-                                        <h2>{{ prod.product_name }}</h2>
-                                        <p>
-                                            {#{% if prod.description|length|striptags > 45 %}#}
-                                                {#{{ prod.description|striptags|slice(0,45) }}#}
-                                            {#{% else %}#}
-                                                {{ prod.description|striptags }}
-                                            {#{% endif %}#}
-                                        </p>
-                                        {% if prod.price_description is not empty %}
-                                            <p class="listing-price">{{ prod.price_description }}</p>
-                                        {% endif %}
-                                    </a>
-                                </li>
-                            {% endfor %}
+                                            <h2>{{ prod.product_name }}</h2>
+                                            <p>
+                                                {#{% if prod.description|length|striptags > 45 %}#}
+                                                    {#{{ prod.description|striptags|slice(0,45) }}#}
+                                                {#{% else %}#}
+                                                    {{ prod.description|striptags }}
+                                                {#{% endif %}#}
+                                            </p>
+                                            {% if prod.price_description is not empty %}
+                                                <p class="listing-price">{{ prod.price_description }}</p>
+                                            {% endif %}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            {% endif %}
                         {% endfor %}
                     </ul>
                 </div>

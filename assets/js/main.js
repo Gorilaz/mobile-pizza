@@ -1652,14 +1652,22 @@ $(document)
                     }
                     else
                     {
-                        elem.hide();
+                        //cash
+                        if( totalAmount < parseFloat(rules.min_order_amt) )
+                        {
+                            showAlert('', 'Minimum amount for Cash On Delivery payments is $' + rules.min_order_amt);
+                        }
+                        else
+                        {
+                            elem.hide();
 
-                        next
-                            .show()
-                            .fadeOut(250)
-                            .fadeIn(250);
+                            next
+                                .show()
+                                .fadeOut(250)
+                                .fadeIn(250);
 
-                        manageHelpFooterLine(next);
+                            manageHelpFooterLine(next);
+                        }
                     }
                 }
                 else if( $(self).attr('name') === 'delivery' )

@@ -110,6 +110,9 @@
                                                         {{ prod.description|striptags }}
                                                     {#{% endif %}#}
                                                 </p>
+                                                <p>
+                                                    {{ loyalty_description }}
+                                                </p>
                                                 {% if prod.price_description is not empty %}
                                                     <p class="listing-price">{{ prod.price_description }}</p>
                                                 {% endif %}

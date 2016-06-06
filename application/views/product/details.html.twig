@@ -32,6 +32,10 @@
                     <h1 itemprop="name">{{ product.product_name }}</h1>
                     <div class="single-description" itemprop="description">
                         {{ product.description|striptags }}
+                        {% if isLoyalty %}
+                            <br />
+                            {{ loyalty_description }}
+                        {% endif %}
                     </div>
                 </div>
 

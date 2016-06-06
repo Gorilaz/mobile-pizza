@@ -130,12 +130,16 @@ class product extends WMDS_Controller {
 
         $withPoints = $product->product_points > 0 && $points === 'points';
 
+        $loyalty_description = $this->db->where('type', 'loyalty_description')->get('tbl_manage_text')->row()->value;
+
         $this->twiggy
             ->set('product',$product)
             ->set('image',  $image)
             ->set('options',$variationsGroups['variations'])
             ->set('halfs',  $variationsGroups['halfs'])
             ->set('withPoints', $withPoints)
+            ->set('loyalty_description', $loyalty_description)
+            ->set('isLoyalty', empty($product->product_points) ? false : true)
             ->set($productType);
 
         $sitesettings = $this->db->select('type, value')->where_in('type', array('restaurant_name', 'restaurant_suburb'))->get('sitesetting')->result();

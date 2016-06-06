@@ -664,6 +664,39 @@ class General extends CI_Model {
 
         if( $row->second_half_from != NULL && $row->second_half_to != NULL )
         {
+            if( $row->timing_for === 'P' && empty($time['start_time']) )
+            {
+                if( (integer) date('i', $start) === 0 )
+                {
+                    $start_time = date('G', $start) . ':00';
+                }
+                else if( ( (integer) date('i', $start) > 0 ) && 
+                    ( (integer) date('i', $start) <= 15 ) )
+                {
+                    $start_time = date('G', $start) . ':15';
+                }
+                else if( ( (integer) date('i', $start) > 15 ) && 
+                    ( (integer) date('i', $start) <= 30 ) )
+                {
+                    $start_time = date('G', $start) . ':30';
+                }
+                else if( ( (integer) date('i', $start) > 30 ) && 
+                    ( (integer) date('i', $start) <= 45 ) )
+                {
+                    $start_time = date('G', $start) . ':45';
+                }
+                else
+                {
+                    $h = date('G', $start);
+
+                    $h++;
+
+                    $start_time = $h . ':00';
+                }
+
+                $time['start_time'] = $start_time;
+            }
+
             if( $timestamp > $start )
             {
                 $start = $timestamp;

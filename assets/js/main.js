@@ -1801,14 +1801,14 @@ $(document)
                             first_datetime = new Date(current_date + ' ' + first_time),
                             current_datetime = new Date(current_date + ' ' + current_time);
 
-                        if( current_datetime.getTime() < first_datetime.getTime() )
-                        {
-                            manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + first_time));
+                        // if( current_datetime.getTime() < first_datetime.getTime() )
+                        // {
+                        //     manageHelpFooterLine($('<div>').data('title', 'Sorry, this option will be available in the ' + first_time));
 
-                            return false;
-                        }
-                        else
-                        {
+                        //     return false;
+                        // }
+                        // else
+                        // {
                             elem.hide();
 
                             next
@@ -1817,7 +1817,7 @@ $(document)
                                 .fadeIn(250);
 
                             manageHelpFooterLine(next);
-                        }
+                        // }
                     }
                 }
                 else if( $(self).attr('name') === 'when' )

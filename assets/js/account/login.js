@@ -54,20 +54,14 @@ function authFBUser() {
 
 // Check the result of the user status and display login button if necessary
 function checkLoginStatus(response) {
-    console.log(response);
-
     if(response && response.status == 'connected') {
         FB.api('/me?fields=id,name,first_name,last_name,email', function(me) {
-            console.log(me);
-
             $.ajax({
                 url: '//' + location.host + '/security/facebook-login',
                 data: me,
                 type: 'POST',
                 dataType: 'json',
                 success: function(result) {
-                    return undefined;
-
                     if(
                         typeof result.fields != 'undefined'
                         && result.fields == 'requare'

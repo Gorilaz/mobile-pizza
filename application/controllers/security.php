@@ -454,9 +454,9 @@ class Security extends WMDS_Controller {
         {
             $firstPointLogin = $this->session->userdata('firstPointLogin');
 
-            if( 'login' === $firstPointLogin )
+            if( 'login' !== $firstPointLogin )
             {
-                $backToLogin = 'requare';
+                // $backToLogin = 'requare';
 
                 $insert = array();
 

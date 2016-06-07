@@ -101,7 +101,10 @@ if ( !function_exists('saveProfile') )
 
         if( empty($userLogged['mobile']) )
         {
-            $mobileToCheck = true;
+            if( empty($user['mobile']) === false )
+            {
+                $mobileToCheck = true;
+            }
         }
         else
         {

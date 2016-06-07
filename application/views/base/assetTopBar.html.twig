@@ -42,4 +42,9 @@
     {% if sitemode_online == false %}
         <div class="we-offline">{{ offlinecontent }}</div>
     {% endif %}
+    {% if isLoyalty is defined and isLoyalty %}
+        <div class="is-loyalty">
+            <p>{{ loyalty_description }}</p>
+        </div>
+    {% endif %}
 </div><!-- /header -->

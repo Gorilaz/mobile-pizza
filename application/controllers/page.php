@@ -234,10 +234,6 @@ class Page extends WMDS_Controller {
             $this->twiggy->set('notice', 'Your cart is now empty');
         }
 
-        $loyalty_description = $this->db->where('type', 'loyalty_description')->get('tbl_manage_text')->row()->value;
-
-        $this->twiggy->set('loyalty_description', $loyalty_description);
-
         $products_db = $this->products_model->getProductsAndCategories();
 
         $products = array();

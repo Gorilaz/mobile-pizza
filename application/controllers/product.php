@@ -139,7 +139,7 @@ class product extends WMDS_Controller {
             ->set('halfs',  $variationsGroups['halfs'])
             ->set('withPoints', $withPoints)
             ->set('loyalty_description', $loyalty_description)
-            ->set('isLoyalty', empty($product->product_points) ? false : true)
+            ->set('isLoyalty', ( ( empty($product->product_points) || empty($points) ) ? false : true ))
             ->set($productType);
 
         $sitesettings = $this->db->select('type, value')->where_in('type', array('restaurant_name', 'restaurant_suburb'))->get('sitesetting')->result();

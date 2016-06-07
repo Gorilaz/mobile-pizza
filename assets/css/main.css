@@ -1519,3 +1519,10 @@ a#welcome-page {
 .feedback_trigger.left-top, .feedback_trigger.left-bottom, .feedback_trigger.right-top, .feedback_trigger.right-bottom {
     width: 25px;
 }
+
+.is-loyalty {
+    background-color: #4f7928;
+    text-align: center;
+    text-shadow: none;
+    color: #fff;
+}

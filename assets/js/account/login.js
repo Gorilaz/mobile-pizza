@@ -11,7 +11,7 @@ if( typeof SOCIALRETURNURL == 'string' )
 
 
 window.fbAsyncInit = function() {
-    
+
     /**
      * Need to check is present global vars
      * @type String|FACEBOOKAPPID
@@ -22,7 +22,7 @@ window.fbAsyncInit = function() {
         FBAppIDAsync = FACEBOOKAPPID;
     }
     /* use after for Facebook App ID - FBAppIDLock */
-    
+
     // init the FB JS SDK
     FB.init({
         appId      : FBAppIDAsync,                   // App ID from the app dashboard
@@ -62,9 +62,9 @@ function checkLoginStatus(response) {
                 type: 'POST',
                 dataType: 'json',
                 success: function(result) {
-                    if( 
-                        typeof result.fields != 'undefined' 
-                        && result.fields == 'requare' 
+                    if(
+                        typeof result.fields != 'undefined'
+                        && result.fields == 'requare'
                        )
                     {
                         window.location.href = '//' + location.host + '/security-edit';
@@ -102,7 +102,7 @@ function googlePlusloginCallback(result)
         {
             'userId': 'me'
         });
-        
+
         request.execute(function(resp)
         {
             var email = '';
@@ -116,7 +116,7 @@ function googlePlusloginCallback(result)
                     }
                 }
             }
-           
+
             var firstName = '';
             var lastName = '';
             if( typeof resp['name'] == "object" )
@@ -136,9 +136,9 @@ function googlePlusloginCallback(result)
                 type: "POST",
                 dataType: 'json',
                 success: function(result) {
-                    if( 
-                        typeof result.fields != 'undefined' 
-                        && result.fields == 'requare' 
+                    if(
+                        typeof result.fields != 'undefined'
+                        && result.fields == 'requare'
                        )
                     {
                         window.location.href = '//' + location.host + '/security-edit';
@@ -187,7 +187,7 @@ function goolePluslogin()
 {
     var myParams = {
         'clientid' : googleclientid,
-        'cookiepolicy' : 'http://mobile.bluestarpizza.com.au',
+        'cookiepolicy' : document.location.origin,
         'callback' : 'googlePlusloginCallback',
         'approvalprompt':'force',
         'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'

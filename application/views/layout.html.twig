@@ -117,8 +117,6 @@
             {% endif %}
             <span itemprop="paymentAccepted">Cash, credit card, etc.</span>
             <span itemprop="email">{{ settings.SITE_EMAIL }}</span>
-{# desktopUrl + 'templates/'+ templateFolder+ '/templates/default/images/smal-circular-logo.png #}
-            <img src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/images/smal-circular-logo.png" itemprop="logo" />
             <link href="{{ base_url }}menu" itemprop="menu" />
             <link href="{{ base_url }}" itemprop="url" />
         </div>
@@ -171,9 +169,9 @@
                 //set up some basic options for the feedback_me plugin
                 fm_options = {
                     feedback_url: "{{ base_url }}feedback/",
-                    position: "right-top",
+                    position: "right-bottom",
                     name_required: true,
-                    message_placeholder: "Go ahead, type your feedback here...",
+                    message_placeholder: "Go ahead, type your feedback here... But please DON'T use this form for time sensitive matter. We won't be able to read it till later.",
                     message_required: true,
                     show_asterisk_for_required: true,
                     //feedback_url: "send_feedback_clean",
@@ -184,7 +182,7 @@
                     },
                     delayed_options: {
                         send_fail : "Sending failed :(.",
-                        send_success : "Sent successfully :) , wow! even this message is customizable!!!"
+                        send_success : "Thank you for your feedback."
                     }
                 };
                 //init feedback_me plugin
@@ -193,9 +191,7 @@
                 //SyntaxHighlighter.all();
             });
 
-
-
-
     </script>
 
+<div id="overlay" hidden "></div>
 </html>

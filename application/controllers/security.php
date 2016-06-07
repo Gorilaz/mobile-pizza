@@ -400,78 +400,77 @@ class Security extends WMDS_Controller {
     public function facebook_login()
     {
         $backToLogin = '';
+
         $flag = false;
+
         $fb = $this->input->post();
-        $email = '';
-        $error = '';
+
         $fbId = '';
-        if( isset($fb['id']) )
+        $email = '';
+
+        $error = '';
+
+        if( empty($fb['id']) === false )
         {
-            if( !empty($fb['id']) )
-            {
-                $fbId = $fb['id'];
-            }
+            $fbId = $fb['id'];
         }
-        if( isset($fb['email']) )
+
+        if( empty($fb['email']) === false )
         {
-            if( !empty($fb['email']) )
-            {
-                $email = $fb['email'];
-            }
+            $email = $fb['email'];
         }
-        if( !empty($email) )
+
+        if( empty($email) === false )
         {
             $this->security_model->clearEmptyUsers();
+
             $user = $this->security_model->getUserByEmail($email);
-            if( $user )
+
+            if( empty($user) === false )
             {
-                if( 
-                    empty($user['address'])
-                    || empty($user['suburb']) 
-                    || empty($user['mobile'])
-                  )
+                if( empty($user['address']) || 
+                    empty($user['suburb']) || 
+                    empty($user['mobile']) )
                 {
                     $backToLogin = 'requare';
                 }
+
                 $this->session->set_userdata('logged', $user);
+
                 $flag = true;
             }
         }
-        if( !$flag )
+
+        if( empty($flag) )
         {
             $firstPointLogin = $this->session->userdata('firstPointLogin');
-            if( 'login' != $firstPointLogin )
+
+            if( 'login' !== $firstPointLogin )
             {
-                //$backToLogin = 'requare';
+                // $backToLogin = 'requare';
+
                 $insert = array();
+
                 $insert['email'] = $email;
                 $insert['address'] = '';
                 $insert['facebook_id'] = $fbId;
-                $insert['first_name'] = '';
-                if( isset($fb['first_name']) )
-                {
-                    if( !empty($fb['first_name']) )
-                    {
-                        $insert['first_name'] = $fb['first_name'];
-                    }
-                }
-                $insert['last_name'] = '';
-                if( isset($fb['last_name']) )
-                {
-                    if( !empty($fb['last_name']) )
-                    {
-                        $insert['last_name'] = $fb['last_name'];
-                    }
-                }
+                $insert['first_name'] = empty($fb['first_name']) ? '' : $fb['first_name'];
+                $insert['last_name'] = empty($fb['last_name']) ? '' : $fb['last_name'];
+
                 $this->session->set_userdata('backToLogin', $backToLogin);
+
                 $this->load->helper('profile');
-                saveProfile( $insert );
-            } else {
+
+                saveProfile($insert);
+            }
+            else
+            {
                 $error = 'User not found in the database. Make your first order to get registered.';
             }
-        }      
+        }
+
         echo json_encode(array(
-            'fields' => $backToLogin,
+            'fields' => $backToLogin, 
             'error' => $error
         ));
     }

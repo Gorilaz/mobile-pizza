@@ -58,7 +58,7 @@ function checkLoginStatus(response) {
 
     if(response && response.status == 'connected') {
         FB.api('/me?fields=id,name,first_name,last_name,email', function(me) {
-            console.log(me); return undefined;
+            console.log(me);
 
             $.ajax({
                 url: '//' + location.host + '/security/facebook-login',
@@ -66,6 +66,8 @@ function checkLoginStatus(response) {
                 type: 'POST',
                 dataType: 'json',
                 success: function(result) {
+                    return undefined;
+
                     if(
                         typeof result.fields != 'undefined'
                         && result.fields == 'requare'

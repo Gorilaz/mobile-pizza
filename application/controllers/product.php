@@ -17,10 +17,10 @@ class product extends WMDS_Controller {
         $this->load->model('products_model');
         $this->load->model('order_model');
         $this->load->model('Sitesettings_model', 'SS_Model');
-
         if( !is_numeric($id) )
-        {
+        {   //error_log("113123" . time(),1);
             $product = $this->db->select('*, LOWER(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(TRIM(p.product_name), ' . $this->db->escape(':') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(')') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('(') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(',') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\\') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\/') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\"') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('?') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('\'') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('&') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('!') . ', ' . $this->db->escape('') . '), ' . $this->db->escape('.') . ', ' . $this->db->escape('') . '), ' . $this->db->escape(' ') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . '), ' . $this->db->escape('--') . ', ' . $this->db->escape('-') . ')) as friendly_url', FALSE)->having('friendly_url', $id)->get('tbl_product as p')->row();
+            //error_log("rrqwer" . time(),0);
         }
         else
         {
@@ -41,15 +41,15 @@ class product extends WMDS_Controller {
         $category = $this->products_model->getCategoryById($product->category_id);
 
         $og = array(
-            'title' => $product->product_name, 
-            'description' => $product->description, 
-            'type' => 'product.item', 
-            'image' => $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/uploads/products/thumb/' . ( empty($product->product_image) ? 'no_prod_image_thumb.png' : $product->product_image ), 
-            'url' => current_url(), 
+            'title' => $product->product_name,
+            'description' => $product->description,
+            'type' => 'product.item',
+            'image' => $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/uploads/products/thumb/' . ( empty($product->product_image) ? 'no_prod_image_thumb.png' : $product->product_image ),
+            'url' => current_url(),
             'product' => array(
-                'brand' => $siteSetting->restaurant_name, 
-                'category' => $category->category_name, 
-                'price:amount' => $product->product_price, 
+                'brand' => $siteSetting->restaurant_name,
+                'category' => $category->category_name,
+                'price:amount' => $product->product_price,
                 'price:currency' => '$'
             )
         );
@@ -165,8 +165,8 @@ class product extends WMDS_Controller {
 
         $this->twiggy->set('page', array(
             'title'  => $product->product_name,
-            'keywords' => $product->product_name . ', ' . $restaurant_name . ', ' . $restaurant_suburb, 
-            'description' => $product->product_name . ' by ' . $restaurant_name . ' - ' . strip_tags($product->description), 
+            'keywords' => $product->product_name . ', ' . $restaurant_name . ', ' . $restaurant_suburb,
+            'description' => $product->product_name . ' by ' . $restaurant_name . ' - ' . strip_tags($product->description),
             'role'   => 'page',
             'theme'  => 'a',
             'id'     => 'page-product'
@@ -218,4 +218,4 @@ class product extends WMDS_Controller {
 
         $this->cart->update($data);
     }
-} 
+}

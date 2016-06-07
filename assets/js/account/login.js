@@ -189,7 +189,8 @@ function goolePluslogin()
         'clientid' : googleclientid,
         'cookiepolicy' : document.location.origin,
         'callback' : 'googlePlusloginCallback',
-        'approvalprompt':'force',
+        'approvalprompt':'auto',
+        'promt' : 'select_account',
         'scope' : 'https://www.googleapis.com/auth/plus.login https://www.googleapis.com/auth/plus.profile.emails.read'
     };
     gapi.auth.signIn(myParams);

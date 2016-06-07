@@ -89,26 +89,35 @@ class Security extends WMDS_Controller {
     /**
      * Generate Login page
      */
-    public function login_page(){
+    public function login_page()
+    {
         $userLogged = $this->session->userdata('logged');
-        if( !isset($userLogged['userid']) )
+
+        if( empty($userLogged['userid']) )
         {
             $firstPointLogin = $this->session->userdata('firstPointLogin');
-            if( !$firstPointLogin )
+
+            if( empty($firstPointLogin) )
             {
                 $this->session->set_userdata('firstPointLogin', 'login');
             }
+
             $this->twiggy->set('page', array(
-                'title'  => 'Login',
-                'role'   => 'page',
-                'theme'  => 'a',
-                'id'     => 'security-login',
-                'backButton'=> true,
+                'title' => 'Login', 
+                'role' => 'page', 
+                'theme' => 'a', 
+                'id' => 'security-login', 
+                'backButton' => true
             ));
+
             $this->twiggy->set('pageposition', 'login');
+
             $out = prepareProfilePage($this->twiggy);
+
             $out->display('account/login');
-        } else {
+        }
+        else
+        {
             redirect(base_url() . 'my-account');
         }
     } // login_page
@@ -445,9 +454,9 @@ class Security extends WMDS_Controller {
         {
             $firstPointLogin = $this->session->userdata('firstPointLogin');
 
-            if( 'login' !== $firstPointLogin )
+            if( 'login' === $firstPointLogin )
             {
-                // $backToLogin = 'requare';
+                $backToLogin = 'requare';
 
                 $insert = array();
 

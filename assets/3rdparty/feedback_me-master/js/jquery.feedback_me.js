@@ -257,7 +257,7 @@ var fm = (function ($) {
 	}
 
 	function triggerAction(event, position) {
-
+		$("#overlay").show();
 		var animation_show = {},
 			animation_hide = {},
 			$fm_trigger,
@@ -315,12 +315,13 @@ var fm = (function ($) {
 	}
 
 	function closeFeedback(event) {
+
 		event = eventTargetFixUp(event);
 		if (($(".feedback_content").length === 1 && $(".feedback_content").hasClass("feedback_content_closed")) ||
 				$(event.target).closest('.feedback_content').length === 1) {
 			return;
 		}
-
+		$("#overlay").hide();
 		var animation_hide = {},
 			option,
 			$fm_trigger,

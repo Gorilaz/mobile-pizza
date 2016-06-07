@@ -2,37 +2,19 @@
 
 class Feedback extends CI_Controller {
 
-	/**
-	 * Index Page for this controller.
-	 *
-	 * Maps to the following URL
-	 * 		http://example.com/index.php/welcome
-	 *	- or -
-	 * 		http://example.com/index.php/welcome/index
-	 *	- or -
-	 * Since this controller is set as the default controller in
-	 * config/routes.php, it's displayed at http://example.com/
-	 *
-	 * So any other public methods not prefixed with an underscore will
-	 * map to /index.php/welcome/<method_name>
-	 * @see http://codeigniter.com/user_guide/general/urls.html
-	 */
 	public function index()
 	{
-		$name 		= $_POST["name"];
-		$message	= $_POST["message"];
-		//$file = fopen("output.txt","w");
-		//fwrite($file,"$name");
-		//fclose($file);
+		$name 		= $this->input->post('name');
+		$message	=	$this->input->post('message');
 
-
-
-		$admin_email 	= "feedback@freemaila.info";
-		$email 			= "feedback@freemaila.info";
-		$subject 		= "feedback from pizza web";
+		$siteSetting 	= $this->session->userdata('siteSetting');
+        $email_from 	=  $siteSetting->EMAIL_FROM; //NAME OF THE REST.
+        $site_email 	=  $siteSetting->SITE_EMAIL; //REST. EMAIL
+        $admin_email 	=  $siteSetting->confirm_email_to;
+		$subject 		= "Feedback From Restaurant's App: " . $siteSetting->restaurant_name;
 		$comment 		= "$name wrote: $message";
-		$headers 		= 'From: webmaster@example.com' . "\r\n" .
-		    'Reply-To: webmaster@example.com' . "\r\n" .
+		$headers 		= "From: $email_from" . "\r\n" .
+		    "Reply-To: $site_email" . "\r\n" .
 		    'X-Mailer: PHP/' . phpversion();
 
 		//send email

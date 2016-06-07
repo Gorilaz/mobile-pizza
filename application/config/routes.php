@@ -72,6 +72,10 @@ $route['ipn']                           = 'paypal/ipn';
 $route['paypal/cancel']                 = 'paypal/cancel';
 $route['paypal/succes']                 = 'paypal/succes';
 
+
+$route['feedback']                 = 'feedback/index';
+
+
 /**
  * Set routes for payment controller
  */

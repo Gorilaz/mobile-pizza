@@ -1671,7 +1671,7 @@ $(document)
                         date = $('#date').val(),
                         time, timeIndex;
 
-                    if( a_process_for_preparing === 'D' && parseFloat($('[name="payment"]:checked').val()) === 1 )
+                    if( a_process_for_preparing === 'D' )
                     {
                         if( totalAmount < parseFloat(rules.min_order_amt) )
                         {

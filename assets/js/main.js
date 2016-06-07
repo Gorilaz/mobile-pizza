@@ -1652,22 +1652,14 @@ $(document)
                     }
                     else
                     {
-                        //cash
-                        if( totalAmount < parseFloat(rules.min_order_amt) )
-                        {
-                            showAlert('', 'Minimum amount for Cash On Delivery payments is $' + rules.min_order_amt);
-                        }
-                        else
-                        {
-                            elem.hide();
+                        elem.hide();
 
-                            next
-                                .show()
-                                .fadeOut(250)
-                                .fadeIn(250);
+                        next
+                            .show()
+                            .fadeOut(250)
+                            .fadeIn(250);
 
-                            manageHelpFooterLine(next);
-                        }
+                        manageHelpFooterLine(next);
                     }
                 }
                 else if( $(self).attr('name') === 'delivery' )
@@ -1678,6 +1670,16 @@ $(document)
                     var a_process_for_preparing = $(self).val(),
                         date = $('#date').val(),
                         time, timeIndex;
+
+                    if( a_process_for_preparing === 'D' )
+                    {
+                        if( totalAmount < parseFloat(rules.min_order_amt) )
+                        {
+                            showAlert('', 'Minimum amount for Cash On Delivery payments is $' + rules.min_order_amt);
+
+                            return undefined;
+                        }
+                    }
 
                     $('#time')
                         .empty()

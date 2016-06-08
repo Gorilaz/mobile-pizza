@@ -1675,7 +1675,7 @@ $(document)
                     {
                         if( totalAmount < parseFloat(rules.min_order_amt) )
                         {
-                            showAlert('', 'Minimum amount for Cash On Delivery payments is $' + rules.min_order_amt);
+                            showAlert('', 'Minimum amount for Home Delivery payments is $' + rules.min_order_amt);
 
                             return undefined;
                         }

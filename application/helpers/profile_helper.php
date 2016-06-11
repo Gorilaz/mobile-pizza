@@ -108,7 +108,7 @@ if ( !function_exists('saveProfile') )
         }
         else
         {
-            if( $user['mobile'] !== (string) $userLogged['mobile'] )
+            if( $user['mobile'] != $userLogged['mobile'] )
             {
                 $mobileToCheck = true;
             }
@@ -123,7 +123,7 @@ if ( !function_exists('saveProfile') )
                 return array('status' => 'error', 'message' => 'Verification code should not be empty.');
             }
 
-            if( $user['mobile_code'] !== $sms_code )
+            if( $user['mobile_code'] != $sms_code )
             {
                 return array('status' => 'error', 'message' => 'Verification code not valid.');
             }

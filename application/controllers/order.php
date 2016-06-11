@@ -848,7 +848,7 @@ class Order extends WMDS_Controller{
         $this->load->library('email');
 
         $this->email->initialize(array(
-            'mailtype' => 'html', 
+            'mailtype' => 'html',
             'bcc_batch_mode' => true
         ));
 
@@ -909,11 +909,6 @@ class Order extends WMDS_Controller{
         $p_order_comment = trim(str_replace('ORDER COMMENTS: :', '', $p_order_comment));
 
         $p_order_comment = str_replace('&nbsp;', '', $p_order_comment) . '*';
-
-        if( $p_order_comment === '*' )
-        {
-            $p_order_comment = '';
-        }
 
         $p_order_received_at = 'ORDER RECEIVED: ' . date('H:i m-d') . '*';
 

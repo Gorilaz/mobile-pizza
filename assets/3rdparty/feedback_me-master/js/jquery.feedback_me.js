@@ -303,6 +303,7 @@ var fm = (function ($) {
 			}
 		} else {
 			//first add the closed class so double (which will trigger closeFeedback function) click wont try to hide the form twice
+			$("#overlay").hide();
 			$fm_trigger.addClass("feedback_trigger_closed");
 			$fm_content.addClass("feedback_content_closed");
 			if (supportsTransitions === false) {
@@ -315,7 +316,6 @@ var fm = (function ($) {
 	}
 
 	function closeFeedback(event) {
-
 		event = eventTargetFixUp(event);
 		if (($(".feedback_content").length === 1 && $(".feedback_content").hasClass("feedback_content_closed")) ||
 				$(event.target).closest('.feedback_content').length === 1) {
@@ -356,6 +356,7 @@ var fm = (function ($) {
 									$fm_trigger.removeClass("feedback_kurama");
 									$fm_trigger.addClass("feedback_trigger_closed");
 									$fm_content.addClass("feedback_content_closed");
+									$("#overlay").hide();
 								}
 							);
 						}
@@ -652,12 +653,12 @@ var fm = (function ($) {
 						slideBack(fm_options, $fm_trigger, $fm_content);
 						$("body").append('<div ' + st + ' class="feedback-delayed-dlg success" onclick="fm.stopPropagation(event);"><span class="feedback-dlg-close" onclick="fm.closeFeedbackDelayedDlg();">X</span><span class="feedback-sucess-message">' +
 							'<span class="feedback-sucess-fail-message-inner"><span>' + fm_options.delayed_options.send_success + '</span></span></span></div>');
-						setTimeout(function () {$(".feedback-delayed-dlg").fadeOut(function () { $(this).remove(); }); }, fm_options.delayed_options.delay_success_milliseconds);
+						setTimeout(function () {$(".feedback-delayed-dlg").fadeOut(function () { $(this).remove(); }); $("#overlay").hide(); }, fm_options.delayed_options.delay_success_milliseconds);
 					} else {
 						$fm_content.find('.feedback_submit').text(fm_options.submit_label);
 						slideBack(fm_options, $fm_trigger, $fm_content);
 						$("body").append('<div class="feedback-delayed-custom-dlg success" onclick="fm.stopPropagation(event);">' + fm_options.delayed_options.custom_html_success + '</div>');
-						setTimeout(function () {$(".feedback-delayed-custom-dlg").fadeOut(function () { $(this).remove(); }); }, fm_options.delayed_options.delay_success_milliseconds);
+						setTimeout(function () {$(".feedback-delayed-custom-dlg").fadeOut(function () { $(this).remove(); $("#overlay").hide(); }); }, fm_options.delayed_options.delay_success_milliseconds);
 					}
 				}
             },
@@ -671,11 +672,11 @@ var fm = (function ($) {
 						$fm_content.find('.feedback_submit').text(fm_options.submit_label);
 						$("body").append('<div ' + st + ' class="feedback-delayed-dlg fail" onclick="fm.stopPropagation(event);"><span class="feedback-dlg-close" onclick="fm.closeFeedbackDelayedDlg();">X</span><span class="feedback-fail-message">' +
 							'<span class="feedback-sucess-fail-message-inner"><span>' + fm_options.delayed_options.send_fail + '</span></span></span></div>');
-						setTimeout(function () {$(".feedback-delayed-dlg").fadeOut(function () { $(this).remove(); }); }, fm_options.delayed_options.delay_fail_milliseconds);
+						setTimeout(function () {$(".feedback-delayed-dlg").fadeOut(function () { $(this).remove(); $("#overlay").hide(); }); }, fm_options.delayed_options.delay_fail_milliseconds);
 					} else {
 						$fm_content.find('.feedback_submit').text(fm_options.submit_label);
 						$("body").append('<div class="feedback-delayed-custom-dlg fail" onclick="fm.stopPropagation(event);">' + fm_options.delayed_options.custom_html_fail + '</div>');
-						setTimeout(function () {$(".feedback-delayed-custom-dlg").fadeOut(function () { $(this).remove(); }); }, fm_options.delayed_options.delay_fail_milliseconds);
+						setTimeout(function () {$(".feedback-delayed-custom-dlg").fadeOut(function () { $(this).remove(); $("#overlay").hide(); }); }, fm_options.delayed_options.delay_fail_milliseconds);
 					}
 				} else {
 					console.log("Failed to send feedback (please double check your feedback_url parameter)");

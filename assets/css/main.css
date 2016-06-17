@@ -1543,3 +1543,12 @@ a#welcome-page {
     text-shadow: none;
     color: #fff;
 }
+
+.feedback-delayed-dlg.success {
+    z-index: 20000;
+}
+
+label#for_later {
+    background: #757573;
+}
+

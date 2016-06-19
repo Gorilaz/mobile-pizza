@@ -41,8 +41,8 @@ class Order_model extends CI_Model{
 
         /** real_id (order no) */
         $real = $this->db->get('tbl_order_number')->row();
-        $real_id = $real->increment + $real->order_number;
-        $this->db->update('tbl_order_number',array('order_number' => $real_id));
+        $real_id = $real->order_number;
+        $this->db->update('tbl_order_number',array('order_number' => ($real_id + $real->increment)));
         /** end */
 
         $current_timestamp = date('Y-m-d H:i:s');
@@ -484,7 +484,7 @@ class Order_model extends CI_Model{
     }
 
     /**
-     * 
+     *
      */
     public function getOrderNumber()
     {
@@ -499,7 +499,7 @@ class Order_model extends CI_Model{
     }
 
 //checkValidVoucher
-    
+
     //VV almost the same like checkValidVoucher() above except the last condition $row>1 (instead fo $row>0), This functin is called form order.php after the data has been recarded to the mast_ord so need to increase
     // the row number to filter out just recorded order
     public function checkValidVoucher2($code) {
@@ -515,16 +515,16 @@ class Order_model extends CI_Model{
         if ($res->num_rows() > 0) {
              $user=$this->phpsession->get('tmUserId');
              $user=intval($user);
-             $code=trim($code);  
+             $code=trim($code);
              $row = $this->db->query("SELECT real_id FROM `mast_order` WHERE voucher_code = '$code' and userid = '$user'  and (coupon_type='discount' or coupon_type='freeproduct' or coupon_type='old')"); //
              $row=$row->num_rows();
             $d = $res->row();
             if ($d->expirydate < $now)
                 return 'expired';
-            if ($row>1) { 
+            if ($row>1) {
               //  error_log('OLD (EXPIRED) ' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
                 return 'old';  //existing
-            } else { 
+            } else {
                 //error_log('OK' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
                 return $res->row();
             }

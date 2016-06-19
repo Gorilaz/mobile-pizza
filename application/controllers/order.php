@@ -408,7 +408,8 @@ class Order extends WMDS_Controller{
             $data['order_option'] = 'Pickup';
         }
 
-        $data['order_number'] = $this->order_model->getOrderNumber();
+        //VV $data['order_number'] = $this->order_model->getOrderNumber();
+        $data['order_number'] = $order['real_id'];
 
         $data['p_txt_file_item_desc'] = $this->p_getTextFileItemsDescription(); //for gprs printer
 

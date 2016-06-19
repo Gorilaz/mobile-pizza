@@ -21,9 +21,9 @@ class Page extends WMDS_Controller {
 
     public function myaccount() {
         $this->twiggy->set('page', array(
-            'title'  => 'My Account', 
-            'role'   => 'page', 
-            'theme'  => 'a', 
+            'title'  => 'My Account',
+            'role'   => 'page',
+            'theme'  => 'a',
             'backButton'=> true
         ));
 
@@ -63,8 +63,8 @@ class Page extends WMDS_Controller {
                     $this->load->helper('cookie');
 
                     $cookie = array(
-                        'name'   => 'referal', 
-                        'value'  => '3', 
+                        'name'   => 'referal',
+                        'value'  => '3',
                         'expire' => '99500'
                     );
 
@@ -83,8 +83,8 @@ class Page extends WMDS_Controller {
         else
         {
             $this->twiggy->set('page', array(
-                'title'  => 'Welcome', 
-                'role'   => 'page', 
+                'title'  => 'Welcome',
+                'role'   => 'page',
                 'id'     => 'page-home'
             ));
 
@@ -142,18 +142,18 @@ class Page extends WMDS_Controller {
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product' => $product, 
+                        'product' => $product,
                         'ingredients' => array(
-                            'all' => $productIngredients, 
+                            'all' => $productIngredients,
                             'selected' => isset($ingredients['ingredient']) ? $ingredients['ingredient'] : ''
-                        ), 
-                        'product2' => $product2, 
+                        ),
+                        'product2' => $product2,
                         'ingredients2' => array(
-                            'all' => $productIngredients2, 
+                            'all' => $productIngredients2,
                             'selected' => isset($ingredients2['ingredient']) ? $ingredients2['ingredient'] : ''
-                        ), 
+                        ),
                         'details' => $post
-                    ), 
+                    ),
                     'half'
                 ));
             }
@@ -173,13 +173,13 @@ class Page extends WMDS_Controller {
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product' => $product, 
+                        'product' => $product,
                         'ingredients' => array(
-                            'all' => $productIngredients, 
+                            'all' => $productIngredients,
                             'selected' => isset($ingredients['ingredient']) ? $ingredients['ingredient'] : ''
-                        ), 
+                        ),
                         'details' => $post
-                    ), 
+                    ),
                     'single'
                 ));
             }
@@ -198,10 +198,10 @@ class Page extends WMDS_Controller {
 
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product' => $product, 
-                        'details' => $post, 
+                        'product' => $product,
+                        'details' => $post,
                         'options' => $options
-                    ), 
+                    ),
                     'deal'
                 ));
             }
@@ -216,9 +216,9 @@ class Page extends WMDS_Controller {
                 /* Add data to cart */
                 $this->cart->insert($this->formatDataForCart(
                     array(
-                        'product' => $product, 
+                        'product' => $product,
                         'details' => $post
-                    ), 
+                    ),
                     'single'
                 ));
             }
@@ -238,6 +238,7 @@ class Page extends WMDS_Controller {
 
         $products = array();
 
+        /* VV - didn't show all products
         if( $products_db )
         {
             foreach( $products_db as $prod )
@@ -253,6 +254,18 @@ class Page extends WMDS_Controller {
                 }
             }
         }
+        */ //VV
+
+        if( $products_db )
+        {
+            foreach( $products_db as $prod )
+            {
+                $products[$prod->category_id]['category_name'] = $prod->category_name;
+                $products[$prod->category_id]['withImage'] = $prod->page_with_image === 'enable' ? true : false;
+                $products[$prod->category_id]['items'][] = $prod;
+
+            }
+        }
 
         /* Add loyalty products */
         $loyaltyProducts = $this->products_model->getLoyaltyProducts();
@@ -266,11 +279,11 @@ class Page extends WMDS_Controller {
         $metas = $this->db->select('title, keywords, description')->where('pagename', 'menu')->get('tbl_meta_tags')->row();
 
         $this->twiggy->set('page', array(
-            'title' => $metas->title, 
-            'keywords' => $metas->keywords, 
-            'description' => $metas->description, 
-            'role' => 'page', 
-            'theme' => 'a', 
+            'title' => $metas->title,
+            'keywords' => $metas->keywords,
+            'description' => $metas->description,
+            'role' => 'page',
+            'theme' => 'a',
             'id' => 'page-menu'
         ));
 
@@ -278,8 +291,8 @@ class Page extends WMDS_Controller {
 
         /* Set Cart Variables */
         $this->twiggy->set(array(
-            'itemsNo' => $this->cart->total_items(), 
-            'total' => $this->cart->total(), 
+            'itemsNo' => $this->cart->total_items(),
+            'total' => $this->cart->total(),
             'minOrder' => $this->order_model->getMinimumOrder()
         ));
 
@@ -372,20 +385,20 @@ class Page extends WMDS_Controller {
             $this->twiggy->set('menuPage', 1);
 
             $this->twiggy->set('page', array(
-                'title'         => $page->title, 
-                'data'          => $page, 
-                'backButton'    => false, 
-                'role'          => 'page', 
+                'title'         => $page->title,
+                'data'          => $page,
+                'backButton'    => false,
+                'role'          => 'page',
                 'theme'         => 'a'
             ));
         }
         else
         {
             $page = array(
-                'title'         => $page->title, 
-                'data'          => $page, 
-                'backButton'    => true, 
-                'role'          => 'page', 
+                'title'         => $page->title,
+                'data'          => $page,
+                'backButton'    => true,
+                'role'          => 'page',
                 'theme'         => 'a'
             );
 
@@ -713,30 +726,30 @@ class Page extends WMDS_Controller {
                     if( empty($data['details']['buyWithPoints']) )
                     {
                         $order = array(
-                            'id' => $data['product']->product_id, 
-                            'name' => $data['product']->product_name, 
-                            'price' => $orderDetails['price'], 
-                            'prod_price' => $data['product']->product_price, 
-                            'qty' => $data['details']['p-quantity'], 
-                            'options' => $orderDetails['options'], 
-                            'ingredient_ids' => $orderDetails['ingredient_ids'], 
-                            'instruction' => $data['details']['textarea'], 
-                            'half_pizza_group_id' => 0, 
+                            'id' => $data['product']->product_id,
+                            'name' => $data['product']->product_name,
+                            'price' => $orderDetails['price'],
+                            'prod_price' => $data['product']->product_price,
+                            'qty' => $data['details']['p-quantity'],
+                            'options' => $orderDetails['options'],
+                            'ingredient_ids' => $orderDetails['ingredient_ids'],
+                            'instruction' => $data['details']['textarea'],
+                            'half_pizza_group_id' => 0,
                             'product_type' => 'single'
                         );
                     } else {
                         $order = array(
-                            'id' => $data['product']->product_id, 
-                            'name' => $data['product']->product_name, 
-                            'price' => (float) 0, 
-                            'prod_price' => (float) 0, 
-                            'points' => $data['product']->product_points * $data['details']['p-quantity'], 
-                            'prod_points' => $data['product']->product_points, 
-                            'qty' => $data['details']['p-quantity'], 
-                            'options' => $orderDetails['options'], 
-                            'ingredient_ids' => $orderDetails['ingredient_ids'], 
-                            'instruction' => $data['details']['textarea'], 
-                            'half_pizza_group_id' => 0, 
+                            'id' => $data['product']->product_id,
+                            'name' => $data['product']->product_name,
+                            'price' => (float) 0,
+                            'prod_price' => (float) 0,
+                            'points' => $data['product']->product_points * $data['details']['p-quantity'],
+                            'prod_points' => $data['product']->product_points,
+                            'qty' => $data['details']['p-quantity'],
+                            'options' => $orderDetails['options'],
+                            'ingredient_ids' => $orderDetails['ingredient_ids'],
+                            'instruction' => $data['details']['textarea'],
+                            'half_pizza_group_id' => 0,
                             'product_type' => 'single'
                         );
                     }

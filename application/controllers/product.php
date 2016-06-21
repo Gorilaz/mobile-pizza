@@ -54,9 +54,7 @@ class product extends WMDS_Controller {
             )
         );
 
-        $available_sizes = array('Medium', 'Large', 'Family');
-
-        $variations = $this->products_model->getVariationsById($id);
+        $variations = $this->products_model->getVariationsById($product->product_id);
 
         $size = false;
 
@@ -66,12 +64,9 @@ class product extends WMDS_Controller {
 
             if( empty($variation_price) )
             {
-                if( in_array($variation->variation_name, $available_sizes) )
-                {
-                    $size = $variation->variation_name;
+                $size = $variation->variation_name;
 
-                    break;
-                }
+                break;
             }
         }
 
@@ -126,7 +121,7 @@ class product extends WMDS_Controller {
 
         $variationsGroups = $this->products_model->getProductVariations($product->product_id);
 
-        $productType = $this->products_model->getProductType($variationsGroups['variations']);
+        $productType = $this->products_model->getProductType($variationsGroups['variations'], isset($variationsGroups['type']) ? $variationsGroups['type'] : '');
 
         $withPoints = $product->product_points > 0 && $points === 'points';
 

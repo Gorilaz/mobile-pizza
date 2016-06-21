@@ -64,7 +64,7 @@
 
             </div>
 
-            {% if isSingle and not isMultple %}
+            {% if isSingle and not isMultiple %}
                 {% include 'product/productSingle.html.twig' %}
             {% elseif isMultiple %}
                 {% include 'product/productMultiple.html.twig' %}
@@ -78,7 +78,7 @@
 
 
             <input id="hasHalf" name="hasHalfInput" value="{% if hasHalf %}1{% else %}0{% endif %}" type="hidden">
-            <input id="hasIngredients" name="hasIngredientsInput" value="{% if isSingle and not isMultple %}1{% else %}0{% endif %}" type="hidden">
+            <input id="hasIngredients" name="hasIngredientsInput" value="{% if isSingle and not isMultiple %}1{% else %}0{% endif %}" type="hidden">
 
 
             <div class="single-options get-space">

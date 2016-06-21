@@ -88,6 +88,11 @@ class Products_model extends CI_Model{
             $result['halfs'] = $this->getMatchedPizzaForHalf($variations, $id);
 
             foreach($variations as $variation) {
+                if( isset($variation->type) )
+                {
+                    $result['type'] = $variation->type;
+                }
+
                 $result['variations'][$variation->title][] = $variation;
             }
         }
@@ -219,7 +224,7 @@ class Products_model extends CI_Model{
      * @param $variationGroups
      * @return array
      */
-    public function getProductType($variationGroups) {
+    public function getProductType($variationGroups, $type) {
 
         $return = array(
             'isSingle'      => false,
@@ -231,11 +236,26 @@ class Products_model extends CI_Model{
         if($variationGroups && is_array($variationGroups)) {
             $variations = array_keys($variationGroups);
 
-            if(array_intersect(array('Size','Sauce','Pasta'),$variations)) {
-                $return['isSingle'] = true;
+            if( !empty($type) )
+            {
+                if( $type === 'single' )
+                {
+                    $return['isSingle'] = true;
+                }
+
+                if( $type === 'multiple' )
+                {
+                    $return['isMultiple'] = true;
+                }
             }
-            if(array_intersect(array('Pizza2','Pizza1','Drink', 'Meal 1', 'Meal 2'),$variations)) {
-                $return['isMultiple'] = true;
+            else
+            {
+                if(array_intersect(array('Size','Sauce','Pasta'),$variations)) {
+                    $return['isSingle'] = true;
+                }
+                if(array_intersect(array('Pizza2','Pizza1','Drink', 'Meal 1', 'Meal 2'),$variations)) {
+                    $return['isMultiple'] = true;
+                }
             }
 
             /**

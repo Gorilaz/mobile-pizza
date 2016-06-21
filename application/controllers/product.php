@@ -121,7 +121,8 @@ class product extends WMDS_Controller {
 
         $variationsGroups = $this->products_model->getProductVariations($product->product_id);
 
-        $productType = $this->products_model->getProductType($variationsGroups['variations'], isset($variationsGroups['type']) ? $variationsGroups['type'] : '');
+        //$productType = $this->products_model->getProductType($variationsGroups['variations'], isset($variationsGroups['type']) ? $variationsGroups['type'] : '');
+        $productType = $this->products_model->getProductType($variationsGroups['variations'], $product->product_type);
 
         $withPoints = $product->product_points > 0 && $points === 'points';
 

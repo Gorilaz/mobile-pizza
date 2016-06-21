@@ -216,15 +216,16 @@ class Products_model extends CI_Model{
      * Get type of the product based on the variations returned
      * Returns array that is directly passed to the view
      *
-     * - isSingle: pizza & pastas
+     * - isSingle: pizza & pastas (has variations like size, sauce)
      * - isMultiple: deals (selectors for multiple products)
-     * - isSimple: drinks, etc
+     * - isSimple: drinks, etc (no variations like size, sauce etc.)
      * - hasHalf: for pizza Only, if allows half pizza
      *
      * @param $variationGroups
      * @return array
      */
-    public function getProductType($variationGroups, $type) {
+
+    public function getProductType($variationGroups, $product_type) {
 
         $return = array(
             'isSingle'      => false,
@@ -233,30 +234,20 @@ class Products_model extends CI_Model{
             'hasHalf'       => false,
         );
 
+        if($product_type === 'isSimple'){
+            $return['isSimple'] = true;
+        }
+
+        if($product_type === 'isMultiple'){
+            $return['isMultiple'] = true;
+        }
+
+        if($product_type === 'isSingle' || !$product_type){ //if product_type not set, display "Add/Modify Ingredients" on a product Page
+            $return['isSingle'] = true;
+        }
+
         if($variationGroups && is_array($variationGroups)) {
             $variations = array_keys($variationGroups);
-
-            if( !empty($type) )
-            {
-                if( $type === 'single' )
-                {
-                    $return['isSingle'] = true;
-                }
-
-                if( $type === 'multiple' )
-                {
-                    $return['isMultiple'] = true;
-                }
-            }
-            else
-            {
-                if(array_intersect(array('Size','Sauce','Pasta'),$variations)) {
-                    $return['isSingle'] = true;
-                }
-                if(array_intersect(array('Pizza2','Pizza1','Drink', 'Meal 1', 'Meal 2'),$variations)) {
-                    $return['isMultiple'] = true;
-                }
-            }
 
             /**
              * Check if allows half pizza
@@ -269,13 +260,9 @@ class Products_model extends CI_Model{
                 }
             }
         }
-        if(!$return['isSingle'] && !$return['isMultiple']) {
-            $return['isSimple'] = true;
-        }
 
         return $return;
     }
-
 
     /**
      * Get product and product details based on variation.
@@ -301,6 +288,7 @@ class Products_model extends CI_Model{
         }
         return false;
     }
+
 
     /**
      * Get coupons

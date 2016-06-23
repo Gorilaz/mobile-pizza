@@ -7,7 +7,7 @@
         </div>
         <div class="ui-block-b">
 
-            <select name="variation" id="variation" data-mini="true" class="calculate" data-type="{{ option }}" {% if withPoints %}disabled="disabled"{% endif %}>
+            <select name="variation" id="variation" data-mini="true" class="calculate" data-type="{{ option }}" {% if withPoints %} {# disabled="disabled" #} {% endif %}>
                 {% for item in entries %}
                     <option value="{{ item.variation_id }}" {% if item.variation_price == 0 %} selected{% endif %} data-price="{{ item.variation_price }}"
                             {% if item.half_pizza_group_id !=0 and hasHalf %}data-half-group="{{ item.half_pizza_group_id }}" data-half-fee="{{ item.half_pizza_group_fee }}" {% endif %}>
@@ -20,7 +20,7 @@
     </div>
 {% endfor %}
 
-    {% if not withPoints %}
+    {% if not withPoints and not isSimple%} {# hide ingredients for loyalty products since ingr. have no points assigned, only variations have#}
     <div class="row ingredientsHolder">
         <a href="javascript: void(0)" data-href="#ingredients"><i class="icon-chevron-sign-right"></i> Add/Modify Ingredients</a>
     </div>

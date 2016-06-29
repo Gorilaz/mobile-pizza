@@ -458,7 +458,7 @@ function changeMobile()
  */
 function verifyClean()
 {
-    if( $('#form_mobile').attr('data-current') === '' || 
+    if( $('#form_mobile').attr('data-current') === '' ||
         $('#form_mobile').val() !== $('#form_mobile').attr('data-current') )
     {
         $('#form_mobile').removeAttr('readonly');
@@ -1371,7 +1371,7 @@ $(document)
 
                                 if( halfPizza.product_image !== '' )
                                 {
-                                    attributes.style = 'background-image: url(\'' + desktopUrl + 'templates/'+ templateFolder + '/uploads/products/thumb/' + halfPizza.product_image + '\')';
+                                    attributes.style = 'background-image: url(\'' + assetsUrl + 'templates/'+ templateFolder + '/uploads/products/thumb/' + halfPizza.product_image + '\')';
                                 }
 
                                 return attributes;
@@ -2475,10 +2475,10 @@ $(document)
 
         var focusInputHandler = function() {
                 $('select').selectmenu('disable');
-            }, 
+            },
             blurInputHandler = function() {
                 $('select').selectmenu('enable');
-            }, 
+            },
             /*
              * Bind click action for standart login form
              */
@@ -2489,20 +2489,20 @@ $(document)
                 {
                     signInRequest(self);
                 }
-            }, 
+            },
             /*
              * Bind click action for log out
              */
             clickLogOutHandler = function() {
                 window.location.href = '//' + window.location.host + '/logout/payment';
-            }, 
+            },
             inputFormMobileHandler = function() {
                 $('#form_mobile').removeData('previousValue');
 
                 var valid = $('#form_mobile').valid();
 
                 $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
-            }, 
+            },
             classChangedFormMobileHandler = function() {
                 var newClass = $('#form_mobile').attr('class');
 
@@ -2518,7 +2518,7 @@ $(document)
                         clearTimeout(timeout);
                     }, 100);
                 }
-            }, 
+            },
             clickChangeMobileNumberHandler = function() {
                 $('#form_mobile').val('');
 
@@ -2590,7 +2590,7 @@ $(document)
             })
             .off('input', '.card-number, #cvv')
             .on('input', '.card-number, #cvv', function(event) {
-                var self = this, 
+                var self = this,
                     value = $(self).val().replace(/[^\d]/gi, '');
 
                 if( $(self).val() !== value )
@@ -2600,22 +2600,22 @@ $(document)
 
                 if( $(self).val().length === 0 )
                 {
-                    var currentId = $(self).attr('id'), 
+                    var currentId = $(self).attr('id'),
                         element = $('[data-id="' + currentId + '"]');
 
                     $(element).focus().val($(element).val());
                 }
                 else if( $(self).val().length === parseInt($(self).attr('data-length'), 10) )
                 {
-                    var elementId = $(self).attr('data-id'), 
+                    var elementId = $(self).attr('data-id'),
                         element = $('#' + elementId);
 
                     $(element).focus();
                 }
                 else if( $(self).val().length > parseInt($(self).attr('data-length'), 10) )
                 {
-                    var elementId = $(self).attr('data-id'), 
-                        element = $('#' + elementId), 
+                    var elementId = $(self).attr('data-id'),
+                        element = $('#' + elementId),
                         value = $(self).val().substr(0, parseInt($(self).attr('data-length'), 10));
 
                     $(self).val(value);
@@ -2951,7 +2951,7 @@ $(document)
                 var valid = $('#form_mobile').valid();
 
                 $('#verify-btn')[( valid ? 'removeClass' : 'addClass' )]('ui-disabled');
-            }, 
+            },
             classChangedFormMobileHandler = function() {
                 var newClass = $('#form_mobile').attr('class');
 

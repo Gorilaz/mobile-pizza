@@ -15,16 +15,16 @@
     <div data-role="content" class="product-single" id="productContent" itemscope itemtype="http://schema.org/ItemPage">
         <form method="post" action="" id="order-form">
 
-            <img class="hide" src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}" alt="{{ product.product_name }}" itemprop="primaryImageOfPage" />
+            <img class="hide" src="{{ settings.assests_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}" alt="{{ product.product_name }}" itemprop="primaryImageOfPage" />
             <link class="hide" href="{{ current_url }}" alt="{{ product.product_name }}" itemprop="url" />
 
-            <div class="single-top {% if image %}with-image{% endif %}" {% if image %} style="background-image: url('{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}')" {% endif %}>
+            <div class="single-top {% if image %}with-image{% endif %}" {% if image %} style="background-image: url('{{ settings.assests_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}')" {% endif %}>
 
                 {% if image %}
                     <a href="#product-image" data-rel="popup" data-position-to="window" data-transition="none" class="photo-popup"><i class="icon-plus"></i></a>
 
                     <div data-role="popup" id="product-image" data-overlay-theme="a" data-theme="d" data-corners="false">
-                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img class="popphoto" src="{{ settings.desktop_url }}templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}" style="max-height:512px;" alt="Large Product Picture">
+                        <a href="#" data-rel="back" data-role="button" data-theme="a" data-icon="delete" data-iconpos="notext" class="ui-btn-right">Close</a><img class="popphoto" src="{{ settings.assests_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/uploads/products/thumb/{{ image.full }}" style="max-height:512px;" alt="Large Product Picture">
                     </div>
                 {% endif %}
 

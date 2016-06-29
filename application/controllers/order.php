@@ -804,7 +804,7 @@ class Order extends WMDS_Controller{
         //file_put_contents($filename, $output);
 
 
-
+       // echo "html_email is $html_email"; die;
         $this->_sendPdfMail($html_email, $order['real_id']);
 
 
@@ -820,7 +820,7 @@ class Order extends WMDS_Controller{
 
         $siteSetting = $this->session->userdata('siteSetting');
 
-        $email_template = file_get_contents($siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html');
+        $email_template = file_get_contents($siteSetting->assests_url . '/templates/' . $siteSetting->TEMPLATEDIR . '/templates/default/email/customer_order_mail.html');
 
         $subject = $siteSetting->order_mail_title;
         $description = $siteSetting->order_mail_descr;
@@ -842,7 +842,7 @@ class Order extends WMDS_Controller{
                     <td style="height:30px;" colspan="2"> </td>
                 </tr>', $html);
 
-        $email_template = str_replace('[[LOGO]]', $siteSetting->desktop_url . 'templates/' . $siteSetting->TEMPLATEDIR . '/templates/default', $email_template);
+        $email_template = str_replace('[[LOGO]]', $siteSetting->assests_url . '/templates/' . $siteSetting->TEMPLATEDIR . '/templates/default', $email_template);
         $email_template = str_replace('[[EMAIL_HEADING]]', $subject, $email_template);
         $email_template = str_replace('[[EMAIL_CONTENT]]', $html, $email_template);
 
@@ -865,7 +865,6 @@ class Order extends WMDS_Controller{
         $this->email->to($logged['email']);
 
         $this->email->message($email_template);
-
         $send = $this->email->send();
     }
 
@@ -948,7 +947,7 @@ class Order extends WMDS_Controller{
         $sitesetting = $this->session->userdata('siteSetting');
 
         //CAN"T USE file_put_contents to a remote server, so saving in on mobile server for now
-        // $text_file_path = $sitesetting->desktop_url . 'templates/' . $sitesetting->TEMPLATEDIR . '/upload/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
+        // $text_file_path = $sitesetting->assests_url . '/templates/' . $sitesetting->TEMPLATEDIR . '/upload/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
 
         $text_file_path = FCPATH . 'templates/printer_files/'.$data['order_number'].'_'.urlencode($data['restaurant_name']).'.txt';
         if ( file_put_contents($text_file_path, $p_printer_data) === false )

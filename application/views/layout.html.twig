@@ -50,7 +50,7 @@
 
         <link type="text/css" rel="stylesheet" href="{{ base_url }}assets/css/animate-custom.css" />
 
-          <link type="text/css" rel="stylesheet" href="{{ settings.desktop_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/css/mobile.css" />
+        <link type="text/css" rel="stylesheet" href="{{ settings.assests_url }}/templates/{{ settings.TEMPLATEDIR|lower }}/templates/default/css/mobile.css" />
 
 
 
@@ -76,7 +76,8 @@
 
         <script type="text/javascript">
 
-            var desktopUrl = '{{ settings.desktop_url }}';
+            var assetsUrl = '{{ settings.assests_url }}';
+            assetsUrl = assetsUrl.replace(/\/?$/, '/'); //add trailing '/' if missing
             var templateFolder = '{{ settings.TEMPLATEDIR|lower }}';
 
             $(function() {
@@ -162,8 +163,8 @@
 
     <script type="text/javascript">
 
-       // $('.main-background-image').css('background-image','url(\'' + desktopUrl + '/templates/'+ templateFolder+ '/templates/default/images/mobile_background.jpg\')');
-        $('.top-bar-title > a, .logo-overlay > div').css('background-image','url(\'' + desktopUrl + '/templates/'+ templateFolder+ '/templates/default/images/logo.png\')');
+       // $('.main-background-image').css('background-image','url(\'' + assetsUrl + '/templates/'+ templateFolder+ '/templates/default/images/mobile_background.jpg\')');
+        $('.top-bar-title > a, .logo-overlay > div').css('background-image','url(\'' + assetsUrl + 'templates/'+ templateFolder+ '/templates/default/images/logo.png\')');
 
             $(document).ready(function(){
                 //set up some basic options for the feedback_me plugin

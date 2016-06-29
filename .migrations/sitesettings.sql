@@ -1,5 +1,5 @@
 
-insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'desktop_url','https://assets1.ktu.com.au');
+insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'assets_url','https://assets2.ktu.com.au');
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'subdomain_url','https://www.XXXXXXX.com.au');
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'order_text','');
 insert into `sitesetting`(`id`,`type`,`value`) values (NULL,'text_social_locket','SOCIAL LOCKET TEXT HERE');

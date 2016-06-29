@@ -44,7 +44,7 @@ class product extends WMDS_Controller {
             'title' => $product->product_name,
             'description' => $product->description,
             'type' => 'product.item',
-            'image' => $siteSetting->assests_url . '/templates/' . $siteSetting->TEMPLATEDIR . '/uploads/products/thumb/' . ( empty($product->product_image) ? 'no_prod_image_thumb.png' : $product->product_image ),
+            'image' => $siteSetting->assets_url . '/templates/' . $siteSetting->TEMPLATEDIR . '/uploads/products/thumb/' . ( empty($product->product_image) ? 'no_prod_image_thumb.png' : $product->product_image ),
             'url' => current_url(),
             'product' => array(
                 'brand' => $siteSetting->restaurant_name,

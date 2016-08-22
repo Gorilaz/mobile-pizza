@@ -37,7 +37,7 @@ class Order_model extends CI_Model{
      * @param $userId
      * @param $html
      */
-    public function saveOrder($checkout, $total, $discount, $delivery_fee, $userId, $html, $status){
+    public function saveOrder($checkout, $total, $discount, $fees, $userId, $html, $status){
 
         /** real_id (order no) */
         $real = $this->db->get('tbl_order_number')->row();
@@ -94,12 +94,30 @@ class Order_model extends CI_Model{
             'coupon_type'           => '',
             'voucher_code'          => (isset($checkout['couponName']))?$checkout['couponName']:'',
             'discount'              => $discount,
-            'delivery_fee'          => $delivery_fee,
             'order_date'            => $placement_date,
             'order_placement_date'  => $current_timestamp,
             'from_mobile'           => 1
         );
 
+        if( isset($fees['delivery']) )
+        {
+            $order['delivery_fee'] = $fees['delivery'];
+        }
+
+        if( isset($fees['holiday']) )
+        {
+            $order['public_holiday_fee'] = $fees['holiday'];
+        }
+
+        if( isset($fees['cc']) )
+        {
+            $order['min_order_credit_card_fee'] = $fees['cc'];
+        }
+
+        if( isset($fees['pp']) )
+        {
+            $order['min_order_paypal_fee'] = $fees['pp'];
+        }
 
         if($status == 'save'){
             $this->db->insert('mast_order', $order);
@@ -522,10 +540,8 @@ class Order_model extends CI_Model{
             if ($d->expirydate < $now)
                 return 'expired';
             if ($row>1) {
-              //  error_log('OLD (EXPIRED) ' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
                 return 'old';  //existing
             } else {
-                //error_log('OK' . var_export($row . 'code is '.trim($code).' user is '. $user, true)); //die;
                 return $res->row();
             }
         } else {
@@ -536,7 +552,7 @@ class Order_model extends CI_Model{
             $item->coupontype = $code;
             $item->discountper = 0;
             $item->status = 'active';
-          //  error_log('item is ' . var_export($item, true));// die;
+
             return $item;  //// non existing
         }
     }

@@ -184,6 +184,7 @@ class Order extends WMDS_Controller{
         $newTotal -= $totalDiscount;
 
         $fees = 0;
+        $_fees = array();
 
         if( $order_less > 0 )
         {
@@ -207,6 +208,8 @@ class Order extends WMDS_Controller{
                 $newTotal += (double) $delivery_fee;
 
                 $fees += (double) $delivery_fee;
+
+                $_fees['delivery'] = (double) $delivery_fee;
             }
         }
 
@@ -220,6 +223,8 @@ class Order extends WMDS_Controller{
             $newTotal += $holidayPrice;
 
             $fees += $holidayPrice;
+
+            $_fees['holiday'] = $holidayPrice;
         }
         /** end holliday fee */
 
@@ -231,6 +236,16 @@ class Order extends WMDS_Controller{
             $newTotal += (double) $surchargeOrder['value'];
 
             $fees += (double) $surchargeOrder['value'];
+
+            if( $surchargeOrder['name'] === 'Credit Card' )
+            {
+                $_fees['cc'] = (double) $surchargeOrder['value'];
+            }
+
+            if( $surchargeOrder['name'] === 'Pay Pal' )
+            {
+                $_fees['pp'] = (double) $surchargeOrder['value'];
+            }
         }
         /** end */
 
@@ -253,7 +268,7 @@ class Order extends WMDS_Controller{
 
         if( $payment == 'paypal' )
         {
-            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'pending');
+            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $_fees, $user['userid'], $html, 'pending');
 
             $paypalFields = array(
                 'total'   => $newTotal,
@@ -266,7 +281,7 @@ class Order extends WMDS_Controller{
         }
         else
         {
-            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $fees, $user['userid'], $html, 'save');
+            $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $_fees, $user['userid'], $html, 'save');
 
             /** sms confirmation */
             $this->confirmationSms($order_id);

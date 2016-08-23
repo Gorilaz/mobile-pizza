@@ -328,25 +328,27 @@ class Security extends WMDS_Controller {
         echo $firstPointLogin;
     } // save
 
-    public function checkUniqueEmail(){
-
+    public function checkUniqueEmail()
+    {
+        $flag = 'false';
         $email = urldecode($this->input->get('email'));
-
         $this->load->library('session');
         $logged = $this->session->userdata('logged');
-        if($logged){
-            $email_user = $logged['email'];
-            if(!empty($email_user) && $email == $email_user){
-                echo 'true';
-            }
-        } else {
-            $is_unique = $this->security_model->checkUniqueEmail($email);
-            if($is_unique){
-                echo 'false';
-            } else {
-                echo 'true';
+        if( $logged )
+        {
+            if( !empty($logged['email']) && $email == $email_user )
+            {
+                $flag = 'true';
             }
         }
+        if( 'false' == $flag )
+        {
+            if( $this->security_model->checkUniqueEmail($email) )
+            {
+                $flag = 'true';
+            }
+        }
+        echo $flag;
     }
 
     /**
@@ -360,10 +362,7 @@ class Security extends WMDS_Controller {
         $logged = $this->session->userdata('logged');
         if( $logged )
         {
-            if( 
-                !empty($logged['mobile'])
-                && $mobile == $logged['mobile']
-            )
+            if( !empty($logged['mobile']) && $mobile == $logged['mobile'] )
             {
                 $flag = 'true';
             }

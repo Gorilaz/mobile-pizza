@@ -365,7 +365,11 @@ function prepareProfileFormValidation()
                 email: {
                     required: true,
                     email: true,
-                    remote: '//' + window.location.host + '/security/checkUniqueEmail'
+                    remote: function() {
+                        return {
+                            url: '//' + window.location.host + '/security/checkUniqueEmail'
+                        };
+                    }
                 },
                 password: {
                     required: true,
@@ -388,11 +392,12 @@ function prepareProfileFormValidation()
                             url: '//' + window.location.host + '/security/checkUniqueMobile'
                         };
                     }
-                    /* remote: '//' + window.location.host + '/security/checkUniqueMobile',
-                    smsVerification: true */
                 }
             },
             messages: {
+                email: {
+                    remote: 'The email already used'
+                }, 
                 mobile: {
                     remote: 'The mobile number already used'
                 }

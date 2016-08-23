@@ -53,9 +53,9 @@ class Security_model extends CI_Model{
         $is_unique = $this->db->where('email', $email)->count_all_results('users');
 
         if ($is_unique > 0){
-            return true;
-        } else {
             return false;
+        } else {
+            return true;
         }
     }
 

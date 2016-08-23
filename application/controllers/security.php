@@ -14,7 +14,7 @@ class Security extends WMDS_Controller {
     }
 
     /*******  Login   *********/
-    
+
     function googleplus_login()
     {
         $backToLogin = '';
@@ -35,9 +35,9 @@ class Security extends WMDS_Controller {
             $user = $this->security_model->getUserByEmail($email);
             if( $user )
             {
-                if( 
+                if(
                     empty($user['address'])
-                    || empty($user['suburb']) 
+                    || empty($user['suburb'])
                     || empty($user['mobile'])
                   )
                 {
@@ -78,7 +78,7 @@ class Security extends WMDS_Controller {
             } else {
                 $error = 'User not found in the database. Make your first order to get registered.';
             }
-        }      
+        }
         echo json_encode(array(
             'fields' => $backToLogin,
             'error' => $error
@@ -103,10 +103,10 @@ class Security extends WMDS_Controller {
             }
 
             $this->twiggy->set('page', array(
-                'title' => 'Login', 
-                'role' => 'page', 
-                'theme' => 'a', 
-                'id' => 'security-login', 
+                'title' => 'Login',
+                'role' => 'page',
+                'theme' => 'a',
+                'id' => 'security-login',
                 'backButton' => true
             ));
 
@@ -210,7 +210,7 @@ class Security extends WMDS_Controller {
                 if( $this->config->item('sms_service') === 'telerivet' )
                 {
                     $sendMessage = $this->Telerivet_Project->sendMessage(array(
-                        'content' => 'Hello ' . $mobile . '! To Recovery Your Password - please visit: ' . base_url() . '/change-password/' . $code, 
+                        'content' => 'Hello ' . $mobile . '! To Recovery Your Password - please visit: ' . base_url() . '/change-password/' . $code,
                         'to_number' => $user['mobile']
                     ));
                 }
@@ -294,14 +294,27 @@ class Security extends WMDS_Controller {
 
         unset($user['paypal']);
 
-        if( empty($user['address']) || 
-            empty($user['suburb']) || 
+        if( empty($user['address']) ||
+            empty($user['suburb']) ||
             empty($user['mobile']) )
         {
             echo 'error';
 
             return;
         }
+
+        //VV*** adding missing state and country data
+        if( empty($user['state'])){
+            $user['state']='8989';
+
+        }
+
+        if( empty($user['country_id'])){
+            $user['country_id']='226';
+
+        }
+
+        //VVV***
 
         $saveProfile = saveProfile($user);
 
@@ -360,7 +373,7 @@ class Security extends WMDS_Controller {
         $logged = $this->session->userdata('logged');
         if( $logged )
         {
-            if( 
+            if(
                 !empty($logged['mobile'])
                 && $mobile == $logged['mobile']
             )
@@ -437,8 +450,8 @@ class Security extends WMDS_Controller {
 
             if( empty($user) === false )
             {
-                if( empty($user['address']) || 
-                    empty($user['suburb']) || 
+                if( empty($user['address']) ||
+                    empty($user['suburb']) ||
                     empty($user['mobile']) )
                 {
                     $backToLogin = 'requare';
@@ -479,7 +492,7 @@ class Security extends WMDS_Controller {
         }
 
         echo json_encode(array(
-            'fields' => $backToLogin, 
+            'fields' => $backToLogin,
             'error' => $error
         ));
     }

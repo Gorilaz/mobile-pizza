@@ -40,14 +40,14 @@ $(function(){
                 });
 
                 request.fail(function( jqXHR, textStatus ) {
-                    showAlert( "", "Request failed: " + textStatus );
+                    showAlert( "", "1Request failed: " + textStatus );
                 });
             }
 
         });
 
         request.fail(function( jqXHR, textStatus ) {
-            showAlert( "", "Request failed: " + textStatus );
+            showAlert( "", "2Request failed: " + textStatus );
         });
 
     }
@@ -121,7 +121,7 @@ $(function(){
                         });
 
                         request.fail(function( jqXHR, textStatus ) {
-                            showAlert( "", "Request failed: " + textStatus );
+                            showAlert( "", "5Request failed: " + textStatus );
                         });
 
                     } else {
@@ -130,7 +130,7 @@ $(function(){
                 });
 
                 request.fail(function( jqXHR, textStatus ) {
-                    showAlert( "", "Request failed: " + textStatus );
+                    showAlert( "", "4Request failed: " + textStatus );
                 });
             }
 
@@ -164,14 +164,14 @@ $(function(){
                     });
 
                     request.fail(function( jqXHR, textStatus ) {
-                        showAlert( "", "Request failed: " + textStatus );
+                        showAlert( "", "6Request failed: " + textStatus );
                     });
                 }
 
             });
 
             request.fail(function( jqXHR, textStatus ) {
-                showAlert( "", "Request failed: " + textStatus );
+                showAlert( "", "7Request failed: " + textStatus );
             });
 
         }

@@ -124,15 +124,17 @@ class Payment extends WMDS_Controller{
         $city         = $suburbData->suburb_name;
         $postCode     = $suburbData->postcode;
 
-        $stateData    = $this->address->getStateDataById($user['state']);
-        $state        = $stateData->code;
-
+        //$stateData    = $this->address->getStateDataById($user['state']);
+       //  $state        = $stateData->code;
+       // $state='NSW';
+        $state=$user['state'];
         $BillingAddress = array(
             'street'            => $user['address'],            // Required. First street address.
             // 'street2'        => '',                          // Second street address.
             'city'              => $city,                       // Required. Name of City.
             'state'             => $state,                      // Required. Name of State or Province.
-            'countrycode'       => $siteSetting->countrycode,   // Required. Country code.
+            //'countrycode'       => $siteSetting->countrycode,   // Required. Country code.
+            'countrycode'       => 'AU',   // Required. Country code.
             'zip'               => $postCode,                   // Required. Postal code of payer.
             'phonenum'          => $user['mobile']              // Phone Number of payer. 20 char max.
         );

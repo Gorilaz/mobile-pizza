@@ -478,16 +478,24 @@ function verifyClean()
 
     $('#sms-code').hide().val('');
 
+    var sms = $('#sms').data('sms');
+
     if( $('#form_mobile').attr('data-current') === '' ||
         $('#form_mobile').val() !== $('#form_mobile').attr('data-current') )
     {
-        $('#verify-div').show();
+        if( sms === 'enable' )
+        {
+            $('#verify-div').show();
+        }
 
         $('#changeMobileNumber').addClass('hide');
     }
     else
     {
-        $('#verify-div').hide();
+        if( sms === 'enable' )
+        {
+            $('#verify-div').hide();
+        }
 
         $('#changeMobileNumber').removeClass('hide');
     }

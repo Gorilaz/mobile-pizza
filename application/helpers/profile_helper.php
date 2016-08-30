@@ -99,18 +99,25 @@ if ( !function_exists('saveProfile') )
 
         $mobileToCheck = false;
 
-        if( empty($userLogged['mobile']) )
+        $obj->load->model('security_model');
+
+        $sms = $obj->security_model->smsSettings();
+
+        if( $sms['sms_verification'] === 'enable' )
         {
-            if( empty($user['mobile']) === false )
+            if( empty($userLogged['mobile']) )
             {
-                $mobileToCheck = true;
+                if( empty($user['mobile']) === false )
+                {
+                    $mobileToCheck = true;
+                }
             }
-        }
-        else
-        {
-            if( $user['mobile'] != $userLogged['mobile'] )
+            else
             {
-                $mobileToCheck = true;
+                if( $user['mobile'] != $userLogged['mobile'] )
+                {
+                    $mobileToCheck = true;
+                }
             }
         }
 
@@ -130,8 +137,6 @@ if ( !function_exists('saveProfile') )
         }
 
         unset($user['mobile_code']);
-
-        $obj->load->model('security_model');
 
         if( empty($userLogged['userid']) )
         {

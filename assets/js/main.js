@@ -2481,7 +2481,7 @@ $(document)
      * Payment/Send Order
      * @url /payment
      **********************************************************************************************************************/
-    .on('pageinit', "#page-payment", function() {
+    .on('pageinit', '#page-payment', function() {
         verifyClean();
 
         var oldClass = $('#form_mobile').attr('class');
@@ -2538,6 +2538,26 @@ $(document)
                 $('#verify-btn').addClass('ui-disabled');
 
                 verifyClean();
+            }, 
+            registerFormChangeHandler = function(event) {
+                var data = $(this).serializeArray(), dataIndex, 
+                    fields = [ 'first_name', 'last_name', 'company_name', 
+                        'address', 'suburb', 'email', 'password', 'conf_password', 
+                        'mobile' ], 
+                    localStorageData = new Object;
+
+                for( dataIndex in data )
+                {
+                    if( data.hasOwnProperty(dataIndex) )
+                    {
+                        if( fields.indexOf(data[dataIndex]['name']) !== -1 )
+                        {
+                            localStorageData[data[dataIndex]['name']] = data[dataIndex]['value'];
+                        }
+                    }
+                }
+
+                localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
             };
 
         $(document)
@@ -2645,7 +2665,9 @@ $(document)
                 {
                     saveForm('saveOrder');
                 }
-            });
+            })
+            .off('change', '#register_form', registerFormChangeHandler)
+            .on('change', '#register_form', registerFormChangeHandler);
 
         if( !!$('#cardholder-input').length )
         {
@@ -2668,7 +2690,32 @@ $(document)
             .on('load', function() {
                 if( !!firstOrderDeleted )
                 {
-                    showAlert('', 'Sorry, but it seems this is not your first oder. The First Order Discount has been removed.');
+                    showAlert('', 'Sorry, but it seems this is not your first order. The First Order Discount has been removed.');
+                }
+
+                var fields = [ 'first_name', 'last_name', 'company_name', 
+                        'address', 'suburb', 'email', 'password', 'conf_password', 
+                        'mobile' ], 
+                    localStorageDataIndex, 
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+
+                for( localStorageDataIndex in localStorageData )
+                {
+                    if( localStorageData.hasOwnProperty(localStorageDataIndex) )
+                    {
+                        if( $('[name="' + localStorageDataIndex + '"]').length && !$('[name="' + localStorageDataIndex + '"]').val() )
+                        {
+                            if( $('[name="' + localStorageDataIndex + '"]').is('select') )
+                            {
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+                            }
+                            else
+                            {
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                            }
+                        }
+                    }
                 }
             });
     })
@@ -2980,6 +3027,26 @@ $(document)
                         clearTimeout(timeout);
                     }, 100);
                 }
+            }, 
+            registerFormChangeHandler = function(event) {
+                var data = $(this).serializeArray(), dataIndex, 
+                    fields = [ 'first_name', 'last_name', 'company_name', 
+                        'address', 'suburb', 'email', 'password', 'conf_password', 
+                        'mobile' ], 
+                    localStorageData = new Object;
+
+                for( dataIndex in data )
+                {
+                    if( data.hasOwnProperty(dataIndex) )
+                    {
+                        if( fields.indexOf(data[dataIndex]['name']) !== -1 )
+                        {
+                            localStorageData[data[dataIndex]['name']] = data[dataIndex]['value'];
+                        }
+                    }
+                }
+
+                localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
             };
 
         $(document)
@@ -3011,7 +3078,9 @@ $(document)
             .off('input', '#form_mobile', inputFormMobileHandler)
             .on('input', '#form_mobile', inputFormMobileHandler)
             .off('classChanged', '#form_mobile', classChangedFormMobileHandler)
-            .on('classChanged', '#form_mobile', classChangedFormMobileHandler);
+            .on('classChanged', '#form_mobile', classChangedFormMobileHandler)
+            .off('change', '#register_form', registerFormChangeHandler)
+            .on('change', '#register_form', registerFormChangeHandler);
 
         verifyClean();
 

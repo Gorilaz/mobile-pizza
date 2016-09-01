@@ -2540,21 +2540,18 @@ $(document)
                 verifyClean();
             }, 
             registerFormChangeHandler = function(event) {
-                var data = $(this).serializeArray(), dataIndex, 
-                    fields = [ 'first_name', 'last_name', 'company_name', 
+                var fields = [ 'first_name', 'last_name', 'company_name', 
                         'address', 'suburb', 'email', 'password', 'conf_password', 
                         'mobile' ], 
-                    localStorageData = new Object;
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    name = $(event.target).prop('name'), 
+                    value = $(event.target).prop('value');
 
-                for( dataIndex in data )
+                localStorageData = localStorageData ? localStorageData : new Object;
+
+                if( fields.indexOf(name) !== -1 )
                 {
-                    if( data.hasOwnProperty(dataIndex) )
-                    {
-                        if( fields.indexOf(data[dataIndex]['name']) !== -1 )
-                        {
-                            localStorageData[data[dataIndex]['name']] = data[dataIndex]['value'];
-                        }
-                    }
+                    localStorageData[name] = value;
                 }
 
                 localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
@@ -2666,8 +2663,8 @@ $(document)
                     saveForm('saveOrder');
                 }
             })
-            .off('change', '#register_form', registerFormChangeHandler)
-            .on('change', '#register_form', registerFormChangeHandler);
+            .off('input', '#register_form', registerFormChangeHandler)
+            .on('input', '#register_form', registerFormChangeHandler);
 
         if( !!$('#cardholder-input').length )
         {
@@ -3029,21 +3026,17 @@ $(document)
                 }
             }, 
             registerFormChangeHandler = function(event) {
-                var data = $(this).serializeArray(), dataIndex, 
-                    fields = [ 'first_name', 'last_name', 'company_name', 
-                        'address', 'suburb', 'email', 'password', 'conf_password', 
-                        'mobile' ], 
-                    localStorageData = new Object;
+                var fields = [ 'first_name', 'last_name', 'company_name', 
+                        'address', 'suburb', 'email', 'mobile' ], 
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    name = $(event.target).prop('name'), 
+                    value = $(event.target).prop('value');
 
-                for( dataIndex in data )
+                localStorageData = localStorageData ? localStorageData : new Object;
+
+                if( fields.indexOf(name) !== -1 )
                 {
-                    if( data.hasOwnProperty(dataIndex) )
-                    {
-                        if( fields.indexOf(data[dataIndex]['name']) !== -1 )
-                        {
-                            localStorageData[data[dataIndex]['name']] = data[dataIndex]['value'];
-                        }
-                    }
+                    localStorageData[name] = value;
                 }
 
                 localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
@@ -3079,10 +3072,38 @@ $(document)
             .on('input', '#form_mobile', inputFormMobileHandler)
             .off('classChanged', '#form_mobile', classChangedFormMobileHandler)
             .on('classChanged', '#form_mobile', classChangedFormMobileHandler)
-            .off('change', '#register_form', registerFormChangeHandler)
-            .on('change', '#register_form', registerFormChangeHandler);
+            .off('input', '#register_form', registerFormChangeHandler)
+            .on('input', '#register_form', registerFormChangeHandler);
 
         verifyClean();
 
         prepareProfileFormValidation();
+
+        $(window)
+            // .off('load')
+            .on('load', function() {
+                var fields = [ 'first_name', 'last_name', 'company_name', 
+                        'address', 'suburb', 'email', 'mobile' ], 
+                    localStorageDataIndex, 
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+
+                for( localStorageDataIndex in localStorageData )
+                {
+                    if( localStorageData.hasOwnProperty(localStorageDataIndex) )
+                    {
+                        if( $('[name="' + localStorageDataIndex + '"]').length && !$('[name="' + localStorageDataIndex + '"]').val() )
+                        {
+                            if( $('[name="' + localStorageDataIndex + '"]').is('select') )
+                            {
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+                            }
+                            else
+                            {
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                            }
+                        }
+                    }
+                }
+            });
     });

@@ -652,8 +652,8 @@ function convertToSlug(Text)
 $.mobile.collapsible.prototype.options.expandCueText = '';
 
 $(document)
-    .off('pageinit')
-    .on('pageinit', function() {
+    .off('pageshow')
+    .on('pageshow', function() {
         if( !$('[data-role="page"]').is('#page-payment') && !$('[data-role="page"]').is('#page-edit') )
         {
             localStorage.removeItem('register_form_data');
@@ -2734,7 +2734,7 @@ $(document)
 
                 if( !$('[name="mobile"]').val() )
                 {
-                    if( localStorageData.verification )
+                    if( localStorageData && localStorageData.verification )
                     {
                         $('#form_mobile').attr('readonly', 'readonly');
 
@@ -2757,7 +2757,14 @@ $(document)
                     {
                         $('#form_mobile').val('');
 
-                        $('#verify-btn').addClass('ui-disabled');
+                        if( !localStorageData || !localStorageData.mobile )
+                        {
+                            $('#verify-btn').addClass('ui-disabled');
+                        }
+                        else
+                        {
+                            $('#verify-btn').removeClass('ui-disabled');
+                        }
 
                         verifyClean();
                     }
@@ -3165,15 +3172,13 @@ $(document)
         $(window)
             // .off('load')
             .on('load', function() {
-                var fields = [ 'first_name', 'last_name', 'company_name', 
-                        'address', 'suburb', 'email', 'mobile', 'mobile_code' ], 
-                    localStorageDataIndex, 
+                var localStorageDataIndex, 
                     localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
                     sms = $('#sms').data('sms');
 
                 if( !$('[name="mobile"]').val() )
                 {
-                    if( localStorageData.verification )
+                    if( localStorageData && localStorageData.verification )
                     {
                         $('#form_mobile').attr('readonly', 'readonly');
 
@@ -3196,7 +3201,14 @@ $(document)
                     {
                         $('#form_mobile').val('');
 
-                        $('#verify-btn').addClass('ui-disabled');
+                        if( !localStorageData || !localStorageData.mobile )
+                        {
+                            $('#verify-btn').addClass('ui-disabled');
+                        }
+                        else
+                        {
+                            $('#verify-btn').removeClass('ui-disabled');
+                        }
 
                         verifyClean();
                     }

@@ -389,7 +389,7 @@ class Order extends WMDS_Controller{
 
         $user = $this->session->userdata('logged');
         $subUrb = $this->order_model->getSubUrb($user['suburb']);
-        $order = $this->order_model->getOrder($orderId); // echo '<pre>'; var_dump($order); echo '</pre>'; die;
+        $order = $this->order_model->getOrder($orderId);
         $checkout = $this->session->userdata('checkout');
 
         if( $checkout['payment'] == 1 )
@@ -1015,7 +1015,7 @@ class Order extends WMDS_Controller{
             $limit = 5;
 
             $orders = $this->order_model->getYourOrders($logged['userid'], $offset, $limit);
-// echo '<pre>'; var_dump($orders); echo '</pre>'; die;
+
             if( $orders )
             {
                 $this->twiggy->set('orders', $orders);
@@ -1089,16 +1089,47 @@ class Order extends WMDS_Controller{
     private function p_getTextFileItemsDescription()
     {
         $order = '';
+        $cart_contents = $this->cart->contents();
 
-        if( $this->cart->contents() )
+        if( $cart_contents )
         {
-            foreach( $this->cart->contents() as $items )
+            foreach( $cart_contents as $items )
             {
-                if( !empty($items['product_type']) && $items['product_type'] == 'single' )
+                if( !empty($items['product_type']) && $items['product_type'] === 'deal' )
+                {
+                    $variation_group = '';
+
+                    foreach( $items['options'] as $option )
+                    {
+                        $option_name_parts = explode(':', $option['name']);
+
+                        $price = isset($option['price']) ? trim($option['price']) : '';
+
+                        $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                        $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                        if( !empty($name) &&
+                            !empty($value) )
+                        {
+                            $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                        }
+                    }
+
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                    }
+
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+
+                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $comment . ';';
+                }
+                else if( !empty($items['product_type']) && $items['product_type'] == 'single' )
                 {
                     $variation_group = '';
                     $current = '';
                     $extra = '';
+                    $choice = '';
 
                     $comment = '';
 
@@ -1117,8 +1148,7 @@ class Order extends WMDS_Controller{
                                 $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value);
                             }
                         }
-
-                        if( strpos(strtolower($option['name']), '-no:') !== false )
+                        else if( strpos(strtolower($option['name']), '-no:') !== false )
                         {
                             $option_name_parts = explode(':', $option['name']);
 
@@ -1131,8 +1161,7 @@ class Order extends WMDS_Controller{
                                 $current .= '>NO: ' . ucwords($value);
                             }
                         }
-
-                        if( strpos(strtolower($option['name']), '+extra:') !== false )
+                        else if( strpos(strtolower($option['name']), '+extra:') !== false )
                         {
                             $option_name_parts = explode(':', $option['name']);
 
@@ -1147,6 +1176,21 @@ class Order extends WMDS_Controller{
                                 $extra .= '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
                             }
                         }
+                        else
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $choice .= '>' . strtoupper($name) . ': ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                            }
+                        }
                     }
 
                     if( !empty($items['instruction']) )
@@ -1156,7 +1200,7 @@ class Order extends WMDS_Controller{
 
                     $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
 
-                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $current . $extra . $comment . ';';
+                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $current . $extra . $choice . $comment . ';';
                 }
                 else if( !empty($items['product_type']) && $items['product_type'] === 'half' )
                 {

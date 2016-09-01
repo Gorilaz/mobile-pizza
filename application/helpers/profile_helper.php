@@ -24,17 +24,10 @@ if ( !function_exists('prepareProfilePage') )
         $template->set('static',array(
             'suburb' => $suburbs,
         ));
-        if(!empty($logged)){
-            $template->set('logged', $logged);
-            if( isset($logged['suburb']) )
-            {
-                $suburb = $logged['suburb'];
-            }
-        } else {
-            $template->set('logged', 0);
-            $text = $obj->general->getRegisterText();
-            $template->set('regText', $text);
-        }
+
+        $template->set('logged', empty($logged['userid']) ? 0 : $logged);
+        $template->set('regText', empty($logged['userid']) ? $obj->general->getRegisterText() : '');
+
         return $template;
     } // prepareProfilePage
 }

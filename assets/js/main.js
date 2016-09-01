@@ -199,6 +199,8 @@ function saveForm(action)
         }
         else if( data === 'order' )
         {
+            localStorage.removeItem('register_form_data');
+
             if( action === 'saveOrder' )
             {
                 saveOrder();
@@ -433,6 +435,20 @@ function changeMobile()
         });
 
     request.done(function(data) {
+        var sms = $('#sms').data('sms');
+
+        if( sms === 'enable' )
+        {
+            var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+
+            localStorageData = localStorageData ? localStorageData : new Object;
+
+            localStorageData.verification = true;
+            localStorageData.mobile_code = '';
+
+            localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+        }
+
         $('#form_mobile').attr('readonly', 'readonly');
 
         $('#sms-code').data('final', 'yes');
@@ -636,6 +652,13 @@ function convertToSlug(Text)
 $.mobile.collapsible.prototype.options.expandCueText = '';
 
 $(document)
+    .off('pageinit')
+    .on('pageinit', function() {
+        if( !$('[data-role="page"]').is('#page-payment') && !$('[data-role="page"]').is('#page-edit') )
+        {
+            localStorage.removeItem('register_form_data');
+        }
+    })
     .off('pageinit', '#page-home')
     /***********************************************************************************************************************
      * Events used on product page
@@ -2533,6 +2556,21 @@ $(document)
                 }
             },
             clickChangeMobileNumberHandler = function() {
+                var sms = $('#sms').data('sms');
+
+                if( sms === 'enable' )
+                {
+                    var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+
+                    localStorageData = localStorageData ? localStorageData : new Object;
+
+                    localStorageData.mobile = '';
+                    localStorageData.verification = false;
+                    delete localStorageData.mobile_code;
+
+                    localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                }
+
                 $('#form_mobile').val('');
 
                 $('#verify-btn').addClass('ui-disabled');
@@ -2542,7 +2580,7 @@ $(document)
             registerFormChangeHandler = function(event) {
                 var fields = [ 'first_name', 'last_name', 'company_name', 
                         'address', 'suburb', 'email', 'password', 'conf_password', 
-                        'mobile' ], 
+                        'mobile', 'mobile_code' ], 
                     localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
                     name = $(event.target).prop('name'), 
                     value = $(event.target).prop('value');
@@ -2690,11 +2728,40 @@ $(document)
                     showAlert('', 'Sorry, but it seems this is not your first order. The First Order Discount has been removed.');
                 }
 
-                var fields = [ 'first_name', 'last_name', 'company_name', 
-                        'address', 'suburb', 'email', 'password', 'conf_password', 
-                        'mobile' ], 
-                    localStorageDataIndex, 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+                var localStorageDataIndex, 
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    sms = $('#sms').data('sms');
+
+                if( !$('[name="mobile"]').val() )
+                {
+                    if( localStorageData.verification )
+                    {
+                        $('#form_mobile').attr('readonly', 'readonly');
+
+                        if( sms === 'enable' )
+                        {
+                            $('#sms-code').data('final', 'yes');
+
+                            $('#sms-code').show();
+
+                            $('#verify-btn').hide();
+
+                            $('.help_form_mobile').addClass('hide');
+
+                            $('.help').removeClass('hide');
+                        }
+
+                        $('#changeMobileNumber').removeClass('hide');
+                    }
+                    else
+                    {
+                        $('#form_mobile').val('');
+
+                        $('#verify-btn').addClass('ui-disabled');
+
+                        verifyClean();
+                    }
+                }
 
                 for( localStorageDataIndex in localStorageData )
                 {
@@ -3025,9 +3092,31 @@ $(document)
                     }, 100);
                 }
             }, 
+            clickChangeMobileNumberHandler = function() {
+                var sms = $('#sms').data('sms');
+
+                if( sms === 'enable' )
+                {
+                    var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+
+                    localStorageData = localStorageData ? localStorageData : new Object;
+
+                    localStorageData.mobile = '';
+                    localStorageData.verification = false;
+                    delete localStorageData.mobile_code;
+
+                    localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                }
+
+                $('#form_mobile').val('');
+
+                $('#verify-btn').addClass('ui-disabled');
+
+                verifyClean();
+            }, 
             registerFormChangeHandler = function(event) {
                 var fields = [ 'first_name', 'last_name', 'company_name', 
-                        'address', 'suburb', 'email', 'mobile' ], 
+                        'address', 'suburb', 'email', 'mobile', 'mobile_code' ], 
                     localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
                     name = $(event.target).prop('name'), 
                     value = $(event.target).prop('value');
@@ -3043,14 +3132,8 @@ $(document)
             };
 
         $(document)
-            .off('click', '#changeMobileNumber')
-            .on('click', '#changeMobileNumber', function() {
-                $('#form_mobile').val('');
-
-                $('#verify-btn').addClass('ui-disabled');
-
-                verifyClean();
-            })
+            .off('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
+            .on('click', '#changeMobileNumber', clickChangeMobileNumberHandler)
             .off('click', '#verify-btn')
             /*
              * Bind click action for Verify button on profile page
@@ -3083,9 +3166,41 @@ $(document)
             // .off('load')
             .on('load', function() {
                 var fields = [ 'first_name', 'last_name', 'company_name', 
-                        'address', 'suburb', 'email', 'mobile' ], 
+                        'address', 'suburb', 'email', 'mobile', 'mobile_code' ], 
                     localStorageDataIndex, 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    sms = $('#sms').data('sms');
+
+                if( !$('[name="mobile"]').val() )
+                {
+                    if( localStorageData.verification )
+                    {
+                        $('#form_mobile').attr('readonly', 'readonly');
+
+                        if( sms === 'enable' )
+                        {
+                            $('#sms-code').data('final', 'yes');
+
+                            $('#sms-code').show();
+
+                            $('#verify-btn').hide();
+
+                            $('.help_form_mobile').addClass('hide');
+
+                            $('.help').removeClass('hide');
+                        }
+
+                        $('#changeMobileNumber').removeClass('hide');
+                    }
+                    else
+                    {
+                        $('#form_mobile').val('');
+
+                        $('#verify-btn').addClass('ui-disabled');
+
+                        verifyClean();
+                    }
+                }
 
                 for( localStorageDataIndex in localStorageData )
                 {

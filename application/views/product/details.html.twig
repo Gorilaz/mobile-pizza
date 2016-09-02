@@ -71,9 +71,9 @@
             {% endif %}
 
             {% if withPoints %}
-                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="1" data-user="{{ logged }}" data-points="{{ pointsLeft }}">
+                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="1" data-user="{% if logged %}0{% else %}1{% endif %}" data-points="{{ pointsLeft }}" />
             {% else %}
-                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="0">
+                <input type="hidden" name="buyWithPoints" id="buyWithPoints" value="0" />
             {% endif %}
 
 

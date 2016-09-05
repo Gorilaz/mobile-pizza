@@ -2778,12 +2778,16 @@ $(document)
                         {
                             if( $('[name="' + localStorageDataIndex + '"]').is('select') )
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]).trigger('change');
                                 $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+
+                                $('[name="' + localStorageDataIndex + '"]').valid();
                             }
                             else
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]).trigger('change');
+
+                                $('[name="' + localStorageDataIndex + '"]').valid();
                             }
                         }
                     }
@@ -3224,10 +3228,14 @@ $(document)
                             {
                                 $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
                                 $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+
+                                $('[name="' + localStorageDataIndex + '"]').valid();
                             }
                             else
                             {
                                 $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+
+                                $('[name="' + localStorageDataIndex + '"]').valid();
                             }
                         }
                     }

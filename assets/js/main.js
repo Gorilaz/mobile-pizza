@@ -361,9 +361,22 @@ function prepareProfileFormValidation()
          */
         $('#register_form').validate({
             rules: {
-                first_name: 'required',
-                last_name: 'required',
-                address: 'required',
+                first_name: {
+                    required: true,
+                    pattern: true
+                },
+                last_name: {
+                    required: true,
+                    pattern: true
+                },
+                company_name: {
+                    required: true,
+                    pattern: true
+                },
+                address: {
+                    required: true,
+                    pattern: true
+                },
                 email: {
                     required: true,
                     email: true,
@@ -650,6 +663,13 @@ function convertToSlug(Text)
 }
 
 $.mobile.collapsible.prototype.options.expandCueText = '';
+
+$(document).ready(function() {
+    $.validator.addMethod('pattern', function(value, element) {
+        var value = $(element).val();
+        return value.length ? (new RegExp('^([a-zA-Z0-9 \&\,\\\-\.])+$')).test(value) : true;
+    }, 'Allowed only the characters: a-z, A-Z, 0-9, space, ampersand, commas, forward slashes, hyphens and dots');
+});
 
 $(document)
     .off('pageshow')
@@ -1471,6 +1491,11 @@ $(document)
                 }
                 else
                 {
+                    if( !$('#order-form').valid() )
+                    {
+                        return false;
+                    }
+
                     var form = $('<form>')
                         .append(
                             $('<input>')
@@ -1519,6 +1544,15 @@ $(document)
 
         /* Trigger actions on page init */
         calculateOrderPrice();
+
+        $('#order-form').validate({
+            rules: {
+                textarea: {
+                    maxlength: 150, 
+                    pattern: true
+                }
+            }
+        });
 
         if( parseFloat($('#hasIngredients').val()) === 1 )
         {
@@ -2453,6 +2487,15 @@ $(document)
 
         $(document).ready(function() {
             $('[name="coupon"]').first().next('label').trigger('click');
+        });
+
+        $('#form-checkout').validate({
+            rules: {
+                comment: {
+                    maxlength: 150, 
+                    pattern: true
+                }
+            }
         });
 
         /** END Date-time picker */

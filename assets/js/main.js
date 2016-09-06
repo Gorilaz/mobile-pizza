@@ -666,8 +666,8 @@ $.mobile.collapsible.prototype.options.expandCueText = '';
 
 $(document).ready(function() {
     $.validator.addMethod('pattern', function(value, element) {
-        var value = $(element).val();
-        return value.length ? (new RegExp('^([a-zA-Z0-9 \&\,\\\-\.])+$')).test(value) : true;
+        var value = $(element).val().replace(/([\\])+/, '');
+        return value.length ? (new RegExp('^([a-zA-Z0-9 &,-\.])+$')).test(value) : true;
     }, 'Allowed only the characters: a-z, A-Z, 0-9, space, ampersand, commas, forward slashes, hyphens and dots');
 });
 

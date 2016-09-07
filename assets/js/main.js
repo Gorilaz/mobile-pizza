@@ -333,33 +333,9 @@ function prepareProfileFormValidation()
     if( typeof($.validator) === 'function' )
     {
         /*
-         * Custom validate function for check mobile number
-         */
-        /* $.validator.addMethod('smsVerification', function(value, element) {
-            var sms = $('#sms').data('sms');
-
-            if( sms === 'enable' )
-            {
-                if( $('#form_mobile').attr('data-current') !== '' &&
-                    $('#form_mobile').val() !== $('#form_mobile').attr('data-current') && false )
-                {
-                    $('#verify-div').show();
-
-                    return false;
-                }
-                else
-                {
-                    verifyClean();
-                }
-            }
-
-            return true;
-        }, 'You need to verify this mobile number'); */
-
-        /*
          * Activate validation for profile form
          */
-        $('#register_form').validate({
+        return $('#register_form').validate({
             rules: {
                 first_name: {
                     required: true,
@@ -418,8 +394,6 @@ function prepareProfileFormValidation()
                 }
             }
         });
-
-        return true;
     }
 
     return false;
@@ -666,8 +640,7 @@ $.mobile.collapsible.prototype.options.expandCueText = '';
 
 $(document).ready(function() {
     $.validator.addMethod('pattern', function(value, element) {
-        var value = $(element).val().replace(/([\\])+/, '');
-        return value.length ? (new RegExp('^([a-zA-Z0-9 &,-\.])+$')).test(value) : true;
+        return (new RegExp('^([a-zA-Z0-9 &,-\.\/])+$')).test($(element).val());
     }, 'Allowed only the characters: a-z, A-Z, 0-9, space, ampersand, commas, forward slashes, hyphens and dots');
 });
 

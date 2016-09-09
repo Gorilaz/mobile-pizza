@@ -199,8 +199,6 @@ function saveForm(action)
         }
         else if( data === 'order' )
         {
-            localStorage.removeItem('register_form_data');
-
             if( action === 'saveOrder' )
             {
                 saveOrder();
@@ -426,14 +424,14 @@ function changeMobile()
 
         if( sms === 'enable' )
         {
-            var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+            var sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data'));
 
-            localStorageData = localStorageData ? localStorageData : new Object;
+            sessionStorageData = sessionStorageData ? sessionStorageData : new Object;
 
-            localStorageData.verification = true;
-            localStorageData.mobile_code = '';
+            sessionStorageData.verification = true;
+            sessionStorageData.mobile_code = '';
 
-            localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+            sessionStorage.setItem('register_form_data', JSON.stringify(sessionStorageData));
         }
 
         $('#form_mobile').attr('readonly', 'readonly');
@@ -645,13 +643,6 @@ $(document).ready(function() {
 });
 
 $(document)
-    .off('pageshow')
-    .on('pageshow', function() {
-        if( !$('[data-role="page"]').is('#page-payment') && !$('[data-role="page"]').is('#page-edit') )
-        {
-            localStorage.removeItem('register_form_data');
-        }
-    })
     .off('pageinit', '#page-home')
     /***********************************************************************************************************************
      * Events used on product page
@@ -2576,15 +2567,16 @@ $(document)
 
                 if( sms === 'enable' )
                 {
-                    var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+                    var sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data'));
 
-                    localStorageData = localStorageData ? localStorageData : new Object;
+                    sessionStorageData = sessionStorageData ? sessionStorageData : new Object;
 
-                    localStorageData.mobile = '';
-                    localStorageData.verification = false;
-                    delete localStorageData.mobile_code;
+                    sessionStorageData.mobile = '';
+                    sessionStorageData.verification = false;
 
-                    localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                    delete sessionStorageData.mobile_code;
+
+                    sessionStorage.setItem('register_form_data', JSON.stringify(sessionStorageData));
                 }
 
                 $('#form_mobile').val('');
@@ -2597,18 +2589,18 @@ $(document)
                 var fields = [ 'first_name', 'last_name', 'company_name', 
                         'address', 'suburb', 'email', 'password', 'conf_password', 
                         'mobile', 'mobile_code' ], 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data')), 
                     name = $(event.target).prop('name'), 
                     value = $(event.target).prop('value');
 
-                localStorageData = localStorageData ? localStorageData : new Object;
+                sessionStorageData = sessionStorageData ? sessionStorageData : new Object;
 
                 if( fields.indexOf(name) !== -1 )
                 {
-                    localStorageData[name] = value;
+                    sessionStorageData[name] = name === 'password' || name === 'conf_password' ? blowfish.encrypt(value, '', { outputType: 1, cipherMode: 1 }) : value;
                 }
 
-                localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                sessionStorage.setItem('register_form_data', JSON.stringify(sessionStorageData));
             };
 
         $(document)
@@ -2743,13 +2735,13 @@ $(document)
                     showAlert('', 'Sorry, but it seems this is not your first order. The First Order Discount has been removed.');
                 }
 
-                var localStorageDataIndex, 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                var sessionStorageDataIndex, 
+                    sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data')), 
                     sms = $('#sms').data('sms');
 
                 if( !$('[name="mobile"]').val() )
                 {
-                    if( localStorageData && localStorageData.verification )
+                    if( sessionStorageData && sessionStorageData.verification )
                     {
                         $('#form_mobile').attr('readonly', 'readonly');
 
@@ -2772,7 +2764,7 @@ $(document)
                     {
                         $('#form_mobile').val('');
 
-                        if( !localStorageData || !localStorageData.mobile )
+                        if( !sessionStorageData || !sessionStorageData.mobile )
                         {
                             $('#verify-btn').addClass('ui-disabled');
                         }
@@ -2785,20 +2777,27 @@ $(document)
                     }
                 }
 
-                for( localStorageDataIndex in localStorageData )
+                for( sessionStorageDataIndex in sessionStorageData )
                 {
-                    if( localStorageData.hasOwnProperty(localStorageDataIndex) )
+                    if( sessionStorageData.hasOwnProperty(sessionStorageDataIndex) )
                     {
-                        if( $('[name="' + localStorageDataIndex + '"]').length && !$('[name="' + localStorageDataIndex + '"]').val() )
+                        if( $('[name="' + sessionStorageDataIndex + '"]').length && !$('[name="' + sessionStorageDataIndex + '"]').val() )
                         {
-                            if( $('[name="' + localStorageDataIndex + '"]').is('select') )
+                            if( $('[name="' + sessionStorageDataIndex + '"]').is('select') )
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
-                                $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+                                $('[name="' + sessionStorageDataIndex + '"]').val(sessionStorageData[sessionStorageDataIndex]);
+                                $('[name="' + sessionStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + sessionStorageDataIndex + '"]').find('option:selected').text()));
                             }
                             else
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                if( sessionStorageDataIndex === 'password' || sessionStorageDataIndex === 'conf_password' )
+                                {
+                                    $('[name="' + sessionStorageDataIndex + '"]').val(blowfish.decrypt(sessionStorageData[sessionStorageDataIndex], '', { outputType: 1, cipherMode: 1 }));
+                                }
+                                else
+                                {
+                                    $('[name="' + sessionStorageDataIndex + '"]').val(sessionStorageData[sessionStorageDataIndex]);
+                                }
                             }
                         }
                     }
@@ -3121,15 +3120,16 @@ $(document)
 
                 if( sms === 'enable' )
                 {
-                    var localStorageData = JSON.parse(localStorage.getItem('register_form_data'));
+                    var sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data'));
 
-                    localStorageData = localStorageData ? localStorageData : new Object;
+                    sessionStorageData = sessionStorageData ? sessionStorageData : new Object;
 
-                    localStorageData.mobile = '';
-                    localStorageData.verification = false;
-                    delete localStorageData.mobile_code;
+                    sessionStorageData.mobile = '';
+                    sessionStorageData.verification = false;
 
-                    localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                    delete sessionStorageData.mobile_code;
+
+                    sessionStorage.setItem('register_form_data', JSON.stringify(sessionStorageData));
                 }
 
                 $('#form_mobile').val('');
@@ -3141,18 +3141,18 @@ $(document)
             registerFormChangeHandler = function(event) {
                 var fields = [ 'first_name', 'last_name', 'company_name', 
                         'address', 'suburb', 'email', 'mobile', 'mobile_code' ], 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                    sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data')), 
                     name = $(event.target).prop('name'), 
                     value = $(event.target).prop('value');
 
-                localStorageData = localStorageData ? localStorageData : new Object;
+                sessionStorageData = sessionStorageData ? sessionStorageData : new Object;
 
                 if( fields.indexOf(name) !== -1 )
                 {
-                    localStorageData[name] = value;
+                    sessionStorageData[name] = name === 'password' || name === 'conf_password' ? blowfish.encrypt(value, '', { outputType: 1, cipherMode: 1 }) : value;
                 }
 
-                localStorage.setItem('register_form_data', JSON.stringify(localStorageData));
+                sessionStorage.setItem('register_form_data', JSON.stringify(sessionStorageData));
             };
 
         $(document)
@@ -3187,13 +3187,13 @@ $(document)
         $(window)
             // .off('load')
             .on('load', function() {
-                var localStorageDataIndex, 
-                    localStorageData = JSON.parse(localStorage.getItem('register_form_data')), 
+                var sessionStorageDataIndex, 
+                    sessionStorageData = JSON.parse(sessionStorage.getItem('register_form_data')), 
                     sms = $('#sms').data('sms');
 
                 if( !$('[name="mobile"]').val() )
                 {
-                    if( localStorageData && localStorageData.verification )
+                    if( sessionStorageData && sessionStorageData.verification )
                     {
                         $('#form_mobile').attr('readonly', 'readonly');
 
@@ -3216,7 +3216,7 @@ $(document)
                     {
                         $('#form_mobile').val('');
 
-                        if( !localStorageData || !localStorageData.mobile )
+                        if( !sessionStorageData || !sessionStorageData.mobile )
                         {
                             $('#verify-btn').addClass('ui-disabled');
                         }
@@ -3229,20 +3229,27 @@ $(document)
                     }
                 }
 
-                for( localStorageDataIndex in localStorageData )
+                for( sessionStorageDataIndex in sessionStorageData )
                 {
-                    if( localStorageData.hasOwnProperty(localStorageDataIndex) )
+                    if( sessionStorageData.hasOwnProperty(sessionStorageDataIndex) )
                     {
-                        if( $('[name="' + localStorageDataIndex + '"]').length && !$('[name="' + localStorageDataIndex + '"]').val() )
+                        if( $('[name="' + sessionStorageDataIndex + '"]').length && !$('[name="' + sessionStorageDataIndex + '"]').val() )
                         {
-                            if( $('[name="' + localStorageDataIndex + '"]').is('select') )
+                            if( $('[name="' + sessionStorageDataIndex + '"]').is('select') )
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
-                                $('[name="' + localStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + localStorageDataIndex + '"]').find('option:selected').text()));
+                                $('[name="' + sessionStorageDataIndex + '"]').val(sessionStorageData[sessionStorageDataIndex]);
+                                $('[name="' + sessionStorageDataIndex + '"]').closest('div').find('.ui-btn-text > span').empty().append(document.createTextNode($('[name="' + sessionStorageDataIndex + '"]').find('option:selected').text()));
                             }
                             else
                             {
-                                $('[name="' + localStorageDataIndex + '"]').val(localStorageData[localStorageDataIndex]);
+                                if( sessionStorageDataIndex === 'password' || sessionStorageDataIndex === 'conf_password' )
+                                {
+                                    $('[name="' + sessionStorageDataIndex + '"]').val(blowfish.decrypt(sessionStorageData[sessionStorageDataIndex], '', { outputType: 1, cipherMode: 1 }));
+                                }
+                                else
+                                {
+                                    $('[name="' + sessionStorageDataIndex + '"]').val(sessionStorageData[sessionStorageDataIndex]);
+                                }
                             }
                         }
                     }

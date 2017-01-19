@@ -400,6 +400,12 @@ form.ui-bar-c {
 }
 .product-info-form { padding: 1em }
 .product-info-form label { font-size: 1.7em!important }
+
+#tabs .ui-btn-active {
+    border: 1px solid #2489ce !important;
+    background: #2489ce !important;
+}
+
 .login-info {
     text-align: center;
     margin: 5em 0 2.5em;

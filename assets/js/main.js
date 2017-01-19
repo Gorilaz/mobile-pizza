@@ -1034,7 +1034,7 @@ $(document)
 
                 if( !!data )
                 {
-                    if( 'included' in data )
+                    if( !data instanceof String && 'included' in data )
                     {
                         /**
                          * Included items comes as a single array
@@ -1104,7 +1104,7 @@ $(document)
                         );
                     }
 
-                    if( 'extra' in data )
+                    if( !data instanceof String && 'extra' in data )
                     {
                         /**
                          * Extra ingredients comes grouped by subcategory
@@ -1460,37 +1460,25 @@ $(document)
                         return false;
                     }
 
-                    var form = $('<form>')
-                        .append(
-                            $('<input>')
-                                .attr({
-                                    'name': 'general',
-                                    'type': 'hidden',
-                                    'value': $('form#order-form').serialize()
-                                })
-                        )
-                        .append(
-                            $('<input>')
-                                .attr({
-                                    'name': 'ingredients',
-                                    'type': 'hidden',
-                                    'value': $('#ingredients form.order-ingredients').serialize()
-                                })
-                        )
-                        .append(
-                            $('<input>')
-                                .attr({
-                                    'name': 'ingredients2',
-                                    'type': 'hidden',
-                                    'value': $('#ingredients2 form.order-ingredients').serialize()
-                                })
-                        )
-                        .attr({
-                            'action': '/menu',
-                            'method': 'post'
-                        });
+                    $.ajax({
+                        type: "POST",
 
-                    $(form).trigger('submit');
+                        url: '/menu',
+
+                        data: {
+                            general:      $('form#order-form').serialize(),
+                            ingredients:  $('#ingredients form.order-ingredients').serialize(),
+                            ingredients2: $('#ingredients2 form.order-ingredients').serialize()
+                        },
+
+                        success: function(res) {
+                            window.location = '/menu';
+                        },
+
+                        error: function(res) {
+                            showAlert('', 'Error! Item was not added');
+                        }
+                    });
                 }
             })
             .off('click', '.ui-header, .ui-content, .ui-footer')

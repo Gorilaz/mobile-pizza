@@ -401,9 +401,26 @@ form.ui-bar-c {
 .product-info-form { padding: 1em }
 .product-info-form label { font-size: 1.7em!important }
 
+#tabs .ui-body-d {
+    //border: 1px solid #aaaaaa;
+    border: 0px solid;
+}
 #tabs .ui-btn-active {
     border: 1px solid #2489ce !important;
     background: #2489ce !important;
+}
+#tabs .ui-btn-up-d {
+    border: 1px solid #aaaaaa;
+    background: rgb(221, 221, 221);
+    color: rgb(51, 51, 51);
+}
+#tabs .ui-btn-hover-d {
+    border: 1px solid #2489ce;
+    background: #2489ce;
+    color: #fff;
+}
+#tabs .mobile-code div {
+    border: 0px solid #000;
 }
 
 .login-info {

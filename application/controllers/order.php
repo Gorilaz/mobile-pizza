@@ -270,6 +270,8 @@ class Order extends WMDS_Controller{
         {
             $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $_fees, $user['userid'], $html, 'pending');
 
+            $this->order_model->sendOrderToAPI($order_id);
+
             $paypalFields = array(
                 'total'   => $newTotal,
                 'orderId' => $order_id
@@ -294,6 +296,9 @@ class Order extends WMDS_Controller{
 
             $this->order_model->save_order_again($order_again, $order_id, $user['userid']);
 
+           
+            $this->order_model->sendOrderToAPI($order_id);
+
             //$name = $this->order_pdf($order_id);
             $this->order_pdf($order_id);
 
@@ -314,6 +319,23 @@ class Order extends WMDS_Controller{
             }
         }
     }
+
+    /**
+     * Send Order data to API
+     * @param $order_id
+     */
+ /*   public function sendOrderToAPI($order_id) {
+        
+        $order = $this->order_model->getOrder($orderId);
+       // die(print_r($order[contents]));
+    $ord = $this->db->select('*')->where_in('id', $order_id)->get('pos_orders')->result();
+    var_dump($ord);exit();  
+        
+    }
+  * 
+  * 
+  * 
+  */
 
     /**
      * SMS Confirmation

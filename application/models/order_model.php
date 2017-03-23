@@ -454,6 +454,8 @@ class Order_model extends CI_Model{
                     $product['variation_id'] = $item['variation_id'];
                 }
                 $this->db->insert('tbl_shopping_cart', $product);
+               
+
 
 
             } else {
@@ -478,6 +480,31 @@ class Order_model extends CI_Model{
         }
 
     }
+    
+       /**
+     * Send Order data to API
+     * @param $order_id
+     */
+    
+    public function sendOrderToAPI($order_id) {
+        
+     //   $order = $this->order_model->getOrder($orderId);
+     
+    $ord = $this->db->select('*')->where('order_id', $order_id)->get('tbl_shopping_cart')->result();
+    
+    $zakaz = json_encode($ord);
+    
+    $product = $this->db->select('*')->where('product_id', $ord[0]->product_id)->get('tbl_product')->result();
+    
+     //   $halfFee = $this->db->select('half_pizza_group_fee')->where('id', $half_pizza_group_id)->get('half_pizza_group')->row();
+
+     //  $product = json_encode($product);
+ var_dump($product);exit();
+  //  die($zakaz);
+ 
+   $obj = new stdObject();
+   
+   }
 
     /**
      * Get order products for order again

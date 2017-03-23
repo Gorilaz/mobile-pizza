@@ -88,6 +88,8 @@ $route['payment/Do-direct-payment']     = 'payment/Do_direct_payment';
 $route['orders']                        = 'order/yourOrders';
 $route['order/save-order/(:any)']       = 'order/save_order/$1';
 $route['order/getAjaxOrders']           = 'order/getAjaxOrders';
+$route['send/order/api']           =      'order/getAjaxOrders';
+
 
 /**
  * Set routes for security controller
@@ -106,6 +108,7 @@ $route['security/savePassword']         = 'security/savePassword';
 $route['reset']                         = 'security/reset';
 $route['security/googleplus-login']     = 'security/googleplus_login';
 $route['security/facebook-login']       = 'security/facebook_login';
+
 
 /**
  * Set routes for social controller

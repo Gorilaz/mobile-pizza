@@ -204,6 +204,7 @@ class Order extends CI_Controller
         if ($this->input->post('order_data')) {
 
             $order_data   = $this->input->post('order_data', TRUE);
+            var_dump($order_data );exit();
             //error_log('order_data: '. var_export($order_data, true));
             $this->load->model('OrderSession_Model', 'OSess');
             $os           = $this->OSess->retrieve($order_data['sessionId']);
@@ -467,7 +468,7 @@ class Order extends CI_Controller
                 $order_comment = '';
             }
 
-            //var_dump($order_data);
+           
 
             $order_description                 = $this->_getOrderDescription() . $order_comment . $voucher_desc . $public_holiday_fee_desc . $delivery_fee_desc . $minimum_order_delivery_fee_desc . $minimum_order_paypal_fee_desc . $minimum_order_credit_card_fee_desc . $payment_method_desc; //getting order description
             $product_detail                    = $this->_getProductDetails();
@@ -550,6 +551,7 @@ class Order extends CI_Controller
                 $this->paymentSuccessful($order_table_data);
             }
         }
+       
     }
 
     private function creditCardPayment(array $post_data)
@@ -1003,6 +1005,7 @@ class Order extends CI_Controller
         $user_id = $this->phpsession->get('tmUserId');
 
         $order_table_data = $this->phpsession->get('order_' . $user_id);
+       
         if (!empty($order_table_data)) {
             $arr = serialize($_POST);
             $this->O_Model->insertPaypalTxnData($arr);
@@ -2332,6 +2335,7 @@ class Order extends CI_Controller
             echo json_encode($user_details);
             //$user_details['rder_points'] = $userInfo->order_points;
 //       echo 'hdf';
+   
         }
     }
 

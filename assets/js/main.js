@@ -108,6 +108,25 @@ function showConfirm( title, description, ok, cancel )
  *
  * @returns none
  */
+
+function SendOrderApi(){
+    $.ajax({
+            
+            dataType: 'json',
+            url: '//' + window.location.host + '/send/order/api',
+            type: 'GET',
+            success: function(data){
+                console.log(data);
+                
+            }
+    });
+    
+}
+
+
+
+
+
 function saveOrder()
 {
     var pg = $('#pg').data('pg');
@@ -162,6 +181,7 @@ function saveOrder()
     else if( pg === 'cash' )
     {
         window.location.href = '//' + window.location.host + '/order/save-order/cash';
+        SendOrderApi();
     }
     else if( pg === 'paypal' )
     {

@@ -46,7 +46,7 @@
 */
 
 /** switch database  */
-switch ($_SERVER['SERVER_NAME']) {
+/* switch ($_SERVER['SERVER_NAME']) {
     case 'm.pizzaboy.bywmds.us':
             $active_group = 'default';
             $active_record = TRUE;
@@ -85,9 +85,17 @@ switch ($_SERVER['SERVER_NAME']) {
         $db['default']['dbprefix'] = 'demo_prefix';
         break;
 
-}
+} */
 
+$active_group = 'default';
+$active_record = TRUE;
 
+$db['default']['hostname'] = 'zuzdb11';
+$db['default']['username'] = 'user_for_work';
+$db['default']['password'] = 'password';
+$db['default']['database'] = 'indian_mobile2';
+$db['default']['dbdriver'] = 'mysql';
+$db['default']['dbprefix'] = '';
 
 $db['default']['pconnect'] = TRUE;
 $db['default']['db_debug'] = TRUE;

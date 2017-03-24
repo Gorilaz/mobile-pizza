@@ -270,7 +270,7 @@ class Order extends WMDS_Controller{
         {
             $order_id = $this->order_model->saveOrder($check, $newTotal, $discount, $_fees, $user['userid'], $html, 'pending');
 
-            $this->order_model->sendOrderToAPI($order_id);
+    //        $this->order_model->sendOrderToAPI($cart,$order_id);
 
             $paypalFields = array(
                 'total'   => $newTotal,
@@ -297,7 +297,7 @@ class Order extends WMDS_Controller{
             $this->order_model->save_order_again($order_again, $order_id, $user['userid']);
 
            
-            $this->order_model->sendOrderToAPI($order_id);
+    //        $this->order_model->sendOrderToAPI($cart,$order_id);
 
             //$name = $this->order_pdf($order_id);
             $this->order_pdf($order_id);
@@ -909,45 +909,65 @@ class Order extends WMDS_Controller{
     function gprs_printer($data)
     {
         $p_rest_id = '#RestID*';
+        
+        $Order_info['restID'] = $p_rest_id;
 
         $p_delivery_or_pickup = strtoupper($data['order_option']) . '*'; // home delivery / pickup
 
         $p_order_number = $data['order_number'] . '*'; // number of order
+        
+        $Order_info['orderNumber'] = $p_order_number;
 
         $p_items = substr($data['p_txt_file_item_desc'], 0, -1) . '*'; // description of the content of the order (products, extras)
 
         $p_discount = $data['p_discount'] . ';'; // description of the discount
 
         $p_total_amount = '$' . $data['total_amount'] . ';;'; // total order amount
+        $Order_info['total'] =  $p_total_amount;
 
         if( $p_delivery_or_pickup === 'HOME DELIVERY*' )
         {
             $p_cust_name = $data['cust_name'] . '\n' . $data['p_cust_address'] . ';';
+            $Order_info['type'] = 'HOME DELIVERY';
         }
         else
         {
             $p_cust_name = $data['cust_name'] . ';';
 
             $p_delivery_or_pickup = 'IN-STORE PICKUP*';
+            $Order_info['type'] = $p_delivery_or_pickup;
         }
 
         $p_asap_or_later = $data['p_order_get_date'] . ';';
+        
+        $Order_info['order_date'] = $p_asap_or_later;
 
         $p_deliver_and_other_fees = '$' . number_format($data['all_extra_fees'], 2) . ';';
+        
+        $Order_info['discountExtraFee'] = $p_deliver_and_other_fees;
 
         $p_paid_or_not = $data['paid_or_not'];
 
         $p_payment_method = $data['payment_method'] . ';';
+        
+        $Order_info['payment'] =$p_payment_method; 
 
         $p_cust_mobile = $data['cust_mobile'] . '*';
+        
+        $Order_info['phoneNumber'] = $p_cust_mobile;
 
         $p_order_comment = strip_tags($data['order_comment']);
 
         $p_order_comment = trim(str_replace('ORDER COMMENTS: :', '', $p_order_comment));
+        
+        $Order_info['comments'] = $p_order_comment;
 
         $p_order_comment = str_replace('&nbsp;', '', $p_order_comment) . '*';
 
         $p_order_received_at = 'ORDER RECEIVED: ' . date('H:i m-d') . '*';
+        
+        $Order_info['orderPlacedAT'] = $p_order_received_at;
+        $Order_info['name']  = $p_cust_name;
 
         $p_part_order = '#'; //add "PART1/2 if neccessary - TO DO LATER"
 
@@ -978,6 +998,13 @@ class Order extends WMDS_Controller{
         }
 
         $this->order_model->recordPrinterData($data['order_number'],$p_printer_data, $p_status);
+        
+    //    $this->order_model->sendToApi($Order_info);
+        
+        echo "<pre>";
+        var_dump($Order_info);
+        echo "</pre>";
+        exit();
 
 
         /*
@@ -1106,12 +1133,22 @@ class Order extends WMDS_Controller{
             'count' => $count
         ));
     }
+    
+    
+    public function sendOrder($order){
+
+      var_dump($order);exit();
+    
+    }  
+    
 
  //VV for GPRS printer - almost identical to getTextFileItemsDescription()
     private function p_getTextFileItemsDescription()
     {
+        
         $order = '';
         $cart_contents = $this->cart->contents();
+        $res = array();
 
         if( $cart_contents )
         {
@@ -1140,11 +1177,15 @@ class Order extends WMDS_Controller{
                     if( !empty($items['instruction']) )
                     {
                         $comment = '\nCOMMENTS: ' . $items['instruction'];
+                       $oneItem['comments'] = $comment;
                     }
 
                     $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
 
                     $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $comment . ';';
+                    
+                    $oneItem['item'] = '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group; 
+                    
                 }
                 else if( !empty($items['product_type']) && $items['product_type'] == 'single' )
                 {
@@ -1223,6 +1264,19 @@ class Order extends WMDS_Controller{
                     $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
 
                     $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $current . $extra . $choice . $comment . ';';
+                    
+                    
+                    $oneItem['item'] = $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price;
+                    $oneItem['ingredients'] = $extra . $choice ;
+                    $oneItem['comment'] = $comment;
+                    $oneItem['size'] = $variation_group;
+                    $oneItem['half_half'] = 'false';
+                     echo "<pre>"    ;
+                        var_dump($oneItem);
+                    echo "</pre>";     
+                     exit();
+                    
+                    
                 }
                 else if( !empty($items['product_type']) && $items['product_type'] === 'half' )
                 {
@@ -1248,6 +1302,9 @@ class Order extends WMDS_Controller{
                             $option_name_parts = explode(':', $option['name']);
 
                             $first_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                            
+                            $first_half['name'] = $first_pizza_name;
+                            
                         }
 
                         if( $half === 'first' &&
@@ -1258,6 +1315,8 @@ class Order extends WMDS_Controller{
                             $option_name_parts = explode(':', $option['name']);
 
                             $second_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                            
+                            $second_half['name'] = $second_pizza_name;
                         }
 
                         if( strpos(strtolower($option['name']), 'size:') !== false )
@@ -1275,11 +1334,15 @@ class Order extends WMDS_Controller{
                                 if( $half === 'first' )
                                 {
                                     $first_product_variation_group .= $product_variation_group;
+                                    
+                                    $first_half['size'] =  $first_product_variation_group;
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_variation_group .= $product_variation_group;
+                                    
+                                    $second_half['size'] = $second_product_variation_group;
                                 }
                             }
                         }
@@ -1299,11 +1362,16 @@ class Order extends WMDS_Controller{
                                 if( $half === 'first' )
                                 {
                                     $first_product_current_options .= $product_current_options;
+                                    
+                                    $first_half['ingredients'] = $first_product_current_options;
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_current_options .= $product_current_options;
+                                    
+                                    $second_half['ingredients'] = $second_product_current_options;
+
                                 }
                             }
                         }
@@ -1325,11 +1393,13 @@ class Order extends WMDS_Controller{
                                 if( $half === 'first' )
                                 {
                                     $first_product_extra_options .= $product_extra_options;
+                                    $first_half['ingredients'] = $first_product_extra_options ;
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_extra_options .= $product_extra_options;
+                                    $second_half['ingredients'] = $second_product_extra_options;
                                 }
                             }
                         }
@@ -1338,17 +1408,32 @@ class Order extends WMDS_Controller{
                     if( !empty($items['instruction']) )
                     {
                         $comment = '\nCOMMENTS: ' . $items['instruction'];
+                        $half_halfAr['comment'] = $comment;
                     }
 
                     $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
-
+                    
+                    $half_halfAr ['item'] = $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price;
+                    $half_halfAr ['half_half'] = "true";
+                    
+                    $half_halfAr ['first_half'] = $first_half;
+                    $half_halfAr ['second_half'] = $second_half;
+                    
                     $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price . '|' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
+                    
                 }
             }
         }
+        
+  
 
+     
         return $order;
     }
+    
+ 
+    
+    
 
 //VV for printer end _getTextFileItemsDescription
 

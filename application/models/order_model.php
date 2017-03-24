@@ -485,8 +485,10 @@ class Order_model extends CI_Model{
      * Send Order data to API
      * @param $order_id
      */
+   
+    /*
     
-    public function sendOrderToAPI($order_id) {
+    public function sendOrderToAPI($cart,$order_id) {
         
      //   $order = $this->order_model->getOrder($orderId);
      
@@ -494,17 +496,98 @@ class Order_model extends CI_Model{
     
     $zakaz = json_encode($ord);
     
-    $product = $this->db->select('*')->where('product_id', $ord[0]->product_id)->get('tbl_product')->result();
+    $prod = $this->db->select('*')->where('product_id', $ord[0]->product_id)->get('tbl_product')->result();
     
      //   $halfFee = $this->db->select('half_pizza_group_fee')->where('id', $half_pizza_group_id)->get('half_pizza_group')->row();
 
      //  $product = json_encode($product);
- var_dump($product);exit();
+  //  var_dump($product);exit();
   //  die($zakaz);
  
-   $obj = new stdObject();
+    $order = $this->db->select('*')->where('order_id', $order_id)->get('order_again')->result();
+    //    var_dump($order);exit();
+    
+    
+    
+    $items = array();
+
    
-   }
+
+    $cart_con =  json_decode($order[0]->cart_content);
+    
+    echo "<pre>"    ;
+    print_r($cart_con);
+    echo "</pre>";
+
+    exit();
+    foreach ($cart_con as $item){
+     
+        $options = $item->options;    
+
+        $shop = $this->db->select('*')->where('order_id', $order_id)->get('tbl_shopping_cart')->result();
+
+
+        $one =[
+
+                "item"         =>   $item->qty. "|" . $item->name . "|" .$item->price,
+                "comments"        =>   $shop[0]->comment,
+          
+        ];  
+ 
+    $count=0;  
+   
+        foreach ($options as $option){
+            if(  strpos($option->name, 'First Half') || strpos($option->name, 'first half') ){
+                $one['first_half'] = $option->name;
+            }
+            else if(  (strpos($option->name, 'Second Half')) || strpos($option->name, 'second half') ) {
+                $one['second_half'] = $option->name;
+            }
+            else if(  strpos($option->name, 'Size') ||  strpos($option->name, 'size') ) {
+                $one['size'] = $option->name;
+            }
+            else{
+                
+                $one['ingredients'] = $option->name. "(+" . $option->price .") |";
+
+
+               
+                
+            }
+        
+        }
+        
+ 
+
+    
+        if($shop[0]->product_flag == 'H'){
+
+            $one["half_half"] = 'true';
+        }
+        else{
+            $one["half_half"] = 'false';
+        }
+        
+        $items [] =  $one;  
+
+
+    }
+    
+    echo "<pre>"    ;
+    print_r($items);
+    echo "</pre>";
+
+    exit();
+
+
+     
+     
+     
+     
+    
+    }    
+  */  
+
 
     /**
      * Get order products for order again

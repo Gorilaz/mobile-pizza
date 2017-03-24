@@ -93,7 +93,7 @@ $active_record = TRUE;
 $db['default']['hostname'] = 'zuzdb11';
 $db['default']['username'] = 'user_for_work';
 $db['default']['password'] = 'password';
-$db['default']['database'] = 'indian_mobile2';
+$db['default']['database'] = 'bluestar';
 $db['default']['dbdriver'] = 'mysql';
 $db['default']['dbprefix'] = '';
 

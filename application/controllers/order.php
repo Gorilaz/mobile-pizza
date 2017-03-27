@@ -450,6 +450,8 @@ class Order extends WMDS_Controller{
 
         $data['p_txt_file_item_desc'] = $this->p_getTextFileItemsDescription(); //for gprs printer
 
+        $OrderApi = $this->p_getOrderApi();
+
         $data['discount'] = $order['discount'];
         $data['p_discount'] = ''; //VV for gprs printer
 
@@ -562,7 +564,7 @@ class Order extends WMDS_Controller{
         $data['restaurant_name'] = $this->db->select('value')->where('type', 'restaurant_name')->get('sitesetting')->row()->value;
 
 
-        $this->gprs_printer($data);
+        $this->gprs_printer($data, $OrderApi);
 
 
         if(empty($order['order_date']))
@@ -906,7 +908,7 @@ class Order extends WMDS_Controller{
     }
 
     //VV GPRS PRINTER
-    function gprs_printer($data)
+    function gprs_printer($data, $OrderApi)
     {
         $p_rest_id = '#RestID*';
         
@@ -1000,6 +1002,9 @@ class Order extends WMDS_Controller{
         $this->order_model->recordPrinterData($data['order_number'],$p_printer_data, $p_status);
         
     //    $this->order_model->sendToApi($Order_info);
+
+        $readyToSend [] = $OrderApi;
+        $readyToSend [] = $Order_info;
         
         echo "<pre>";
         var_dump($Order_info);
@@ -1148,7 +1153,10 @@ class Order extends WMDS_Controller{
         
         $order = '';
         $cart_contents = $this->cart->contents();
-        $res = array();
+        $OrderApi = array();
+        $oneItem = array();
+        $half_halfAr = array();
+
 
         if( $cart_contents )
         {
@@ -1209,6 +1217,7 @@ class Order extends WMDS_Controller{
                                 !empty($value) )
                             {
                                 $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value);
+                                $size = strtoupper($value);
                             }
                         }
                         else if( strpos(strtolower($option['name']), '-no:') !== false )
@@ -1267,10 +1276,13 @@ class Order extends WMDS_Controller{
                     
                     
                     $oneItem['item'] = $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price;
-                    $oneItem['ingredients'] = $extra . $choice ;
+                    $oneItem['ingredients'] = $current . $extra . $choice ;
                     $oneItem['comment'] = $comment;
-                    $oneItem['size'] = $variation_group;
+                    $oneItem['size'] = $size;
                     $oneItem['half_half'] = 'false';
+
+                     $res [] = $half_halfAr;
+
                      echo "<pre>"    ;
                         var_dump($oneItem);
                     echo "</pre>";     
@@ -1335,14 +1347,14 @@ class Order extends WMDS_Controller{
                                 {
                                     $first_product_variation_group .= $product_variation_group;
                                     
-                                    $first_half['size'] =  $first_product_variation_group;
+                                    $first_half['size'] =  $strtoupper($value);
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_variation_group .= $product_variation_group;
                                     
-                                    $second_half['size'] = $second_product_variation_group;
+                                    $second_half['size'] =  $strtoupper($value);
                                 }
                             }
                         }
@@ -1363,14 +1375,14 @@ class Order extends WMDS_Controller{
                                 {
                                     $first_product_current_options .= $product_current_options;
                                     
-                                    $first_half['ingredients'] = $first_product_current_options;
+                                //    $first_half['ingredients'] = $first_product_current_options;
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_current_options .= $product_current_options;
                                     
-                                    $second_half['ingredients'] = $second_product_current_options;
+                                //    $second_half['ingredients'] = $second_product_current_options;
 
                                 }
                             }
@@ -1393,13 +1405,13 @@ class Order extends WMDS_Controller{
                                 if( $half === 'first' )
                                 {
                                     $first_product_extra_options .= $product_extra_options;
-                                    $first_half['ingredients'] = $first_product_extra_options ;
+                                //    $first_half['ingredients'] .= $first_product_extra_options ;
                                 }
 
                                 if( $half === 'second' )
                                 {
                                     $second_product_extra_options .= $product_extra_options;
-                                    $second_half['ingredients'] = $second_product_extra_options;
+                                //    $second_half['ingredients'] .= $second_product_extra_options;
                                 }
                             }
                         }
@@ -1415,11 +1427,19 @@ class Order extends WMDS_Controller{
                     
                     $half_halfAr ['item'] = $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price;
                     $half_halfAr ['half_half'] = "true";
+
+                    $first_half['ingredients'] = $first_product_current_options . $first_product_extra_options;
+                    $second_half['ingredients'] = $second_product_current_options .  $second_product_extra_options;
+
+
+                    
                     
                     $half_halfAr ['first_half'] = $first_half;
                     $half_halfAr ['second_half'] = $second_half;
                     
                     $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price . '|' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
+
+                    $res [] = $half_halfAr;
                     
                 }
             }
@@ -1430,9 +1450,317 @@ class Order extends WMDS_Controller{
      
         return $order;
     }
-    
+
+
+
+
+
+
+
+ private function p_getOrderApi()
+    {
+        
+        $order = '';
+        $cart_contents = $this->cart->contents();
+        $OrderApi = array();
+        $oneItem = array();
+        $half_halfAr = array();
+
+        if( $cart_contents )
+        {
+            foreach( $cart_contents as $items )
+            {
+                if( !empty($items['product_type']) && $items['product_type'] === 'deal' )
+                {
+                    $variation_group = '';
+
+                    foreach( $items['options'] as $option )
+                    {
+                        $option_name_parts = explode(':', $option['name']);
+
+                        $price = isset($option['price']) ? trim($option['price']) : '';
+
+                        $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                        $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                        if( !empty($name) &&
+                            !empty($value) )
+                        {
+                            $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                        }
+                    }
+
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                       $oneItem['comments'] = $comment;
+                    }
+
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+
+                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $comment . ';';
+                    
+                    $oneItem['item'] = '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group; 
+                    
+                }
+                else if( !empty($items['product_type']) && $items['product_type'] == 'single' )
+                {
+                    $variation_group = '';
+                    $current = '';
+                    $extra = '';
+                    $choice = '';
+
+                    $comment = '';
+
+                    foreach( $items['options'] as $option )
+                    {
+                        if( strpos(strtolower($option['name']), 'size:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $variation_group .= '>' . strtoupper($name) . ': ' . strtoupper($value);
+                                $size = strtoupper($value);
+                            }
+                        }
+                        else if( strpos(strtolower($option['name']), '-no:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $current .= '>NO: ' . ucwords($value);
+                            }
+                        }
+                        else if( strpos(strtolower($option['name']), '+extra:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $extra .= '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                            }
+                        }
+                        else
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $choice .= '>' . strtoupper($name) . ': ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+                            }
+                        }
+                    }
+
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                    }
+
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+
+                    $order .= '|' . $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price . '|' . $variation_group . $current . $extra . $choice . $comment . ';';
+                    
+                    
+                    $oneItem['item'] = $items['qty'] . '|' . strtoupper($items['name']) . '|' . $item_price;
+                    $oneItem['ingredients'] = $current . $extra . $choice ;
+                    $oneItem['comment'] = $comment;
+                    $oneItem['size'] = $size;
+                    $oneItem['half_half'] = 'false';
+
+                     $OrderApi [] = $oneItem;
+
+                     echo "<pre>"    ;
+                        var_dump($oneItem);
+                    echo "</pre>";     
+                     exit();
+                    
+                    
+                }
+                else if( !empty($items['product_type']) && $items['product_type'] === 'half' )
+                {
+                    $half = false;
+
+                    $first_product_variation_group = '';
+                    $first_product_current_options = '';
+                    $first_product_extra_options = '';
+
+                    $second_product_variation_group = '';
+                    $second_product_current_options = '';
+                    $second_product_extra_options = '';
+
+                    $comment = '';
+
+                    foreach( $items['options'] as $option )
+                    {
+                        if( $half === false &&
+                            strpos(strtolower($option['name']), 'first half') !== false )
+                        {
+                            $half = 'first';
+
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $first_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                            
+                            $first_half['name'] = $first_pizza_name;
+                            
+                        }
+
+                        if( $half === 'first' &&
+                            strpos(strtolower($option['name']), 'second half') !== false )
+                        {
+                            $half = 'second';
+
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $second_pizza_name = isset($option_name_parts[1]) ? strtoupper(trim($option_name_parts[1])) : '';
+                            
+                            $second_half['name'] = $second_pizza_name;
+                        }
+
+                        if( strpos(strtolower($option['name']), 'size:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $product_variation_group = '>' . strtoupper($name) . ': ' . strtoupper($value);
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_variation_group .= $product_variation_group;
+                                    
+                                    $first_half['size'] =  $strtoupper($value);
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_variation_group .= $product_variation_group;
+                                    
+                                    $second_half['size'] =  $strtoupper($value);
+                                }
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '-no:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $product_current_options = '>NO: ' . ucwords($value);
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_current_options .= $product_current_options;
+                                    
+                                //    $first_half['ingredients'] = $first_product_current_options;
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_current_options .= $product_current_options;
+                                    
+                                //    $second_half['ingredients'] = $second_product_current_options;
+
+                                }
+                            }
+                        }
+
+                        if( strpos(strtolower($option['name']), '+extra:') !== false )
+                        {
+                            $option_name_parts = explode(':', $option['name']);
+
+                            $name = isset($option_name_parts[0]) ? trim($option_name_parts[0]) : '';
+                            $value = isset($option_name_parts[1]) ? trim($option_name_parts[1]) : '';
+
+                            $price = isset($option['price']) ? trim($option['price']) : '';
+
+                            if( !empty($name) &&
+                                !empty($value) )
+                            {
+                                $product_extra_options = '>EXTRA: ' . ucwords($value) . ( empty($price) ? '' : '(+' . $price . ')' );
+
+                                if( $half === 'first' )
+                                {
+                                    $first_product_extra_options .= $product_extra_options;
+                                //    $first_half['ingredients'] .= $first_product_extra_options ;
+                                }
+
+                                if( $half === 'second' )
+                                {
+                                    $second_product_extra_options .= $product_extra_options;
+                                //    $second_half['ingredients'] .= $second_product_extra_options;
+                                }
+                            }
+                        }
+                    }
+
+                    if( !empty($items['instruction']) )
+                    {
+                        $comment = '\nCOMMENTS: ' . $items['instruction'];
+                        $half_halfAr['comment'] = $comment;
+                    }
+
+                    $item_price = number_format((integer) $items['qty'] * (float) $items['price'], 2);
+                    
+                    $half_halfAr ['item'] = $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price;
+                    $half_halfAr ['half_half'] = "true";
+
+                    $first_half['ingredients'] = $first_product_current_options . $first_product_extra_options;
+                    $second_half['ingredients'] = $second_product_current_options .  $second_product_extra_options;
+
+
+                    
+                    
+                    $half_halfAr ['first_half'] = $first_half;
+                    $half_halfAr ['second_half'] = $second_half;
+                    
+                    $order .= '|' . $items['qty'] . '|HALF & HALF PIZZA' . '|' . $item_price . '|' . '\n1st Half: ' . $first_pizza_name . $first_product_variation_group . $first_product_current_options . $first_product_extra_options . '\n2nd Half: ' . $second_pizza_name .  $second_product_variation_group . $second_product_current_options .  $second_product_extra_options . $comment . ';';
+
+                    $OrderApi [] = $half_halfAr;
+                    
+                }
+            }
+        }
+        
+
+        return $OrderApi;
+    }
+
+
+
+
  
-    
     
 
 //VV for printer end _getTextFileItemsDescription
